@@ -32,7 +32,7 @@ const dersler = defineCollection({
             tur: z.enum(['kitap', 'lab', 'okuma']),
             baslik: z.string(),
             ayrinti: z.string(),
-            url: z.url().optional(),
+            url: z.url({ protocol: /^https?$/ }).optional(),
           }),
         )
         .optional(),
@@ -57,7 +57,7 @@ const efsaneler = defineCollection({
     hukum: z.enum(['dogru', 'kismen', 'yanlis']),
     ozet: z.string().min(10),
     analoji: z.string().optional(),
-    kaynaklar: z.array(z.object({ ad: z.string(), url: z.url() })).min(1, 'Her efsanede en az 1 kaynak olmalı'),
+    kaynaklar: z.array(z.object({ ad: z.string(), url: z.url({ protocol: /^https?$/ }) })).min(1, 'Her efsanede en az 1 kaynak olmalı'),
     ilgiliDers: dersKimligi.optional(),
     tarih: gun,
   }),

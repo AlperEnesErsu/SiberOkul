@@ -111,6 +111,9 @@ button:hover:not(:disabled), .dugme:hover { border-color: var(--vurgu); }
 button:disabled { opacity: 0.55; cursor: not-allowed; }
 .birincil { background: var(--vurgu); border-color: var(--vurgu); color: var(--zemin); }
 
+/* `hidden` özniteliği, display tanımlayan sınıflardan (ör. .dugme) her zaman üstün gelsin. */
+[hidden] { display: none !important; }
+
 .gizli-ekran {
   position: absolute; width: 1px; height: 1px; overflow: hidden;
   clip: rect(0 0 0 0); white-space: nowrap;
