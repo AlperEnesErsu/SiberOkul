@@ -10,12 +10,14 @@ export function bolgeDurumlari(
   donemler: { no: number; planlananDers: number }[],
   yayimlanan: Record<number, string[]>,
   biten: Set<string>,
+  /** Verilirse: sınavı olan bölge, sınavı geçilmeden tamamlandı sayılmaz. */
+  sinav?: { sinavDonemleri: number[]; gecilen: Set<number> },
 ): BolgeDurumu[] {
   const sonuc: BolgeDurumu[] = [];
   donemler.forEach((d, i) => {
     const dersler = yayimlanan[d.no] ?? [];
     const bitenSayi = dersler.filter((k) => biten.has(k)).length;
-    if (dersler.length >= d.planlananDers && d.planlananDers > 0 && bitenSayi === dersler.length) sonuc.push('tamamlandi');
+    if (dersler.length >= d.planlananDers && d.planlananDers > 0 && bitenSayi === dersler.length && (!sinav || !sinav.sinavDonemleri.includes(d.no) || sinav.gecilen.has(d.no))) sonuc.push('tamamlandi');
     else if (i === 0 || bitenSayi > 0 || sonuc[i - 1] === 'tamamlandi') sonuc.push('devam');
     else sonuc.push('kilitli');
   });

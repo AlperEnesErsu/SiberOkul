@@ -26,6 +26,8 @@ export interface Ilerleme {
   calisilanGunler: Gun[];
   /** Okunan Efsane/Atölye kartları (`efsane:<id>`, `atolye:<id>`). */
   okunanKartlar?: string[];
+  /** Dönem no → bölge sınavı en iyi yüzdesi ve son deneme günü. */
+  sinavlar?: Record<string, { enIyi: number; sonGun: Gun }>;
 }
 
 export function bosIlerleme(): Ilerleme {

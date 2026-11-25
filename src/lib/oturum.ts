@@ -4,8 +4,9 @@
 import { bugunSec, type DersOzet } from './ilerleme/bugun';
 import type { Ilerleme } from './ilerleme/model';
 import type { Gun } from './ilerleme/tarih';
+import { bekleyenSinav } from './sinav';
 
-export type AdimTuru = 'isinma' | 'tekrar' | 'ders' | 'kart' | 'ozet';
+export type AdimTuru = 'isinma' | 'tekrar' | 'ders' | 'sinav' | 'kart' | 'ozet';
 
 export interface KartOzet {
   /** `efsane:<id>` ya da `atolye:<id>` */
@@ -25,11 +26,19 @@ export interface Oturum {
   tekrarlar: string[];
   ders: string | null;
   kart: string | null;
+  /** Bekleyen bölge sınavının dönem numarası (varsa ders adımının yerini alır). Eski kayıtlarda yok. */
+  sinav?: number | null;
   bitti: boolean;
 }
 
+/** Sınav adımını planlamak için gereken bilgi; verilmezse sınav adımı hiç planlanmaz. */
+export interface SinavBilgisi {
+  donemler: { no: number; planlananDers: number }[];
+  sinavDonemleri: number[];
+}
+
 export const OTURUM_ANAHTARI = 'siberokul.oturum';
-const ADIMLAR = new Set<AdimTuru>(['isinma', 'tekrar', 'ders', 'kart', 'ozet']);
+const ADIMLAR = new Set<AdimTuru>(['isinma', 'tekrar', 'ders', 'sinav', 'kart', 'ozet']);
 
 /** Bugünün dersine bağlı okunmamış efsane → en küçük numaralı okunmamış Atölye → okunmamış herhangi bir efsane. */
 export function kartSec(kartlar: KartOzet[], i: Ilerleme, dersKimligi: string | null): string | null {
@@ -42,12 +51,23 @@ export function kartSec(kartlar: KartOzet[], i: Ilerleme, dersKimligi: string | 
   return okunmamis.find((k) => k.tur === 'efsane')?.kimlik ?? null;
 }
 
-export function oturumPlanla(dersler: DersOzet[], kartlar: KartOzet[], i: Ilerleme, bugun: Gun): Oturum {
-  const { ders, tekrarlar } = bugunSec(dersler, i, bugun);
+export function oturumPlanla(
+  dersler: DersOzet[],
+  kartlar: KartOzet[],
+  i: Ilerleme,
+  bugun: Gun,
+  sinavBilgisi?: SinavBilgisi,
+): Oturum {
+  const secim = bugunSec(dersler, i, bugun);
+  const { tekrarlar } = secim;
+  // Bitmiş bir bölgenin sınavı geçilmeden sonraki bölgenin dersine geçilmez.
+  const sinav = sinavBilgisi ? bekleyenSinav(dersler, sinavBilgisi.donemler, i, sinavBilgisi.sinavDonemleri) : null;
+  const ders = sinav === null ? secim.ders : null;
   const kart = kartSec(kartlar, i, ders?.kimlik ?? null);
   const adimlar: AdimTuru[] = ['isinma'];
   if (tekrarlar.length) adimlar.push('tekrar');
-  if (ders) adimlar.push('ders');
+  if (sinav !== null) adimlar.push('sinav');
+  else if (ders) adimlar.push('ders');
   if (kart) adimlar.push('kart');
   adimlar.push('ozet');
   return {
@@ -58,6 +78,7 @@ export function oturumPlanla(dersler: DersOzet[], kartlar: KartOzet[], i: Ilerle
     tekrarlar,
     ders: ders?.kimlik ?? null,
     kart,
+    sinav,
     bitti: false,
   };
 }
@@ -70,6 +91,9 @@ export function adimTamamMi(o: Oturum, i: Ilerleme, bugun: Gun): boolean {
       return o.ders !== null && Object.hasOwn(i.bitenDersler, o.ders);
     case 'kart':
       return o.kart !== null && (i.okunanKartlar ?? []).includes(o.kart);
+    case 'sinav':
+      // Oturum için bugün bir deneme yeterli; bölgenin açılması için geçmek gerekir.
+      return o.sinav != null && i.sinavlar?.[String(o.sinav)]?.sonGun === bugun;
     default:
       return true;
   }
@@ -96,7 +120,9 @@ function oturumMu(x: unknown): x is Oturum {
     typeof o.bitti === 'boolean' &&
     // Adımlar alanlarla tutarlı olmalı; yoksa adımın sayfası bulunamaz (sonsuz yönlendirme riski).
     o.adimlar.includes('ders') === (o.ders !== null) &&
-    o.adimlar.includes('kart') === (o.kart !== null)
+    o.adimlar.includes('kart') === (o.kart !== null) &&
+    (o.sinav === undefined || o.sinav === null || Number.isInteger(o.sinav)) &&
+    o.adimlar.includes('sinav') === (o.sinav != null)
   );
 }
 
@@ -115,6 +141,7 @@ export function adimUrl(o: Oturum, dersler: DersOzet[], kartlar: KartOzet[]): st
     const k = kartlar.find((x) => x.kimlik === o.kart);
     return k ? `${k.url}?oturum` : null;
   }
+  if (adim === 'sinav') return o.sinav != null ? `sinav:${o.sinav}` : null;
   return 'oturum';
 }
 

@@ -23,3 +23,8 @@ for (const li of document.querySelectorAll<HTMLElement>('[data-kimlik]')) {
   if (Object.hasOwn(d.ilerleme.bitenDersler, k)) li.classList.add('bitti');
   if (k === siradaki) li.classList.add('siradaki');
 }
+
+for (const el of document.querySelectorAll<HTMLElement>('[data-sinav-donem]')) {
+  const k = d.ilerleme.sinavlar?.[el.dataset.sinavDonem!];
+  if (k) el.textContent = `en iyi %${k.enIyi}${k.enIyi >= 70 ? ' ✓' : ''}`;
+}

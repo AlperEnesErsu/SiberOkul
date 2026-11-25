@@ -20,7 +20,7 @@ function ciz() {
   if (!oturum) return goster('oturum-yok');
   const adim = oturum.bitti ? 'ozet' : oturum.adimlar[oturum.konum];
 
-  if (adim === 'ders' || adim === 'kart') {
+  if (adim === 'ders' || adim === 'kart' || adim === 'sinav') {
     // Bu adımlar kendi sayfalarında; doğrudan /oturum/ açıldıysa oraya yönlendir.
     // Sayfası yoksa kendine yönlenip döngüye girme; oturumu geçersiz say.
     const hedef = adimAdresi(oturum, d.veri.dersler, d.veri.kartlar);
@@ -39,7 +39,8 @@ function ciz() {
       tekrar: `${oturum.tekrarlar.length} soru`,
       ders: ders ? `${ders.baslik} (~${ders.sure} dk)` : '',
       kart: kart ? kart.baslik : '',
-      ozet: 'kazandıkların',
+      sinav: oturum.sinav != null ? `${d.veri.donemler.find((x) => x.no === oturum.sinav)?.ad ?? ''} bölgesinin sınavı (~20 dk)` : '',
+      ozet: 'bugünün özeti',
       isinma: 'şu an buradasın',
     };
     document.getElementById('isinma-plan')!.replaceChildren(

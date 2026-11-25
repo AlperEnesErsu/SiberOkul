@@ -25,6 +25,16 @@ export function ilerlemeyiDogrula(x: unknown): x is Ilerleme {
   if (okunanKartlar !== undefined && (!Array.isArray(okunanKartlar) || !okunanKartlar.every((k) => typeof k === 'string'))) {
     return false;
   }
+  const { sinavlar } = x;
+  if (
+    sinavlar !== undefined &&
+    (!nesneMi(sinavlar) ||
+      !Object.values(sinavlar).every(
+        (s) => nesneMi(s) && typeof s.enIyi === 'number' && s.enIyi >= 0 && s.enIyi <= 100 && typeof s.sonGun === 'string' && GUN.test(s.sonGun),
+      ))
+  ) {
+    return false;
+  }
   if (!nesneMi(sorular)) return false;
   return Object.values(sorular).every(
     (s) =>

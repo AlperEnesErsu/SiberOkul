@@ -1,5 +1,6 @@
 // Pano sayfalarının ortak durum özeti: seri, bölge durumları.
 import { bolgeDurumlari } from '../lib/bolge';
+import { sinavGecildi } from '../lib/sinav';
 import { ilerlemeOku } from '../lib/ilerleme/depo';
 import type { Ilerleme } from '../lib/ilerleme/model';
 import { seriHesapla } from '../lib/ilerleme/seri';
@@ -18,7 +19,11 @@ export function durumHesapla(): Durum {
   const veri = dersVerisiniOku();
   const ilerleme = ilerlemeOku();
   const bugun = bugunStr();
-  const bolgeler = bolgeDurumlari(veri.donemler, yayimlananlar(veri.dersler), new Set(Object.keys(ilerleme.bitenDersler)));
+  const gecilen = new Set(veri.sinavDonemleri.filter((n) => sinavGecildi(ilerleme, n)));
+  const bolgeler = bolgeDurumlari(veri.donemler, yayimlananlar(veri.dersler), new Set(Object.keys(ilerleme.bitenDersler)), {
+    sinavDonemleri: veri.sinavDonemleri,
+    gecilen,
+  });
   return {
     veri,
     ilerleme,

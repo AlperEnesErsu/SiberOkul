@@ -22,6 +22,8 @@ const dersler = defineCollection({
         aciklama: z.string(),
         komutlar: z.array(z.string()).min(1),
         soru: z.string(),
+        /** Telefondan çalışırken terminal yerine: komutların çıktısını okuyup yorumlama sorusu. */
+        telefon: z.object({ soru: z.string().min(10), cevap: z.string().min(5) }).optional(),
       }),
       sorular: z
         .array(z.object({ id: z.string(), soru: z.string().min(5), cevap: z.string().min(2) }))
@@ -78,4 +80,30 @@ const atolye = defineCollection({
   }),
 });
 
-export const collections = { dersler, efsaneler, atolye };
+const sinavlar = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/sinavlar' }),
+  schema: z
+    .object({
+      donem: z.number().int().min(1).max(8),
+      baslik: z.string(),
+      sorular: z
+        .array(
+          z.object({
+            soru: z.string().min(5),
+            secenekler: z.array(z.string().min(1)).min(2).max(5),
+            dogru: z.number().int().min(0),
+            aciklama: z.string().min(5),
+          }),
+        )
+        .min(15, 'Her bölge sınavında en az 15 soru olmalı'),
+    })
+    .superRefine((s, ctx) => {
+      s.sorular.forEach((q, i) => {
+        if (q.dogru >= q.secenekler.length) {
+          ctx.addIssue({ code: 'custom', path: ['sorular', i, 'dogru'], message: 'dogru, seçeneklerden birinin sırası olmalı (0dan başlar)' });
+        }
+      });
+    }),
+});
+
+export const collections = { dersler, efsaneler, atolye, sinavlar };

@@ -22,3 +22,10 @@ test('eksik yayın', () =>
 // Korur: önceki dönem bitmeden içinden ders bitirilen dönemin açık, onu izleyenin de açılmasını
 test('ileri atlama', () =>
   expect(bolgeDurumlari(donemler, yayin, new Set(['c']))).toEqual(['devam', 'tamamlandi', 'devam']));
+
+// Korur: sınavı olan bölgenin, sınav geçilmeden tamamlandı sayılmamasını ve sonrakini açmamasını
+test('sınav geçilmeden tamamlanmaz', () => {
+  const sinav = { sinavDonemleri: [1], gecilen: new Set<number>() };
+  expect(bolgeDurumlari(donemler, yayin, new Set(['a', 'b']), sinav)).toEqual(['devam', 'kilitli', 'kilitli']);
+  expect(bolgeDurumlari(donemler, yayin, new Set(['a', 'b']), { ...sinav, gecilen: new Set([1]) })).toEqual(['tamamlandi', 'devam', 'kilitli']);
+});

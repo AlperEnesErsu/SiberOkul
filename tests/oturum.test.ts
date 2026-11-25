@@ -111,3 +111,28 @@ test('adimUrl bulunamayan ders', () => {
   expect(adimUrl({ ...o, konum: 2 }, dersler, [])).toBeNull();
   expect(adimUrl({ ...o, konum: 0 }, dersler, kartlar)).toBe('oturum');
 });
+
+// Korur: bölge bitince dersin yerine sınav adımının gelmesini
+test('sınav adımı', () => {
+  const ozet = { donemler: [{ no: 1, planlananDers: 2 }, { no: 2, planlananDers: 1 }], sinavDonemleri: [1] };
+  const i = { ...bosIlerleme(), bitenDersler: { 'linux-001': B, 'linux-002': B } };
+  const o = oturumPlanla(dersler, kartlar, i, B, ozet);
+  expect(o.adimlar).toContain('sinav');
+  expect(o.adimlar).not.toContain('ders');
+  expect(o.sinav).toBe(1);
+  const sinavAdimi = { ...o, konum: o.adimlar.indexOf('sinav') };
+  expect(adimTamamMi(sinavAdimi, i, B)).toBe(false);
+  expect(adimTamamMi(sinavAdimi, { ...i, sinavlar: { '1': { enIyi: 40, sonGun: B } } }, B)).toBe(true);
+  expect(adimUrl(sinavAdimi, dersler, kartlar)).toBe('sinav:1');
+});
+
+// Korur: sınav alanı olmayan eski oturum kaydının hâlâ okunmasını, tutarsız sınav kaydının reddini
+test('sınav alanı kaydı', () => {
+  const depo = new Depo();
+  const o = oturumPlanla(dersler, kartlar, bosIlerleme(), B);
+  const { sinav: _, ...eski } = o;
+  depo.setItem(OTURUM_ANAHTARI, JSON.stringify(eski));
+  expect(oturumOku(B, depo)).not.toBeNull();
+  depo.setItem(OTURUM_ANAHTARI, JSON.stringify({ ...o, sinav: 3 }));
+  expect(oturumOku(B, depo)).toBeNull();
+});

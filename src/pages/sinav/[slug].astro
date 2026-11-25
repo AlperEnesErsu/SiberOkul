@@ -1,0 +1,93 @@
+---
+import { getCollection } from 'astro:content';
+import Temel from '../../layouts/Temel.astro';
+import DersVerisi from '../../components/DersVerisi.astro';
+import OturumCercevesi from '../../components/OturumCercevesi.astro';
+import { DONEMLER } from '../../data/donemler';
+import { DONEM_GORSEL } from '../../data/donem-gorsel';
+import { satirIci } from '../../lib/satir-ici';
+import { GECME_YUZDESI } from '../../lib/sinav';
+
+export async function getStaticPaths() {
+  return (await getCollection('sinavlar')).map((s) => {
+    const donem = DONEMLER.find((d) => d.no === s.data.donem)!;
+    return { params: { slug: donem.slug }, props: { sinav: s.data, donem } };
+  });
+}
+
+const { sinav, donem } = Astro.props;
+const gorsel = DONEM_GORSEL[donem.no];
+// Cevap anahtarı sayfaya gömülür: kişisel bir öğrenme sınavı, kopya koruması amaçlanmaz.
+const anahtar = sinav.sorular.map((s) => s.dogru);
+---
+
+<Temel baslik={`${donem.ad} sınavı`} aciklama={sinav.baslik} duzen="okuma">
+  <DersVerisi />
+  <div class="okuma-izgara" style={`--renk:${gorsel.renk}`}>
+    <aside class="okuma-yan"><OturumCercevesi parca="adimlar" /></aside>
+    <div class="okuma-ana">
+      <article class="okuma" data-sinav={donem.no} data-anahtar={JSON.stringify(anahtar)}>
+        <p class="etiket"><span aria-hidden="true">{gorsel.simge}</span> Bölge sınavı · {sinav.sorular.length} soru · geçme %{GECME_YUZDESI}</p>
+        <h1>{sinav.baslik}</h1>
+        <p class="soluk" id="sinav-gecmis">Her soruda bir seçenek işaretle, sonra "Sınavı bitir"e bas. İstediğin kadar tekrar deneyebilirsin.</p>
+
+        <ol class="sorular">
+          {sinav.sorular.map((s, i) => (
+            <li class="kart soru" data-no={i}>
+              <fieldset>
+                <legend set:html={`${i + 1}. ${satirIci(s.soru)}`} />
+                {s.secenekler.map((sec, j) => (
+                  <label class="secenek">
+                    <input type="radio" name={`s${i}`} value={j} />
+                    <span set:html={satirIci(sec)} />
+                  </label>
+                ))}
+              </fieldset>
+              <p class="aciklama" hidden>
+                <strong class="sonuc"></strong> <span set:html={satirIci(s.aciklama)} />
+              </p>
+            </li>
+          ))}
+        </ol>
+
+        <div class="bitir">
+          <button type="button" class="birincil buyuk" id="sinavi-bitir">Sınavı bitir</button>
+          <button type="button" class="buyuk" id="yeniden" hidden>Yeniden dene</button>
+          <span id="sinav-durum" class="soluk" aria-live="polite"></span>
+        </div>
+        <div class="kart sonuc-kutu" id="sonuc-kutu" hidden role="status">
+          <p class="buyuk-yuzde" id="sonuc-yuzde"></p>
+          <p id="sonuc-metin"></p>
+        </div>
+      </article>
+      <OturumCercevesi parca="cubuk" />
+    </div>
+  </div>
+</Temel>
+
+<script>
+  import '../../scripts/sinav.ts';
+</script>
+
+<style>
+  .okuma { border-top: 6px solid var(--renk); }
+  .sorular { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.9rem; margin-top: 1.5rem; }
+  fieldset { border: 0; margin: 0; padding: 0; }
+  legend { font-weight: 650; margin-bottom: 0.6rem; padding: 0; }
+  .secenek {
+    display: flex; align-items: flex-start; gap: 0.7rem;
+    padding: 0.7rem 0.8rem; margin: 0.35rem 0;
+    border: 1px solid var(--cizgi); border-radius: 11px; cursor: pointer; background: var(--yuzey);
+  }
+  .secenek:has(input:checked) { border-color: var(--birincil); background: var(--birincil-zemin); }
+  .secenek input { margin-top: 0.25rem; width: 1.1rem; height: 1.1rem; flex: none; }
+  .soru.dogru { border-color: var(--dogru); }
+  .soru.yanlis { border-color: var(--yanlis); }
+  .secenek.dogru-secenek { border-color: var(--dogru); box-shadow: inset 4px 0 0 var(--dogru); }
+  .aciklama { margin: 0.6rem 0 0; font-size: 0.95rem; }
+  .soru.dogru .sonuc { color: var(--dogru); }
+  .soru.yanlis .sonuc { color: var(--yanlis); }
+  .bitir { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-top: 1.5rem; }
+  .sonuc-kutu { margin-top: 1.2rem; text-align: center; }
+  .buyuk-yuzde { font-size: 2.6rem; font-weight: 800; margin: 0; }
+</style>

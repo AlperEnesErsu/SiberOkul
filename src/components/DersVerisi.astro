@@ -2,8 +2,9 @@
 // Ders ve kart listesini sayfaya JSON olarak gömer; tarayıcı betikleri `id="ders-listesi"`den okur.
 import { dersOzetleri } from '../lib/ders-listesi';
 import { kartOzetleri } from '../lib/kart-listesi';
+import { getCollection } from 'astro:content';
 import { DONEMLER } from '../data/donemler';
 
-const veri = { dersler: await dersOzetleri(), donemler: DONEMLER, kartlar: await kartOzetleri() };
+const veri = { dersler: await dersOzetleri(), donemler: DONEMLER, kartlar: await kartOzetleri(), sinavDonemleri: (await getCollection('sinavlar')).map((s) => s.data.donem) };
 ---
 <script type="application/json" id="ders-listesi" set:html={JSON.stringify(veri).replace(/</g, '\\u003c')} />

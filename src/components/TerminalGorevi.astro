@@ -1,7 +1,7 @@
 ---
 import { satirIci } from '../lib/satir-ici';
-interface Props { aciklama: string; komutlar: string[]; soru: string }
-const { aciklama, komutlar, soru } = Astro.props;
+interface Props { aciklama: string; komutlar: string[]; soru: string; telefon?: { soru: string; cevap: string } }
+const { aciklama, komutlar, soru, telefon } = Astro.props;
 ---
 <section class="gorev" aria-labelledby="gorev-b">
   <h2 id="gorev-b">Terminal görevi</h2>
@@ -14,6 +14,17 @@ const { aciklama, komutlar, soru } = Astro.props;
     <pre><code>{komutlar.map((k) => `$ ${k}`).join('\n')}</code></pre>
   </div>
   <p class="dusun"><strong>Düşün:</strong> <Fragment set:html={satirIci(soru)} /></p>
+  {telefon && (
+    <div class="telefon">
+      <p class="etiket">📱 Telefondaysan</p>
+      <p>Terminali bilgisayarda açtığında yukarıdaki komutları dene. Şimdilik şunu düşün:</p>
+      <p><strong set:html={satirIci(telefon.soru)} /></p>
+      <details>
+        <summary>Cevabı göster</summary>
+        <p set:html={satirIci(telefon.cevap)} />
+      </details>
+    </div>
+  )}
 </section>
 <style>
   .pencere { border-radius: 12px; overflow: hidden; border: 1px solid #2b3040; box-shadow: var(--golge); margin: 1rem 0; }
@@ -23,4 +34,7 @@ const { aciklama, komutlar, soru } = Astro.props;
   .pencere-ad { margin-left: 0.6rem; font: 0.75rem var(--yazi-kod); color: #b8c0d4; }
   .pencere pre { margin: 0; border-radius: 0; }
   .dusun { font-family: var(--yazi); font-size: 1rem; }
+  .telefon { font-family: var(--yazi); font-size: 1rem; background: var(--yuzey-2); border-radius: var(--r-k); padding: 0.8rem 1rem; margin-top: 1rem; }
+  .telefon p { margin: 0.4rem 0; }
+  .telefon summary { cursor: pointer; color: var(--birincil); font-weight: 650; }
 </style>

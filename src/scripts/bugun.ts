@@ -16,7 +16,8 @@ yaz('#biten-ders', String(Object.keys(d.ilerleme.bitenDersler).length));
 // Sayfası bulunamayan (ör. ders silinmiş) oturum geçersiz sayılır ve yeniden planlanır.
 const okunan = oturumOku(d.bugun);
 const kayitli = okunan && adimAdresi(okunan, dersler, kartlar) ? okunan : null;
-const oturum: Oturum = kayitli ?? oturumPlanla(dersler, kartlar, d.ilerleme, d.bugun);
+const sinavBilgisi = { donemler, sinavDonemleri: d.veri.sinavDonemleri };
+const oturum: Oturum = kayitli ?? oturumPlanla(dersler, kartlar, d.ilerleme, d.bugun, sinavBilgisi);
 const ders = dersler.find((x) => x.kimlik === oturum.ders);
 const dugme = document.getElementById('kapi-dugme') as HTMLAnchorElement;
 
@@ -54,7 +55,7 @@ if (oturum.bitti) {
   dugme.textContent = 'Bugünün oturumunu başlat →';
   dugme.addEventListener('click', (olay) => {
     olay.preventDefault();
-    const yeni = oturumPlanla(dersler, kartlar, d.ilerleme, d.bugun);
+    const yeni = oturumPlanla(dersler, kartlar, d.ilerleme, d.bugun, sinavBilgisi);
     oturumYaz(yeni);
     location.href = adimAdresi(yeni, dersler, kartlar) ?? `${import.meta.env.BASE_URL}oturum/`;
   });
