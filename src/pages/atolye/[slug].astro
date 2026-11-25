@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import Temel from '../../layouts/Temel.astro';
 import { dersUrl } from '../../lib/ders-listesi';
+import { satirIci } from '../../lib/satir-ici';
 
 export async function getStaticPaths() {
   return (await getCollection('atolye')).map((k) => ({ params: { slug: k.id }, props: { k } }));
@@ -18,29 +19,29 @@ const ilgili = d.ilgiliDers ? dersler.find((x) => x.data.kimlik === d.ilgiliDers
     <h1>{d.baslik}</h1>
     <dl>
       <dt>Sorun</dt>
-      <dd>{d.sorun}</dd>
+      <dd set:html={satirIci(d.sorun)} />
       <dt>Seçenekler</dt>
       <dd>
         <ul class="secenekler">
           {d.secenekler.map((s) => (
             <li class={s.secildi ? 'secildi' : ''}>
-              <strong>{s.ad}</strong>{s.secildi && <span class="etiket"> ← seçildi</span>}<br />{s.aciklama}
+              <strong>{s.ad}</strong>{s.secildi && <span class="etiket"> ← seçildi</span>}<br /><Fragment set:html={satirIci(s.aciklama)} />
             </li>
           ))}
         </ul>
       </dd>
       <dt>Neden</dt>
-      <dd>{d.neden}</dd>
+      <dd set:html={satirIci(d.neden)} />
       <dt>Bedeli</dt>
-      <dd>{d.bedel}</dd>
+      <dd set:html={satirIci(d.bedel)} />
     </dl>
     <div class="govde"><Content /></div>
     <section class="kart">
       <p class="etiket">Kendini yokla</p>
-      <p><strong>{d.yoklamaSorusu.soru}</strong></p>
+      <p><strong set:html={satirIci(d.yoklamaSorusu.soru)} /></p>
       <details>
         <summary>Cevabı göster</summary>
-        <p>{d.yoklamaSorusu.cevap}</p>
+        <p set:html={satirIci(d.yoklamaSorusu.cevap)} />
       </details>
     </section>
     {ilgili && <p>İlgili ders: <a href={dersUrl(ilgili.data.kimlik)}>{ilgili.data.baslik}</a></p>}

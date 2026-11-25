@@ -1,4 +1,5 @@
 ---
+import { satirIci } from '../lib/satir-ici';
 interface Oge { tur: 'kitap' | 'lab' | 'okuma'; baslik: string; ayrinti: string; url?: string }
 interface Props { ogeler: Oge[] }
 const { ogeler } = Astro.props;
@@ -13,7 +14,7 @@ const ad = { kitap: 'Kitap', lab: 'Lab', okuma: 'Okuma' } as const;
         <span aria-hidden="true">{simge[o.tur]}</span>
         <span class="gizli-ekran">{ad[o.tur]}:</span>{' '}
         {o.url ? <a href={o.url} rel="noopener noreferrer" target="_blank">{o.baslik}</a> : <strong>{o.baslik}</strong>}
-        {' '}— {o.ayrinti}
+        {' '}— <Fragment set:html={satirIci(o.ayrinti)} />
       </li>
     ))}
   </ul>

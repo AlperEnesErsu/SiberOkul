@@ -8,6 +8,7 @@ import DerinDalis from '../../components/DerinDalis.astro';
 import HataBildir from '../../components/HataBildir.astro';
 import { dersOzetleri, dersUrl } from '../../lib/ders-listesi';
 import { DONEMLER } from '../../data/donemler';
+import { satirIci } from '../../lib/satir-ici';
 
 export async function getStaticPaths() {
   const ozetler = await dersOzetleri(); // tekrar eden kimlik varsa build burada durur
@@ -46,7 +47,7 @@ const donem = DONEMLER.find((x) => x.no === d.donem);
 
     <section class="neden" aria-labelledby="neden-b">
       <h2 id="neden-b">Neden önemli</h2>
-      <p>{d.neden}</p>
+      <p set:html={satirIci(d.neden)} />
     </section>
 
     <section aria-labelledby="kavram-b">

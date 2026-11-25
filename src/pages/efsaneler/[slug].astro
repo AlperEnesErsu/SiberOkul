@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import Temel from '../../layouts/Temel.astro';
 import HukumRozeti from '../../components/HukumRozeti.astro';
 import { dersUrl } from '../../lib/ders-listesi';
+import { satirIci } from '../../lib/satir-ici';
 
 export async function getStaticPaths() {
   return (await getCollection('efsaneler')).map((e) => ({ params: { slug: e.id }, props: { e } }));
@@ -18,12 +19,12 @@ const ilgili = d.ilgiliDers ? dersler.find((x) => x.data.kimlik === d.ilgiliDers
     <p class="etiket">İddia</p>
     <h1>“{d.iddia}”</h1>
     <p><span class="etiket">Hüküm</span><br /><HukumRozeti hukum={d.hukum} /></p>
-    <p class="ozet">{d.ozet}</p>
+    <p class="ozet" set:html={satirIci(d.ozet)} />
     <div class="govde"><Content /></div>
     {d.analoji && (
       <section class="analoji">
         <p class="etiket">Analoji</p>
-        <p>{d.analoji}</p>
+        <p set:html={satirIci(d.analoji)} />
       </section>
     )}
     <section>

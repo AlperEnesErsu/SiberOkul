@@ -1,4 +1,5 @@
 ---
+import { satirIci } from '../lib/satir-ici';
 interface Props { sorular: { id: string; soru: string; cevap: string }[] }
 const { sorular } = Astro.props;
 ---
@@ -8,10 +9,10 @@ const { sorular } = Astro.props;
   <ol class="sorular">
     {sorular.map((s) => (
       <li class="kart soru" data-soru-id={s.id} id={`soru-${s.id}`}>
-        <p class="soru-metni">{s.soru}</p>
+        <p class="soru-metni" set:html={satirIci(s.soru)} />
         <details>
           <summary>Cevabı göster</summary>
-          <p class="cevap">{s.cevap}</p>
+          <p class="cevap" set:html={satirIci(s.cevap)} />
           <div class="puanlar" role="group" aria-label="Kendine not ver" hidden>
             <button type="button" data-puan="bildim">Bildim</button>
             <button type="button" data-puan="kismen">Kısmen</button>

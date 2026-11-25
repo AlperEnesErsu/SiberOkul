@@ -1,11 +1,12 @@
 ---
+import { satirIci } from '../lib/satir-ici';
 interface Props { baslik: string; metin: string }
 const { baslik, metin } = Astro.props;
 ---
 <section class="analoji" aria-labelledby="analoji-b">
   <p class="etiket">Analoji</p>
   <h2 id="analoji-b">{baslik}</h2>
-  <p>{metin}</p>
+  <p set:html={satirIci(metin)} />
 </section>
 <style>
   .analoji {
