@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "test": "vitest run",
     "check": "astro check && vitest run",
-    "tampon": "node scripts/tampon.mjs"
+    "tampon": "node scripts/tampon.mjs",
+    "icerik": "node scripts/icerik-denetle.mjs"
   },
   "dependencies": {
     "@astrojs/check": "0.9.12",
