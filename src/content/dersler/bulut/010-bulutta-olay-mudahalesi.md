@@ -43,8 +43,9 @@ sorular:
     cevap: "Amaç aynı olayın tekrarını önlemektir: anahtar nasıl sızdı, neden daha önce fark edilmedi, hangi kontrol eksikti. Suçlu aramak insanları gerçeği saklamaya iter."
 derinDalis:
   - tur: okuma
-    baslik: "NIST SP 800-61: Computer Security Incident Handling Guide"
-    ayrinti: "Hazırlık, tespit, sınırlama, giderme ve olay sonrası öğrenme aşamaları; bulutta da aynı iskelet geçerli."
+    baslik: "NIST SP 800-61 Rev. 3 (Nisan 2025)"
+    ayrinti: "Olay müdahalesinin güncel NIST rehberi (CSF 2.0 ile hizalı). Hazırlık, tespit, sınırlama, giderme ve olay sonrası öğrenme iskeleti bulutta da geçerli."
+    url: "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
 ---
 
 Olay müdahalesi, sakin kalıp önceden belirlenmiş adımları sırayla yapma işidir. Bulutta en sık görülen senaryo: **bir erişim anahtarı sızdı.** Adım adım ilerleyelim.

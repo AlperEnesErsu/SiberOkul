@@ -38,9 +38,9 @@ sorular:
     cevap: "Kimin hata yaptığını bulmak değil, süreçte ve sistemde neyin açık bıraktığını anlamak ve tekrarlanmasını önleyecek somut iyileştirmeler çıkarmaktır. Suçlanmaktan korkan ekip olayı saklar, öğrenme biter."
 derinDalis:
   - tur: okuma
-    baslik: "NIST SP 800-61: Computer Security Incident Handling Guide"
-    ayrinti: "Olay müdahale yaşam döngüsünün temel kaynağı. Rev. 2 geri çekildi ve yerini Rev. 3 aldı; sayfadan güncel sürüme ulaşabilirsin."
-    url: "https://csrc.nist.gov/pubs/sp/800/61/r2/final"
+    baslik: "NIST SP 800-61 Rev. 3 (Nisan 2025)"
+    ayrinti: "Olay müdahalesinin güncel NIST rehberi. Rev. 3, olay müdahalesini NIST Siber Güvenlik Çerçevesi (CSF 2.0) işlevleriyle anlatır; dersteki aşamalar 2012 tarihli Rev. 2 düzenidir ve hâlâ yaygın kullanılır."
+    url: "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
   - tur: kitap
     baslik: "Building Secure and Reliable Systems (Google)"
     ayrinti: "Olay yönetimi ve olay sonrası inceleme bölümleri; kitap ücretsiz yayımlanıyor."

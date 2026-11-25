@@ -9,7 +9,7 @@ analoji:
   baslik: "Apartman kapıcısı ve ziyaretçi listesi"
   metin: "Varsayılan durum, her dairenin kapısının açık olduğu bir apartmandır: herkes her kapıdan girebilir. NetworkPolicy, kapıcıya 'yalnız bu listedekiler girsin' talimatı vermektir. Önce herkesi reddedersin, sonra ihtiyaç duyulan ziyaretçileri tek tek yazarsın. Sınırı: kapıcının görevi için bina yönetiminin (ağ eklentisinin) kuralı uygulaması gerekir; yönetim uygulamazsa liste kağıtta kalır."
 gorev:
-  aciklama: "Yerel `kind` kümesi ve `kubectl` gerekir. ÖNEMLİ: NetworkPolicy'yi uygulayan bir ağ eklentisi (CNI) gerekir; kind'in varsayılan eklentisi sürüme göre kuralı uygulamayabilir. Deneyde yasak sonrası bağlantı hâlâ başarılıysa kural uygulanmıyor demektir; bu da dersin bir parçası. Komutlar küçük bir `nginx` ve `busybox` test pod'u kullanır; ücretsizdir, sonda temizlenir."
+  aciklama: "Yerel `kind` kümesi ve `kubectl` gerekir. ÖNEMLİ: NetworkPolicy'yi uygulayan bir ağ eklentisi (CNI) gerekir; kind v0.24.0 ve sonrasında varsayılan eklenti (kindnetd) NetworkPolicy'yi uygular; `kind version` ile sürümünü kontrol et. Daha eski bir sürümde yasak sonrası bağlantı hâlâ başarılı olur; bu, kuralın uygulanması için CNI desteği gerektiğini gösterir. Komutlar küçük bir `nginx` ve `busybox` test pod'u kullanır; ücretsizdir, sonda temizlenir."
   komutlar:
     - kubectl create deployment api --image=nginx:1.27
     - kubectl expose deployment api --port=80

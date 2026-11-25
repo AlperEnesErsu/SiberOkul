@@ -44,7 +44,10 @@ gorev:
                 fetch-depth: 0
                 persist-credentials: false
             # Kendi GitShield Action'ın:
-            - uses: <kullanici>/gitshield@<SHA>
+            - uses: AlperEnesErsu/GitShield@<commit-SHA>
+              with:
+                format: sarif
+                fail-on-high: true
         bagimlilik-taramasi:
           runs-on: ubuntu-latest
           steps:
