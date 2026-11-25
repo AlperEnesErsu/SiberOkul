@@ -7,7 +7,7 @@ const { sorular } = Astro.props;
   <p class="soluk">Önce cevabı kafanda kur, sonra aç ve kendine dürüstçe not ver.</p>
   <ol class="sorular">
     {sorular.map((s) => (
-      <li class="kart soru" data-soru-id={s.id}>
+      <li class="kart soru" data-soru-id={s.id} id={`soru-${s.id}`}>
         <p class="soru-metni">{s.soru}</p>
         <details>
           <summary>Cevabı göster</summary>

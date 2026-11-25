@@ -1,0 +1,106 @@
+---
+import Temel from '../layouts/Temel.astro';
+import DersVerisi from '../components/DersVerisi.astro';
+import { dersOzetleri } from '../lib/ders-listesi';
+import { DONEMLER } from '../data/donemler';
+
+const dersler = await dersOzetleri();
+---
+
+<Temel baslik="Yolculuk" aciklama="Linux'tan buluta, sekiz bölgelik DevSecOps haritası.">
+  <DersVerisi />
+  <h1>Yolculuk</h1>
+  <p class="soluk">Sekiz bölge, tek yol. Bir bölgeyi bitirince sonraki açılır.</p>
+
+  <ol class="harita">
+    {
+      DONEMLER.map((d) => {
+        const bolgeDersleri = dersler.filter((x) => x.donem === d.no);
+        return (
+          <li class="bolge" data-donem={d.no} data-durum="">
+            <details>
+              <summary>
+                <span class="no">{String(d.no).padStart(2, '0')}</span>
+                <span class="ad">{d.ad}</span>
+                <span class="durum" />
+                <span class="sayi">
+                  <span class="biten">0</span>/{d.planlananDers}
+                </span>
+              </summary>
+              <p class="soluk">{d.aciklama}</p>
+              {bolgeDersleri.length ? (
+                <ol class="dersler">
+                  {bolgeDersleri.map((x) => (
+                    <li data-kimlik={x.kimlik}>
+                      <a href={x.url}>{x.baslik}</a>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p class="soluk">Bu bölgenin dersleri sırası gelince yazılacak.</p>
+              )}
+            </details>
+          </li>
+        );
+      })
+    }
+  </ol>
+</Temel>
+
+<script>
+  import '../scripts/yolculuk.ts';
+</script>
+
+<style>
+  .harita { list-style: none; padding: 0; position: relative; }
+  .harita::before {
+    content: '';
+    position: absolute;
+    left: 1.35rem;
+    top: 1rem;
+    bottom: 1rem;
+    border-left: 2px dashed var(--cizgi);
+  }
+  .bolge { position: relative; margin: 0.8rem 0; }
+  details {
+    background: var(--yuzey);
+    border: 1px solid var(--cizgi);
+    border-radius: var(--r);
+    padding: 0.2rem 1rem 0.2rem 0;
+  }
+  summary {
+    display: grid;
+    grid-template-columns: 2.7rem 1fr auto auto;
+    gap: 0.7rem;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.6rem 0;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  .no {
+    justify-self: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font: 700 0.85rem/1 var(--yazi-kod);
+    background: var(--yuzey-2);
+    border: 2px solid var(--cizgi);
+  }
+  .ad { font-weight: 600; }
+  .sayi { font: 0.85rem var(--yazi-kod); color: var(--metin-soluk); }
+  .durum { font-size: 0.82rem; color: var(--metin-soluk); }
+  details > :not(summary) { margin-left: 3.4rem; }
+  .dersler { padding-left: 1.1rem; }
+  .dersler li.bitti::marker { content: '✓  '; color: var(--vurgu); }
+
+  [data-durum='devam'] .no { border-color: var(--vurgu); color: var(--vurgu); }
+  [data-durum='tamamlandi'] .no { background: var(--vurgu); border-color: var(--vurgu); color: var(--zemin); }
+  [data-durum='kilitli'] details { opacity: 0.6; }
+  @media (max-width: 30rem) {
+    summary { grid-template-columns: 2.7rem 1fr auto; }
+    .durum { display: none; }
+  }
+</style>

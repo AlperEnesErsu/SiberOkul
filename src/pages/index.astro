@@ -1,8 +1,97 @@
 ---
+import { getCollection } from 'astro:content';
 import Temel from '../layouts/Temel.astro';
+import DersVerisi from '../components/DersVerisi.astro';
+import { dersOzetleri } from '../lib/ders-listesi';
+import { DONEMLER } from '../data/donemler';
+
+const kok = import.meta.env.BASE_URL;
+const dersler = await dersOzetleri();
+const ilk = dersler[0];
+const sonKarar = (await getCollection('atolye')).sort((a, b) => b.data.no - a.data.no)[0];
 ---
 
 <Temel baslik="SiberOkul">
-  <h1>SiberOkul</h1>
-  <p>Sıfırdan DevSecOps mühendisliğine, her gün bir ders.</p>
+  <DersVerisi />
+  <div class="ust-satir">
+    <h1 class="gizli-ekran">Bugün</h1>
+    <p class="seri" id="seri" aria-live="polite"></p>
+  </div>
+
+  <section class="kart bugun" aria-labelledby="bugun-b">
+    <p class="etiket" id="bugun-b">Bugün</p>
+    <div id="bugun-icerik">
+      {
+        ilk ? (
+          <>
+            <h2>{ilk.baslik}</h2>
+            <p class="soluk">~{ilk.sure} dk · {ilk.soruIdleri.length} soru</p>
+            <a class="dugme birincil" href={ilk.url}>Derse başla →</a>
+          </>
+        ) : (
+          <p>Henüz yayımlanmış ders yok.</p>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="kart" id="tekrar" aria-labelledby="tekrar-b" hidden>
+    <p class="etiket" id="tekrar-b">Tekrar</p>
+    <p id="tekrar-ozet"></p>
+    <ul id="tekrar-liste"></ul>
+  </section>
+
+  <section aria-labelledby="yol-b">
+    <h2 id="yol-b">Yolculuk</h2>
+    <ul class="seritler">
+      {
+        DONEMLER.map((d) => (
+          <li data-donem={d.no}>
+            <span class="ad">{d.ad}</span>
+            <span class="cubuk" aria-hidden="true"><span class="dolu" /></span>
+            <span class="sayi">0/{d.planlananDers}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <a href={`${kok}yolculuk/`}>Haritayı aç →</a>
+  </section>
+
+  {
+    sonKarar && (
+      <p class="soluk son-karar">
+        Son karar (Atölye):{' '}
+        <a href={`${kok}atolye/${sonKarar.id}/`}>{sonKarar.data.baslik}</a>
+      </p>
+    )
+  }
 </Temel>
+
+<script>
+  import '../scripts/bugun.ts';
+</script>
+
+<style>
+  .ust-satir { display: flex; justify-content: flex-end; min-height: 1.6rem; }
+  .seri { margin: 0; font-weight: 600; }
+  .bugun { border-color: var(--vurgu); }
+  .bugun h2 { margin: 0.4rem 0 0.2rem; }
+  #tekrar-liste { padding-left: 1.1rem; margin-bottom: 0; }
+  .seritler { list-style: none; padding: 0; margin: 0 0 0.8rem; }
+  .seritler li {
+    display: grid;
+    grid-template-columns: minmax(8rem, 13rem) 1fr 3.5rem;
+    gap: 0.7rem;
+    align-items: center;
+    padding: 0.25rem 0;
+    font-size: 0.95rem;
+  }
+  .cubuk { height: 0.55rem; background: var(--yuzey-2); border-radius: 99px; overflow: hidden; }
+  .dolu { display: block; height: 100%; width: 0; background: var(--vurgu); }
+  .sayi { text-align: right; font-family: var(--yazi-kod); font-size: 0.85rem; color: var(--metin-soluk); }
+  .son-karar { margin-top: 2rem; }
+  @media (max-width: 30rem) {
+    .seritler li { grid-template-columns: 1fr 3.5rem; }
+    .cubuk { grid-column: 1 / -1; grid-row: 2; }
+  }
+</style>

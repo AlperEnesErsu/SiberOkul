@@ -1,0 +1,78 @@
+---
+import Temel from '../layouts/Temel.astro';
+---
+
+<Temel baslik="İlerleme" aciklama="Çalışma takvimi, seri ve ilerleme yedeği.">
+  <h1>İlerleme</h1>
+
+  <section aria-labelledby="takvim-b">
+    <h2 id="takvim-b">Çalışma takvimi</h2>
+    <p id="seri-ozet" class="soluk">İlerleme bu tarayıcıda tutulur.</p>
+    <div class="takvim-kap">
+      <div id="takvim" class="takvim" role="img" aria-label="Son 26 haftanın çalışma takvimi"></div>
+    </div>
+    <p class="soluk kural">Kural: haftada 5 gün çalışırsan seri sürer. Süren haftada henüz 5'e ulaşmamak seriyi bozmaz.</p>
+  </section>
+
+  <section aria-labelledby="yedek-b">
+    <h2 id="yedek-b">Yedek</h2>
+    <p>
+      İlerlemen yalnız bu tarayıcıda duruyor. Başka cihaza taşımak ya da kaybetmemek için yedek kodunu al.
+    </p>
+    <div class="satir">
+      <button type="button" id="kopyala">Kodu kopyala</button>
+      <button type="button" id="indir">Dosya olarak indir</button>
+    </div>
+    <label for="yedek-kodu" class="etiket">Yedek kodu</label>
+    <textarea id="yedek-kodu" rows="3" spellcheck="false" placeholder="SO1.…"></textarea>
+    <div class="satir">
+      <button type="button" id="geri-yukle">Geri yükle</button>
+    </div>
+    <div id="onay" class="kart onay" hidden>
+      <p id="onay-metni"></p>
+      <div class="satir">
+        <button type="button" class="birincil" id="onayla">Onayla</button>
+        <button type="button" id="vazgec">Vazgeç</button>
+      </div>
+    </div>
+    <p id="yedek-durum" role="status" aria-live="polite"></p>
+  </section>
+</Temel>
+
+<script>
+  import '../scripts/ilerleme-sayfasi.ts';
+</script>
+
+<style>
+  .takvim-kap { overflow-x: auto; padding-bottom: 0.3rem; }
+  .takvim {
+    display: grid;
+    grid-template-rows: repeat(7, 0.85rem);
+    grid-auto-flow: column;
+    grid-auto-columns: 0.85rem;
+    gap: 3px;
+    width: max-content;
+  }
+  .kural { font-size: 0.9rem; }
+  .satir { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.6rem 0; }
+  textarea {
+    display: block;
+    width: 100%;
+    margin-top: 0.4rem;
+    font: 0.85rem var(--yazi-kod);
+    background: var(--yuzey);
+    color: var(--metin);
+    border: 1px solid var(--cizgi);
+    border-radius: 8px;
+    padding: 0.6rem;
+  }
+  .onay { border-color: var(--kismen); }
+  .onay p { margin-top: 0; }
+</style>
+
+<style is:global>
+  .takvim .kare { border-radius: 3px; background: var(--yuzey-2); border: 1px solid var(--cizgi); }
+  .takvim .kare.dolu { background: var(--vurgu); border-color: var(--vurgu); }
+  .takvim .kare.bugun { outline: 2px solid var(--metin); outline-offset: 1px; }
+  .takvim .kare.gelecek { visibility: hidden; }
+</style>

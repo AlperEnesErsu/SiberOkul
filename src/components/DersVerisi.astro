@@ -1,0 +1,8 @@
+---
+// Ders listesini sayfaya JSON olarak gömer; tarayıcı betikleri `id="ders-listesi"`den okur.
+import { dersOzetleri } from '../lib/ders-listesi';
+import { DONEMLER } from '../data/donemler';
+
+const veri = { dersler: await dersOzetleri(), donemler: DONEMLER };
+---
+<script type="application/json" id="ders-listesi" set:html={JSON.stringify(veri).replace(/</g, '\\u003c')} />
