@@ -83,3 +83,54 @@ Gövde 120-250 kelime. Hüküm kaynağa dayansın; kaynak desteklemiyorsa kartı
 - Uydurma komut seçeneği, uydurma CVE numarası, uydurma URL.
 - Başka bölgenin dosyalarına dokunma. `git` komutu çalıştırma. Build çalıştırma (paralel çalışan başka
   yazarlar var); yalnız kendi dosyalarını oluştur.
+
+## Zenginleştirme alanları (ders frontmatter'ı)
+
+Mevcut derslere eklenir; var olan alanlara, `kimlik`'e ve soru `id`'lerine dokunulmaz.
+
+- **`sorular[].ipucu`** (her soruya): Cevabı söylemeden düşünmeye yön veren tek cümle. Ör. "`ls -l`
+  çıktısının ilk sütununu hatırla." Cevabı ele veren ipucu yazma.
+- **Senaryo sorusu**: Her derse bir 5. soru ekle (`id`: `<kimlik>-s5`). Gerçek iş durumu: "Gece 3'te
+  şu log satırını gördün, ilk ne yaparsın?" Cevap 2-4 cümle, `ipucu` da olsun.
+- **`hizliKontrol`** (1-2 soru): Kavram bölümünü okuyunca cevaplanabilen çoktan seçmeli sorular.
+  `{ soru, secenekler: [4 adet], dogru (0'dan), aciklama, ipucu }`. Doğru şıkkın yeri değişsin; doğru
+  şık hep en uzun şık olmasın. Sınav sorularını kopyalama.
+- **`sikHatalar`** (1-3): `{ hata, dogrusu }`. Yeni başlayanın gerçekten yaptığı hata ve doğrusu.
+- **`olay`** (yalnız gerçekten ilgili, kaynağı doğrulanabilen bir olay varsa): `{ baslik, yil, ozet,
+  ders, kaynak: { ad, url } }`. `ozet` 2-3 cümle ne oldu; `ders` bu olayın bu dersle bağı. Kaynak
+  **birincil** olsun (kurumun açıklaması, resmi rapor, CISA/NIST, mahkeme/düzenleyici belgesi ya da
+  güvenilir haber kuruluşu) ve WebFetch ile açılıp doğrulanmış olsun. Emin değilsen `olay` koyma.
+  Rakam ve tarih uydurma.
+- **`sema`** (süreç anlatan derslerde: el sıkışma, istek akışı, pipeline adımları vb.): `{ baslik,
+  adimlar: [{ etiket, aciklama }] }`, 3-8 adım. Etiket kısa, açıklama tek cümle.
+- **`terimler`** (3-8): Bu derste geçen ve sözlükte tanımlı terimlerin **tam adları**
+  (`src/content/sozluk/<bolge>.md` içindeki `terim` ile birebir aynı yazım).
+
+## Sınav ipuçları
+
+`src/content/sinavlar/<bolge>.md` içindeki her soruya `ipucu` ekle: hangi kavramı düşünmesi gerektiğini
+söyler, doğru şıkkı ele vermez. Soruların sırasına, şıklarına ve `dogru` değerine dokunma.
+
+## Sözlük
+
+Yol: `src/content/sozluk/<bolge-slug>.md` (yalnız frontmatter):
+
+```yaml
+---
+donem: 2
+terimler:
+  - terim: "Port"
+    ingilizce: "port"
+    tanim: "Bir makinede hangi servise bağlanılacağını belirten 0-65535 arası numara."
+    ders: "ag-003"
+---
+```
+
+Bölge başına 15-30 terim. Tanım 1-2 cümle, sıfırdan başlayan biri için. Aynı terimi başka bölgede
+tekrar tanımlama (önce `src/content/sozluk/` altındaki diğer dosyalara bak; bölgeler paralel
+yazıldığından çakışma olursa terimi bölge adıyla ayırma, yalnız daha temel olan bölgede tut:
+Linux < Ağ < Temeller < DevOps < AppSec < Pipeline < Container < Bulut).
+
+## Denetim
+
+`node scripts/icerik-denetle.mjs <bolge> --tam` "Sorun yok." demeli.
