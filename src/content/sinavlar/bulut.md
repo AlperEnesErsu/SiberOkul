@@ -13,7 +13,7 @@ sorular:
   - soru: "Yeni bir güvenlik mühendisi hesaptaki kök kullanıcıyı (root) günlük işlerde kullanmayı öneriyor. En doğru cevap hangisi?"
     secenekler: [ "Olur, kökte MFA varsa sorun yoktur", "Olur, çünkü kök kısıtlanabilir", "Olmaz, çünkü kök hesap MFA kabul etmez", "Olmaz; yönetici bir kimlik kullanılır, kök yalnız onu gerektiren nadir işlerde açılır" ]
     dogru: 3
-    aciklama: "Kök her şeye sınırsız erişir ve kısıtlanamaz. AWS, kökü yalnız gerektiren işlerde kullanmayı, MFA koymayı ve köke erişim anahtarı üretmemeyi önerir. MFA kabul eder."
+    aciklama: "Kök her şeye sınırsız erişir ve IAM politikalarıyla kısıtlanamaz. AWS, kökü yalnız gerektiren işlerde kullanmayı, MFA koymayı ve köke erişim anahtarı üretmemeyi önerir. MFA kabul eder."
   - soru: "Bir CI işi uzun süredir 14 aylık bir IAM kullanıcı anahtarıyla AWS'ye bağlanıyor. En iyi iyileştirme hangisi?"
     secenekler: [ "Anahtarı bir not dosyasına yazıp ekibe dağıtmak", "Kullanıcıyı yönetici yapıp anahtarı uzatmak", "İşin geçici kimlik bilgileriyle bir rolü üstlenmesini sağlamak", "Anahtarı repoya şifreli olarak koymak" ]
     dogru: 2

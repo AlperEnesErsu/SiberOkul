@@ -18,7 +18,7 @@ gorev:
     - chmod 000 not.txt
     - cat not.txt
     - chmod 600 not.txt
-  soru: "`chmod 600` hangi CIA ögesini, `chmod 000` ise hangisini zedeledi? Neden?"
+  soru: "`chmod 600` hangi CIA ögesini korudu, `chmod 000` ise hangisini zedeledi? Neden?"
   telefon:
     soru: "Bir fidye yazılımı sunucudaki bütün dosyaları şifreleyip kilitledi. Dosyaları kimse okumuş ya da değiştirmiş değil, sadece açılamıyor. CIA'nın hangi ögesi ihlal edildi?"
     cevap: "Erişilebilirlik. Veri çalınmadı (gizlilik şart değil) ve içeriği değiştirilmedi (bütünlük bozulmadı); ama sahibi ona ulaşamıyor. Not: bazı fidye saldırıları veriyi önce çalıp sızdırır, o zaman gizlilik de ihlal edilir."

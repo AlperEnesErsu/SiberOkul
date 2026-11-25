@@ -32,7 +32,7 @@ gorev:
     - terraform output parola
     - grep '"result"' terraform.tfstate
     - terraform destroy -auto-approve
-  soru: "`terraform apply` çıktısında parola neden `(sensitive value)` göründü? `grep` ile state dosyasında ne gördün ve bu `sensitive = true` hakkında ne söylüyor?"
+  soru: "`terraform apply` çıktısında parola neden `<sensitive>` göründü? `grep` ile state dosyasında ne gördün ve bu `sensitive = true` hakkında ne söylüyor?"
   telefon:
     soru: "Bir ekip arkadaşın `terraform.tfstate` dosyasını Git'e eklemiş. Parola içeren bir kaynak varsa bu ne anlama gelir ve ne yaparsın?"
     cevap: "State düz metin olduğundan parola depoyu okuyan herkesçe görülür; sızmış say. Sırrı değiştir (rotasyon), state'i depodan ve geçmişten çıkar, `.gitignore`'a ekle ve state'i erişim kontrollü ve şifreli bir uzak backend'e taşı."
@@ -74,7 +74,7 @@ State, koddaki her kaynağın gerçek dünyadaki karşılığını eşler: kimli
 
 Bir kaynağın özellikleri arasında parola, erişim anahtarı ya da özel anahtar varsa, bu değerler state'e yazılır. HashiCorp dokümanı bunu açıkça belirtir: yerel çalışırken state **düz metin** bir dosyadır ve yapılandırmadaki sır değerlerini içerir.
 
-Görevde bunu gördün: çıktıda `(sensitive value)` yazdı, ama `grep` ile state dosyasında parolayı düz metin buldun. **`sensitive = true` bir görüntüleme ayarıdır**, saklama ayarı değildir. Ekranda, planda ve günlüklerde değeri gizler; dosyada gizlemez.
+Görevde bunu gördün: çıktıda `<sensitive>` yazdı, ama `grep` ile state dosyasında parolayı düz metin buldun. **`sensitive = true` bir görüntüleme ayarıdır**, saklama ayarı değildir. Ekranda, planda ve günlüklerde değeri gizler; dosyada gizlemez.
 
 ### State'i korumak
 

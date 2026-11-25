@@ -9,7 +9,7 @@ analoji:
   baslik: "Evin dışından kapı pencere denemek"
   metin: "SAST evin planına bakmaktır, DAST ise dışarı çıkıp kapıları ve pencereleri tek tek denemektir. Planda kilit görünür ama kapı aslında kapanmıyor olabilir. Sınırı: yalnız dışarıdan erişebildiğin kapıları denersin; içerideki gizli odaları, yani kodun hiç çalışmayan yollarını göremezsin."
 gorev:
-  aciklama: "Kendi bilgisayarında basit bir web sunucusu başlatıp ZAP'ın baseline taramasını yalnız ona karşı çalıştıracaksın. Docker gerekir (Docker Desktop WSL entegrasyonu açık olmalı). Tarama sadece senin makinendeki sunucuya gider. Başkasının sitesini izinsiz asla tarama."
+  aciklama: "Kendi bilgisayarında basit bir web sunucusu başlatıp ZAP'ın baseline taramasını yalnız ona karşı çalıştıracaksın. Docker gerekir (Docker Desktop WSL entegrasyonu açık olmalı). Tarama sadece senin makinendeki sunucuya gider. Başkasının sitesini izinsiz asla tarama. Not: `--bind 0.0.0.0` sunucuyu ZAP container'ının erişebilmesi için bütün ağ arayüzlerine açar, yani aynı ağdaki başka cihazlar da kısa süreliğine görebilir; klasörde gizli bir şey tutma ve işin bitince sunucuyu kapat."
   komutlar:
     - "mkdir -p /tmp/dast && cd /tmp/dast && echo '<h1>deneme</h1>' > index.html"
     - "python3 -m http.server 8000 --bind 0.0.0.0 > /dev/null 2>&1 &"

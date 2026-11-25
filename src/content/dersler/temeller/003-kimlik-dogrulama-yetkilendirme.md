@@ -19,7 +19,7 @@ gorev:
     - head -n 3 /etc/passwd
   soru: "`cat /etc/shadow` neden 'Permission denied' verdi? Bu kimlik doğrulama mı, yetkilendirme mi hatası?"
   telefon:
-    soru: "Bir API'ye geçerli token'ınla istek attın ve '401 Unauthorized' aldın. Başka bir istekte '403 Forbidden' aldın. İkisinin farkı nedir?"
+    soru: "Bir API'ye token olmadan istek attın ve '401 Unauthorized' aldın. Geçerli token'la attığın başka bir istekte '403 Forbidden' aldın. İkisinin farkı nedir?"
     cevap: "401, kimliğin doğrulanamadığı (token yok ya da geçersiz) demektir: kimlik doğrulama sorunu. 403 ise kim olduğun biliniyor ama bu işe izninin olmadığı demektir: yetkilendirme sorunu."
 sorular:
   - id: temeller-003-s1

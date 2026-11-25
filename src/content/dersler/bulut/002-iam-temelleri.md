@@ -33,7 +33,7 @@ sorular:
     cevap: "Kullanıcının kalıcı kimlik bilgileri (parola, erişim anahtarı) vardır. Rolün yoktur; üstlenildiğinde (assume) geçici kimlik bilgileri verilir. Bu yüzden rol, uygulamalar ve otomasyon için tercih edilir."
   - id: bulut-002-s2
     soru: "Kök hesap (root user) neden günlük iş için kullanılmamalı? Ona karşı ne yapılmalı?"
-    cevap: "Kök hesap her şeye sınırsız erişir ve kısıtlanamaz. Günlük işler için yönetici kimliği oluşturulur; köke güçlü parola ve MFA konur, kök için erişim anahtarı üretilmez, kullanımı izlenir."
+    cevap: "Kök hesap her şeye sınırsız erişir ve IAM politikalarıyla kısıtlanamaz. Günlük işler için yönetici kimliği oluşturulur; köke güçlü parola ve MFA konur, kök için erişim anahtarı üretilmez, kullanımı izlenir."
   - id: bulut-002-s3
     soru: "IAM politikası (policy) ne işe yarar ve varsayılan durum nedir?"
     cevap: "Hangi kimliğin hangi kaynak üzerinde hangi eylemi yapabileceğini JSON ile söyler. Varsayılan her şey yasaktır; izin yalnız bir politika açıkça verirse oluşur."
@@ -64,7 +64,7 @@ IAM'de bir izin açıkça verilmedikçe yoktur. Bir istek geldiğinde şu sıray
 
 ### Kök hesap
 
-Hesabı ilk açtığında bir **kök kullanıcı** (root user) oluşur. Her şeyi yapabilir ve kısıtlanamaz. AWS'nin önerisi: kökü yalnız onu gerektiren nadir işler için kullan, yerine yönetici bir kimlik oluştur; köke güçlü parola ve MFA ekle, **kök için erişim anahtarı üretme**, kullanımını izle.
+Hesabı ilk açtığında bir **kök kullanıcı** (root user) oluşur. Her şeyi yapabilir ve IAM politikalarıyla kısıtlanamaz (yalnız AWS Organizations kullanan şirketlerde, üye hesapların kökü kuruluş düzeyindeki SCP kurallarıyla sınırlanabilir). AWS'nin önerisi: kökü yalnız onu gerektiren nadir işler için kullan, yerine yönetici bir kimlik oluştur; köke güçlü parola ve MFA ekle, **kök için erişim anahtarı üretme**, kullanımını izle.
 
 ### Uzun ömürlü anahtar yerine rol
 

@@ -21,7 +21,7 @@ gorev:
     - grep -rnE 'AKIA[0-9A-Z]{16}' /tmp/proje
     - grep -rniE '(password|parola|secret)' /tmp/proje
     - aws secretsmanager rotate-secret help | sed -n '1,25p'
-  soru: "Tarama hangi iki dosyada ne buldu? Bu sırları koddan çıkarmanın doğru yolu ne olurdu ve zaten commit edilmişlerse yalnızca silmek yeter mi?"
+  soru: "İki tarama hangi dosyada neleri buldu? Bu sırları koddan çıkarmanın doğru yolu ne olurdu ve zaten commit edilmişlerse yalnızca silmek yeter mi?"
   telefon:
     soru: "Bir geliştirici yanlışlıkla gerçek bir erişim anahtarını public repoya push etti ve 5 dakika sonra sildi. Sorun çözüldü mü?"
     cevap: "Hayır. Anahtar git geçmişinde ve kopyalarda durur; tarayıcılar dakikalar içinde bulabilir. Anahtarı derhal devre dışı bırakıp yenisini üret, CloudTrail'de kullanımını incele. Geçmişi temizlemek ek bir adımdır; ama asıl çare anahtarın iptalidir."

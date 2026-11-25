@@ -13,7 +13,7 @@ Hesabı ilk açtığında kök kullanıcı hazır gelir, her şeyi yapabilir ve 
 
 Önerilenler: günlük işler için ayrı bir yönetici kimliği oluşturmak; kök için güçlü ve benzersiz bir parola ve MFA kullanmak (AWS artık kök için MFA'yı gerektiriyor); kök için erişim anahtarı oluşturmamak, çünkü kök hesap faturalama dahil her şeye tam erişim sağlar; kök kullanımını izleyip alarm kurmak.
 
-Neden önemli: kök kısıtlanamaz. Kök kimlik bilgisi çalınırsa saldırganı durduracak bir izin sınırı yoktur. Dar yetkili bir kimliğin çalınması ise zararı o kimliğin izinleriyle sınırlar.
+Neden önemli: kök IAM politikalarıyla kısıtlanamaz. Kök kimlik bilgisi çalınırsa saldırganı durduracak bir izin sınırı yoktur. Dar yetkili bir kimliğin çalınması ise zararı o kimliğin izinleriyle sınırlar.
 
 Rehber ayrıca insanlar için geçici kimlik bilgilerinin (roller, IAM Identity Center) tercih edilmesini söyler. Bu, uzun ömürlü parola ve anahtarların yönetim yükünü ve sızma riskini azaltır.
 
