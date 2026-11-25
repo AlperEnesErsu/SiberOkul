@@ -1,9 +1,10 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-// GitHub Pages: site kullanıcı alan adında, repo adı alt yol olarak yayınlanır.
+// Varsayılan: GitHub Pages (kullanıcı alan adı + repo adı alt yolu).
+// Portföy sitesine kopyalanırken `npm run portfolio` SITE_URL ve SITE_BASE'i değiştirir.
 export default defineConfig({
-  site: 'https://alperenesersu.github.io',
-  base: '/SiberOkul',
+  site: process.env.SITE_URL ?? 'https://alperenesersu.github.io',
+  base: process.env.SITE_BASE ?? '/SiberOkul',
   trailingSlash: 'always',
 });

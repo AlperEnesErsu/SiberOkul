@@ -10,7 +10,8 @@
     "test": "vitest run",
     "check": "astro check && vitest run",
     "tampon": "node scripts/tampon.mjs",
-    "icerik": "node scripts/icerik-denetle.mjs"
+    "icerik": "node scripts/icerik-denetle.mjs",
+    "portfolio": "node scripts/portfoy.mjs"
   },
   "dependencies": {
     "@astrojs/check": "0.9.12",
