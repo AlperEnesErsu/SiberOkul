@@ -144,3 +144,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 /* Oturum dışında adım listesi gizliyse sol sütun yer kaplamasın */
 .okuma-izgara:has(> .okuma-yan > nav[hidden]:only-child) { grid-template-columns: minmax(0, 1fr); }
 .okuma-yan:has(> nav[hidden]:only-child) { display: none; }
+/* Dar ekranda içindekiler gizli; oturum adımları da gizliyse sol sütun hiç yer kaplamasın */
+@media (max-width: 1023px) {
+  .okuma-yan:not(:has(> nav.oturum-adimlari:not([hidden]))) { display: none; }
+}

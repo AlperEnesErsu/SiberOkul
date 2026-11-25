@@ -1,6 +1,6 @@
 // Oturumla ilgili sayfalar arası ortak yardımcılar.
 import type { DersOzet } from '../lib/ilerleme/bugun';
-import type { AdimTuru, KartOzet, Oturum } from '../lib/oturum';
+import { adimUrl, type AdimTuru, type KartOzet, type Oturum } from '../lib/oturum';
 
 export const ADIM_ADI: Record<AdimTuru, string> = {
   isinma: 'Isınma',
@@ -18,19 +18,11 @@ export const ADIM_SIMGE: Record<AdimTuru, string> = {
   ozet: '🏆',
 };
 
-/** Oturumun şu anki adımının açılacağı adres. */
-export function adimUrl(o: Oturum, dersler: DersOzet[], kartlar: KartOzet[]): string {
-  const kok = import.meta.env.BASE_URL;
-  const adim = o.adimlar[o.konum];
-  if (adim === 'ders') {
-    const d = dersler.find((x) => x.kimlik === o.ders);
-    if (d) return `${d.url}?oturum`;
-  }
-  if (adim === 'kart') {
-    const k = kartlar.find((x) => x.kimlik === o.kart);
-    if (k) return `${k.url}?oturum`;
-  }
-  return `${kok}oturum/`;
+/** Adımın tam adresi; sayfası bulunamazsa null (oturum geçersiz sayılmalı). */
+export function adimAdresi(o: Oturum, dersler: DersOzet[], kartlar: KartOzet[]): string | null {
+  const hedef = adimUrl(o, dersler, kartlar);
+  if (hedef === null) return null;
+  return hedef === 'oturum' ? `${import.meta.env.BASE_URL}oturum/` : hedef;
 }
 
 /** Tahmini süre (dk): ısınma 2 + tekrar soru başı 1 + ders süresi + kart 5 + özet 1. */

@@ -28,7 +28,7 @@ test('seviye 3 + bilemedim', () =>
 test('seviye 3 + kismen', () =>
   expect(puanla({ puan: 'bildim', seviye: 3, sonraki: B }, 'kismen', B)).toMatchObject({ puan: 'kismen', seviye: 3, sonraki: '2026-12-09' }));
 
-// Korur: yeni sorunun ilk puanını, sayacını ve gününü kaydetmesini (XP hesabı bunlara dayanır)
+// Korur: yeni sorunun ilk puanını, sayacını ve gününü kaydetmesini (tekrar sayısı ve oturum kapısı bunlara dayanır)
 test('yeni soru izleme alanları', () =>
   expect(puanla(undefined, 'kismen', B)).toMatchObject({ ilkPuan: 'kismen', puanSayisi: 1, sonGun: B }));
 
@@ -38,7 +38,7 @@ test('ertesi gün tekrar', () => {
   expect(puanla(ilk, 'bildim', '2026-11-26')).toMatchObject({ ilkPuan: 'bilemedim', puanSayisi: 2, sonGun: '2026-11-26' });
 });
 
-// Korur: aynı gün ikinci puanlamanın tekrar sayılmamasını (XP istismarı)
+// Korur: aynı gün ikinci puanlamanın tekrar sayılmamasını (rozet sayacı şişmesin)
 test('aynı gün ikinci puan', () => {
   const ilk = puanla(undefined, 'bilemedim', B);
   expect(puanla(ilk, 'bildim', B)).toMatchObject({ ilkPuan: 'bilemedim', puanSayisi: 1, puan: 'bildim' });

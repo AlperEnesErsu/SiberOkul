@@ -5,7 +5,7 @@ import { seriHesapla } from '../lib/ilerleme/seri';
 import { bugunStr } from '../lib/ilerleme/tarih';
 import { oturumOku } from '../lib/oturum';
 import { durumHesapla, yaz } from './durum';
-import { ADIM_ADI, ADIM_SIMGE, adimUrl, tahminiSure } from './oturum-ortak';
+import { ADIM_ADI, ADIM_SIMGE, adimAdresi, tahminiSure } from './oturum-ortak';
 import { puanlamayiBagla, puanlariCiz } from './puanlama';
 
 const GORULEN = 'siberokul.gorulenRozetler';
@@ -23,7 +23,10 @@ function ciz() {
 
   if (adim === 'ders' || adim === 'kart') {
     // Bu adımlar kendi sayfalarında; doğrudan /oturum/ açıldıysa oraya yönlendir.
-    location.replace(adimUrl(oturum, d.veri.dersler, d.veri.kartlar));
+    // Sayfası yoksa kendine yönlenip döngüye girme; oturumu geçersiz say.
+    const hedef = adimAdresi(oturum, d.veri.dersler, d.veri.kartlar);
+    if (!hedef || hedef.endsWith('/oturum/')) return goster('oturum-yok');
+    location.replace(hedef);
     return;
   }
 
@@ -91,4 +94,6 @@ function ciz() {
 
 puanlamayiBagla(document.getElementById('tekrar-listesi')!, () => undefined, true);
 document.addEventListener('oturum-adimi-degisti', ciz);
+// Geri/ileri önbelleğinden dönünce eski durum gösterilmesin.
+window.addEventListener('pageshow', (e) => { if (e.persisted) ciz(); });
 ciz();

@@ -93,8 +93,29 @@ function oturumMu(x: unknown): x is Oturum {
     Array.isArray(o.tekrarlar) && o.tekrarlar.every((t) => typeof t === 'string') &&
     (o.ders === null || typeof o.ders === 'string') &&
     (o.kart === null || typeof o.kart === 'string') &&
-    typeof o.bitti === 'boolean'
+    typeof o.bitti === 'boolean' &&
+    // Adımlar alanlarla tutarlı olmalı; yoksa adımın sayfası bulunamaz (sonsuz yönlendirme riski).
+    o.adimlar.includes('ders') === (o.ders !== null) &&
+    o.adimlar.includes('kart') === (o.kart !== null)
   );
+}
+
+/**
+ * Oturumun şu anki adımının açılacağı yer: ders/kart için o sayfanın adresi (`?oturum` ekli),
+ * ısınma/tekrar/özet için `'oturum'` (yani /oturum/ sayfası). Ders ya da kart bulunamazsa null;
+ * çağıran bu durumda oturumu geçersiz saymalı, /oturum/'a geri yönlendirmemeli.
+ */
+export function adimUrl(o: Oturum, dersler: DersOzet[], kartlar: KartOzet[]): string | null {
+  const adim = o.bitti ? 'ozet' : o.adimlar[o.konum];
+  if (adim === 'ders') {
+    const d = dersler.find((x) => x.kimlik === o.ders);
+    return d ? `${d.url}?oturum` : null;
+  }
+  if (adim === 'kart') {
+    const k = kartlar.find((x) => x.kimlik === o.kart);
+    return k ? `${k.url}?oturum` : null;
+  }
+  return 'oturum';
 }
 
 const varsayilanDepo = (): Storage | null => {

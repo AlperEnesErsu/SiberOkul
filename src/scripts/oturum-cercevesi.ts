@@ -3,7 +3,7 @@ import { ilerlemeOku } from '../lib/ilerleme/depo';
 import { bugunStr } from '../lib/ilerleme/tarih';
 import { adimTamamMi, ilerlet, oturumOku, oturumYaz, type Oturum } from '../lib/oturum';
 import { dersVerisiniOku } from './ders-verisi';
-import { ADIM_ADI, ADIM_SIMGE, adimUrl } from './oturum-ortak';
+import { ADIM_ADI, ADIM_SIMGE, adimAdresi } from './oturum-ortak';
 import { DEGISIM_OLAYI } from './puanlama';
 
 const nav = document.getElementById('oturum-adimlari');
@@ -57,12 +57,22 @@ if (nav && cubuk && dugme) {
   };
 
   dugme.addEventListener('click', () => {
-    if (!oturum) return;
+    // Diskteki oturum bu sayfanın bildiğinden ilerideyse (geri tuşu, başka sekme) geriye yazma:
+    // ekranı güncelle ve doğru adıma git.
+    const diskte = oturumOku(bugun);
+    if (!oturum || !diskte) return;
+    if (diskte.konum !== oturum.konum || diskte.bitti !== oturum.bitti) {
+      oturum = diskte;
+      const dogru = adimAdresi(diskte, veri.dersler, veri.kartlar);
+      if (dogru && !location.href.endsWith(dogru)) location.href = dogru;
+      else ciz();
+      return;
+    }
     const yeni = ilerlet(oturum, ilerlemeOku(), bugun);
     if (yeni === oturum) return;
     oturum = yeni;
     oturumYaz(yeni);
-    const hedef = yeni.bitti ? `${import.meta.env.BASE_URL}oturum/` : adimUrl(yeni, veri.dersler, veri.kartlar);
+    const hedef = adimAdresi(yeni, veri.dersler, veri.kartlar) ?? `${import.meta.env.BASE_URL}oturum/`;
     if (oturumSayfasi && hedef.endsWith('/oturum/')) {
       document.dispatchEvent(new CustomEvent('oturum-adimi-degisti'));
       ciz();
@@ -73,5 +83,12 @@ if (nav && cubuk && dugme) {
   });
 
   document.addEventListener(DEGISIM_OLAYI, ciz);
+  // Geri/ileri önbelleğinden dönünce oturumu diskten tazele.
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted && oturumda) {
+      oturum = oturumOku(bugun);
+      ciz();
+    }
+  });
   ciz();
 }

@@ -11,6 +11,9 @@ Tarih: 2026-11-25 · Durum: Onaylandı (Alper, 2026-11-25) · Önceki: `2026-11-
 - Kullanıcı tek kişi ve siteyi her gün kullanacak. Sayfa sayfa gezmek istemiyor: o günün her şeyi
   tek bir öğrenme akışında önüne gelmeli.
 
+> **Not:** Bölüm 8'deki değişiklik (koyu tema ve XP/seviye kaldırıldı) aşağıdaki bölümlerin ilgili
+> satırlarını geçersiz kılar.
+
 ## 2. Alper'in verdiği kararlar
 
 1. **Görünüm:** Pano sayfaları (ana sayfa, Yolculuk, İlerleme) oyunlaştırılmış (A); ders ve okuma

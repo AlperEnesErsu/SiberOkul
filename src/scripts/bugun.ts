@@ -3,7 +3,7 @@ import { bugunSec } from '../lib/ilerleme/bugun';
 import { oturumOku, oturumPlanla, oturumYaz, type Oturum } from '../lib/oturum';
 import { durumHesapla, yaz } from './durum';
 import { yayimlananlar } from './ders-verisi';
-import { ADIM_ADI, ADIM_SIMGE, adimUrl, tahminiSure } from './oturum-ortak';
+import { ADIM_ADI, ADIM_SIMGE, adimAdresi, tahminiSure } from './oturum-ortak';
 
 const d = durumHesapla();
 const { dersler, kartlar, donemler } = d.veri;
@@ -14,7 +14,9 @@ yaz('#biten-ders', String(Object.keys(d.ilerleme.bitenDersler).length));
 yaz('#rozet-ozet', `${d.rozetler.length}/5`);
 
 // Oturum kapısı
-const kayitli = oturumOku(d.bugun);
+// Sayfası bulunamayan (ör. ders silinmiş) oturum geçersiz sayılır ve yeniden planlanır.
+const okunan = oturumOku(d.bugun);
+const kayitli = okunan && adimAdresi(okunan, dersler, kartlar) ? okunan : null;
 const oturum: Oturum = kayitli ?? oturumPlanla(dersler, kartlar, d.ilerleme, d.bugun);
 const ders = dersler.find((x) => x.kimlik === oturum.ders);
 const dugme = document.getElementById('kapi-dugme') as HTMLAnchorElement;
@@ -44,7 +46,7 @@ if (oturum.bitti) {
   yaz('#kapi-durum', `Sürüyor · Adım ${oturum.konum + 1}/${oturum.adimlar.length}`);
   yaz('#kapi-baslik', ders ? `Bugün: ${ders.baslik}` : 'Bugünün oturumu');
   dugme.textContent = 'Kaldığın yerden devam et →';
-  dugme.href = adimUrl(oturum, dersler, kartlar);
+  dugme.href = adimAdresi(oturum, dersler, kartlar)!;
   yaz('#kapi-sure', `~${tahminiSure(oturum, dersler)} dk`);
 } else {
   yaz('#kapi-durum', 'Hazır');
@@ -55,7 +57,7 @@ if (oturum.bitti) {
     olay.preventDefault();
     const yeni = oturumPlanla(dersler, kartlar, d.ilerleme, d.bugun);
     oturumYaz(yeni);
-    location.href = adimUrl(yeni, dersler, kartlar);
+    location.href = adimAdresi(yeni, dersler, kartlar) ?? `${import.meta.env.BASE_URL}oturum/`;
   });
 }
 

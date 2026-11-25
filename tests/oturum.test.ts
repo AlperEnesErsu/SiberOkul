@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { adimTamamMi, ilerlet, kartSec, oturumOku, oturumPlanla, oturumYaz, OTURUM_ANAHTARI, type KartOzet } from '../src/lib/oturum';
+import { adimTamamMi, adimUrl, ilerlet, kartSec, oturumOku, oturumPlanla, oturumYaz, OTURUM_ANAHTARI, type KartOzet } from '../src/lib/oturum';
 import type { DersOzet } from '../src/lib/ilerleme/bugun';
 import { bosIlerleme, type Ilerleme } from '../src/lib/ilerleme/model';
 
@@ -89,4 +89,25 @@ test('oturum deposu', () => {
   depo.setItem(OTURUM_ANAHTARI, JSON.stringify({ ...o, adimlar: ['uydurma'] }));
   expect(oturumOku(B, depo)).toBeNull();
   expect(oturumOku(B, null)).toBeNull();
+});
+
+// Korur: adımlarla alanları tutarsız kaydın (ders adımı var ama ders yok) reddini; sonsuz yönlendirmeyi önler
+test('tutarsız oturum kaydı', () => {
+  const depo = new Depo();
+  const o = oturumPlanla(dersler, kartlar, bosIlerleme(), B);
+  depo.setItem(OTURUM_ANAHTARI, JSON.stringify({ ...o, ders: null }));
+  expect(oturumOku(B, depo)).toBeNull();
+  depo.setItem(OTURUM_ANAHTARI, JSON.stringify({ ...o, kart: null }));
+  expect(oturumOku(B, depo)).toBeNull();
+  depo.setItem(OTURUM_ANAHTARI, JSON.stringify({ ...o, adimlar: ['isinma', 'ozet'] }));
+  expect(oturumOku(B, depo)).toBeNull();
+});
+
+// Korur: adımın sayfası bulunamazsa null dönmesini (ör. ders silindi); çağıran /oturum/'a geri dönmez
+test('adimUrl bulunamayan ders', () => {
+  const o = { ...oturumPlanla(dersler, kartlar, bosIlerleme(), B), konum: 1 };
+  expect(adimUrl(o, dersler, kartlar)).toBe('/d1/?oturum');
+  expect(adimUrl(o, [], kartlar)).toBeNull();
+  expect(adimUrl({ ...o, konum: 2 }, dersler, [])).toBeNull();
+  expect(adimUrl({ ...o, konum: 0 }, dersler, kartlar)).toBe('oturum');
 });
