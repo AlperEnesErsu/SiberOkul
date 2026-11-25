@@ -8,6 +8,12 @@ export interface SoruDurumu {
   seviye: number;
   /** Sorunun yeniden sorulacağı gün. */
   sonraki: Gun;
+  /** İlk puanlamadaki puan (XP için). v1 kayıtlarında yok; yoksa `puan` sayılır. */
+  ilkPuan?: Puan;
+  /** Farklı günlerde kaç kez puanlandığı. Yoksa 1 sayılır. */
+  puanSayisi?: number;
+  /** Son puanlandığı gün. */
+  sonGun?: Gun;
 }
 
 export interface Ilerleme {
@@ -18,6 +24,8 @@ export interface Ilerleme {
   sorular: Record<string, SoruDurumu>;
   /** Ders bitirilen ya da soru puanlanan günler (tekil). */
   calisilanGunler: Gun[];
+  /** Okunan Efsane/Atölye kartları (`efsane:<id>`, `atolye:<id>`). */
+  okunanKartlar?: string[];
 }
 
 export function bosIlerleme(): Ilerleme {

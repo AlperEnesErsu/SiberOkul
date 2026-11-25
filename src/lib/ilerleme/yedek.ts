@@ -21,13 +21,20 @@ export function ilerlemeyiDogrula(x: unknown): x is Ilerleme {
   const { bitenDersler, sorular, calisilanGunler } = x;
   if (!nesneMi(bitenDersler) || !Object.values(bitenDersler).every((g) => typeof g === 'string' && GUN.test(g))) return false;
   if (!Array.isArray(calisilanGunler) || !calisilanGunler.every((g) => typeof g === 'string' && GUN.test(g))) return false;
+  const { okunanKartlar } = x;
+  if (okunanKartlar !== undefined && (!Array.isArray(okunanKartlar) || !okunanKartlar.every((k) => typeof k === 'string'))) {
+    return false;
+  }
   if (!nesneMi(sorular)) return false;
   return Object.values(sorular).every(
     (s) =>
       nesneMi(s) &&
       typeof s.puan === 'string' && PUANLAR.has(s.puan) &&
       Number.isInteger(s.seviye) && (s.seviye as number) >= 0 && (s.seviye as number) <= 5 &&
-      typeof s.sonraki === 'string' && GUN.test(s.sonraki),
+      typeof s.sonraki === 'string' && GUN.test(s.sonraki) &&
+      (s.ilkPuan === undefined || (typeof s.ilkPuan === 'string' && PUANLAR.has(s.ilkPuan))) &&
+      (s.puanSayisi === undefined || (Number.isInteger(s.puanSayisi) && (s.puanSayisi as number) >= 1)) &&
+      (s.sonGun === undefined || (typeof s.sonGun === 'string' && GUN.test(s.sonGun))),
   );
 }
 

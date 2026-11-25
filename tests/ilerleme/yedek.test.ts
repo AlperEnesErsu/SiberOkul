@@ -49,3 +49,19 @@ test('geçersiz puan', () => {
   const bozuk = { ...dolu, sorular: { x: { puan: 'belki', seviye: 0, sonraki: '2026-11-25' } } };
   expect(() => yedekKodunuCoz(ONEK + b64(JSON.stringify(bozuk)))).toThrow(YedekHatasi);
 });
+
+// Korur: v2 alanlarıyla gelen kodun kabulü
+test('v2 alanları', () => {
+  const i = { ...dolu, okunanKartlar: ['efsane:gizli-sekme'], sorular: { 'linux-001-s1': { puan: 'kismen' as const, seviye: 2, sonraki: '2026-12-02', ilkPuan: 'bildim' as const, puanSayisi: 3, sonGun: '2026-11-25' } } };
+  expect(yedekKodunuCoz(yedekKoduOlustur(i))).toEqual(i);
+});
+
+// Korur: v2 alanlarında yanlış tipin reddi
+test('okunanKartlar tip hatası', () =>
+  expect(() => yedekKodunuCoz(ONEK + b64(JSON.stringify({ ...dolu, okunanKartlar: [1] })))).toThrow(YedekHatasi));
+
+// Korur: puanSayisi tip hatasının reddi
+test('puanSayisi tip hatası', () => {
+  const bozuk = { ...dolu, sorular: { x: { puan: 'bildim', seviye: 0, sonraki: '2026-11-25', puanSayisi: 'çok' } } };
+  expect(() => yedekKodunuCoz(ONEK + b64(JSON.stringify(bozuk)))).toThrow(YedekHatasi);
+});

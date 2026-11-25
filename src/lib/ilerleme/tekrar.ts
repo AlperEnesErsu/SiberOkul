@@ -10,5 +10,9 @@ export function puanla(eski: SoruDurumu | undefined, puan: Puan, bugun: Gun): So
   let seviye = eski?.seviye ?? 0;
   if (puan === 'bilemedim') seviye = 0;
   else if (puan === 'bildim') seviye = Math.min(seviye + 1, EN_UST);
-  return { puan, seviye, sonraki: gunEkle(bugun, ARALIKLAR[seviye]) };
+  const ilkPuan = eski ? (eski.ilkPuan ?? eski.puan) : puan;
+  const oncekiSayi = eski ? (eski.puanSayisi ?? 1) : 0;
+  // Aynı gün ikinci puanlama tekrar sayılmaz.
+  const puanSayisi = eski && eski.sonGun === bugun ? oncekiSayi : oncekiSayi + 1;
+  return { puan, seviye, sonraki: gunEkle(bugun, ARALIKLAR[seviye]), ilkPuan, puanSayisi, sonGun: bugun };
 }
