@@ -1,0 +1,10 @@
+---
+interface Props { aciklama: string; komutlar: string[]; soru: string }
+const { aciklama, komutlar, soru } = Astro.props;
+---
+<section aria-labelledby="gorev-b">
+  <h2 id="gorev-b">Terminal görevi</h2>
+  <p>{aciklama}</p>
+  <pre><code>{komutlar.map((k) => `$ ${k}`).join('\n')}</code></pre>
+  <p><strong>Düşün:</strong> {soru}</p>
+</section>

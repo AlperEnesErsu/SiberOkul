@@ -1,0 +1,7 @@
+---
+interface Props { kimlik: string }
+const { kimlik } = Astro.props;
+const url = `https://github.com/AlperEnesErsu/SiberOkul/issues/new?labels=ders-hatasi&title=${encodeURIComponent('Hata: ' + kimlik)}`;
+---
+<p class="soluk hata">Bu derste bir yanlışlık mı var? <a href={url} rel="noopener noreferrer" target="_blank">Hata bildir</a></p>
+<style>.hata { font-size: 0.9rem; margin-top: 2.5rem; }</style>

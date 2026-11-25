@@ -1,0 +1,25 @@
+---
+interface Oge { tur: 'kitap' | 'lab' | 'okuma'; baslik: string; ayrinti: string; url?: string }
+interface Props { ogeler: Oge[] }
+const { ogeler } = Astro.props;
+const simge = { kitap: '📖', lab: '🎮', okuma: '🔗' } as const;
+const ad = { kitap: 'Kitap', lab: 'Lab', okuma: 'Okuma' } as const;
+---
+<section aria-labelledby="derin-b">
+  <h2 id="derin-b">Derin dalış <span class="soluk">(isteğe bağlı)</span></h2>
+  <ul>
+    {ogeler.map((o) => (
+      <li>
+        <span aria-hidden="true">{simge[o.tur]}</span>
+        <span class="gizli-ekran">{ad[o.tur]}:</span>{' '}
+        {o.url ? <a href={o.url} rel="noopener noreferrer" target="_blank">{o.baslik}</a> : <strong>{o.baslik}</strong>}
+        {' '}— {o.ayrinti}
+      </li>
+    ))}
+  </ul>
+</section>
+<style>
+  ul { padding-left: 0; list-style: none; }
+  li { margin: 0.45rem 0; }
+  h2 span { font-weight: 400; font-size: 0.9rem; }
+</style>

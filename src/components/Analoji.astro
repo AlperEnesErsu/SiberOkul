@@ -1,0 +1,20 @@
+---
+interface Props { baslik: string; metin: string }
+const { baslik, metin } = Astro.props;
+---
+<section class="analoji" aria-labelledby="analoji-b">
+  <p class="etiket">Analoji</p>
+  <h2 id="analoji-b">{baslik}</h2>
+  <p>{metin}</p>
+</section>
+<style>
+  .analoji {
+    border-left: 4px solid var(--vurgu);
+    background: var(--vurgu-zemin);
+    border-radius: 0 var(--r) var(--r) 0;
+    padding: 0.9rem 1.1rem;
+    margin: 1.6rem 0;
+  }
+  h2 { margin: 0.3rem 0 0.4rem; font-size: 1.1rem; }
+  p:last-child { margin: 0; }
+</style>

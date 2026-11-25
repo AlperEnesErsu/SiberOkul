@@ -1,0 +1,36 @@
+---
+interface Props { sorular: { id: string; soru: string; cevap: string }[] }
+const { sorular } = Astro.props;
+---
+<section aria-labelledby="sorular-b">
+  <h2 id="sorular-b">Sorular</h2>
+  <p class="soluk">Önce cevabı kafanda kur, sonra aç ve kendine dürüstçe not ver.</p>
+  <ol class="sorular">
+    {sorular.map((s) => (
+      <li class="kart soru" data-soru-id={s.id}>
+        <p class="soru-metni">{s.soru}</p>
+        <details>
+          <summary>Cevabı göster</summary>
+          <p class="cevap">{s.cevap}</p>
+          <div class="puanlar" role="group" aria-label="Kendine not ver" hidden>
+            <button type="button" data-puan="bildim">Bildim</button>
+            <button type="button" data-puan="kismen">Kısmen</button>
+            <button type="button" data-puan="bilemedim">Bilemedim</button>
+          </div>
+        </details>
+      </li>
+    ))}
+  </ol>
+</section>
+<style>
+  .sorular { padding-left: 0; list-style: none; counter-reset: s; }
+  .soru { counter-increment: s; }
+  .soru-metni { margin: 0 0 0.5rem; font-weight: 600; }
+  .soru-metni::before { content: counter(s) '. '; color: var(--vurgu); }
+  summary { cursor: pointer; color: var(--vurgu); font-weight: 600; }
+  .cevap { margin: 0.6rem 0; }
+  .puanlar { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .puanlar button[aria-pressed='true'][data-puan='bildim'] { background: var(--dogru); border-color: var(--dogru); color: var(--zemin); }
+  .puanlar button[aria-pressed='true'][data-puan='kismen'] { background: var(--kismen); border-color: var(--kismen); color: var(--zemin); }
+  .puanlar button[aria-pressed='true'][data-puan='bilemedim'] { background: var(--yanlis); border-color: var(--yanlis); color: var(--zemin); }
+</style>

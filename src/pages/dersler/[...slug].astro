@@ -1,0 +1,86 @@
+---
+import { getCollection, render } from 'astro:content';
+import Temel from '../../layouts/Temel.astro';
+import Analoji from '../../components/Analoji.astro';
+import TerminalGorevi from '../../components/TerminalGorevi.astro';
+import Sorular from '../../components/Sorular.astro';
+import DerinDalis from '../../components/DerinDalis.astro';
+import HataBildir from '../../components/HataBildir.astro';
+import { dersOzetleri, dersUrl } from '../../lib/ders-listesi';
+import { DONEMLER } from '../../data/donemler';
+
+export async function getStaticPaths() {
+  const ozetler = await dersOzetleri(); // tekrar eden kimlik varsa build burada durur
+  const dersler = await getCollection('dersler');
+  return dersler.map((ders) => {
+    const i = ozetler.findIndex((o) => o.kimlik === ders.data.kimlik);
+    return {
+      params: { slug: ders.data.kimlik },
+      props: { ders, onceki: ozetler[i - 1] ?? null, sonraki: ozetler[i + 1] ?? null },
+    };
+  });
+}
+
+const { ders, onceki, sonraki } = Astro.props;
+const d = ders.data;
+const { Content } = await render(ders);
+const donem = DONEMLER.find((x) => x.no === d.donem);
+---
+
+<Temel baslik={d.baslik} aciklama={d.neden}>
+  <article
+    data-ders={d.kimlik}
+    data-sorular={JSON.stringify(d.sorular.map((s) => s.id))}
+    data-sonraki={sonraki ? dersUrl(sonraki.kimlik) : ''}
+  >
+    <header class="ders-ust">
+      <p class="etiket">
+        {donem?.ad} · Ders {String(d.sira).padStart(3, '0')} · ~{d.sure} dk
+      </p>
+      <h1>{d.baslik}</h1>
+      <nav class="komsu" aria-label="Ders gezinme">
+        {onceki ? <a href={onceki.url}>← {onceki.baslik}</a> : <span />}
+        {sonraki && <a href={sonraki.url}>{sonraki.baslik} →</a>}
+      </nav>
+    </header>
+
+    <section class="neden" aria-labelledby="neden-b">
+      <h2 id="neden-b">Neden önemli</h2>
+      <p>{d.neden}</p>
+    </section>
+
+    <section aria-labelledby="kavram-b">
+      <h2 id="kavram-b">Kavram</h2>
+      <div class="kavram"><Content /></div>
+    </section>
+
+    <Analoji {...d.analoji} />
+    <TerminalGorevi {...d.gorev} />
+    <Sorular sorular={d.sorular} />
+    {d.derinDalis && d.derinDalis.length > 0 && <DerinDalis ogeler={d.derinDalis} />}
+
+    <div class="bitir">
+      <button type="button" class="birincil" id="bitir" disabled>Dersi bitirdim</button>
+      <span id="bitir-durum" class="soluk" aria-live="polite"></span>
+      <a id="sonraki-ders" class="dugme" hidden>Sıradaki ders →</a>
+    </div>
+    <p id="kayit-uyarisi" class="uyari" role="alert" hidden>
+      İlerleme kaydedilemedi (tarayıcı depolaması kapalı olabilir).
+    </p>
+
+    <HataBildir kimlik={d.kimlik} />
+  </article>
+</Temel>
+
+<script>
+  import '../../scripts/ders.ts';
+</script>
+
+<style>
+  .ders-ust { border-bottom: 1px solid var(--cizgi); padding-bottom: 0.8rem; }
+  .komsu { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; flex-wrap: wrap; }
+  .neden { background: var(--yuzey-2); border-radius: var(--r); padding: 0.2rem 1.1rem 0.4rem; margin-top: 1.2rem; }
+  .neden h2 { margin-top: 0.8rem; }
+  .bitir { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-top: 2rem; }
+  .uyari { color: var(--yanlis); font-weight: 600; }
+</style>
