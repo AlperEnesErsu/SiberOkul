@@ -1,0 +1,57 @@
+---
+import { getCollection, render } from 'astro:content';
+import Temel from '../../layouts/Temel.astro';
+import { dersUrl } from '../../lib/ders-listesi';
+
+export async function getStaticPaths() {
+  return (await getCollection('atolye')).map((k) => ({ params: { slug: k.id }, props: { k } }));
+}
+const { k } = Astro.props;
+const d = k.data;
+const { Content } = await render(k);
+const dersler = await getCollection('dersler');
+const ilgili = d.ilgiliDers ? dersler.find((x) => x.data.kimlik === d.ilgiliDers) : undefined;
+---
+<Temel baslik={d.baslik} aciklama={d.sorun}>
+  <article>
+    <p class="etiket">Atölye · Karar {String(d.no).padStart(3, '0')} · {d.tarih}</p>
+    <h1>{d.baslik}</h1>
+    <dl>
+      <dt>Sorun</dt>
+      <dd>{d.sorun}</dd>
+      <dt>Seçenekler</dt>
+      <dd>
+        <ul class="secenekler">
+          {d.secenekler.map((s) => (
+            <li class={s.secildi ? 'secildi' : ''}>
+              <strong>{s.ad}</strong>{s.secildi && <span class="etiket"> ← seçildi</span>}<br />{s.aciklama}
+            </li>
+          ))}
+        </ul>
+      </dd>
+      <dt>Neden</dt>
+      <dd>{d.neden}</dd>
+      <dt>Bedeli</dt>
+      <dd>{d.bedel}</dd>
+    </dl>
+    <div class="govde"><Content /></div>
+    <section class="kart">
+      <p class="etiket">Kendini yokla</p>
+      <p><strong>{d.yoklamaSorusu.soru}</strong></p>
+      <details>
+        <summary>Cevabı göster</summary>
+        <p>{d.yoklamaSorusu.cevap}</p>
+      </details>
+    </section>
+    {ilgili && <p>İlgili ders: <a href={dersUrl(ilgili.data.kimlik)}>{ilgili.data.baslik}</a></p>}
+  </article>
+</Temel>
+<style>
+  dt { font: 600 0.75rem/1 var(--yazi-kod); letter-spacing: 0.08em; text-transform: uppercase; color: var(--metin-soluk); margin-top: 1.3rem; }
+  dd { margin: 0.4rem 0 0; }
+  .secenekler { padding-left: 1.1rem; }
+  .secenekler li { margin: 0.5rem 0; }
+  .secildi { color: var(--metin); }
+  .secildi strong { color: var(--vurgu); }
+  summary { cursor: pointer; color: var(--vurgu); font-weight: 600; }
+</style>

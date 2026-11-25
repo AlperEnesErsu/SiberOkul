@@ -1,0 +1,43 @@
+---
+import { getCollection, render } from 'astro:content';
+import Temel from '../../layouts/Temel.astro';
+import HukumRozeti from '../../components/HukumRozeti.astro';
+import { dersUrl } from '../../lib/ders-listesi';
+
+export async function getStaticPaths() {
+  return (await getCollection('efsaneler')).map((e) => ({ params: { slug: e.id }, props: { e } }));
+}
+const { e } = Astro.props;
+const d = e.data;
+const { Content } = await render(e);
+const dersler = await getCollection('dersler');
+const ilgili = d.ilgiliDers ? dersler.find((x) => x.data.kimlik === d.ilgiliDers) : undefined;
+---
+<Temel baslik={d.iddia} aciklama={d.ozet}>
+  <article>
+    <p class="etiket">İddia</p>
+    <h1>“{d.iddia}”</h1>
+    <p><span class="etiket">Hüküm</span><br /><HukumRozeti hukum={d.hukum} /></p>
+    <p class="ozet">{d.ozet}</p>
+    <div class="govde"><Content /></div>
+    {d.analoji && (
+      <section class="analoji">
+        <p class="etiket">Analoji</p>
+        <p>{d.analoji}</p>
+      </section>
+    )}
+    <section>
+      <h2>Kaynaklar</h2>
+      <ul>
+        {d.kaynaklar.map((k) => <li><a href={k.url} rel="noopener noreferrer" target="_blank">{k.ad}</a></li>)}
+      </ul>
+    </section>
+    {ilgili && <p>İlgili ders: <a href={dersUrl(ilgili.data.kimlik)}>{ilgili.data.baslik}</a></p>}
+    {d.ilgiliDers && !ilgili && <p class="soluk">İlgili ders yakında: {d.ilgiliDers}</p>}
+  </article>
+</Temel>
+<style>
+  .ozet { font-size: 1.1rem; font-weight: 500; }
+  .analoji { border-left: 4px solid var(--vurgu); background: var(--vurgu-zemin); padding: 0.6rem 1rem; border-radius: 0 var(--r) var(--r) 0; margin: 1.4rem 0; }
+  .analoji p:last-child { margin-bottom: 0; }
+</style>

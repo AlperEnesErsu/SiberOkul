@@ -1,0 +1,23 @@
+---
+interface Props { hukum: 'dogru' | 'kismen' | 'yanlis' }
+const { hukum } = Astro.props;
+const bilgi = {
+  dogru: { simge: '✅', ad: 'Doğru' },
+  kismen: { simge: '⚠', ad: 'Kısmen doğru' },
+  yanlis: { simge: '❌', ad: 'Yanlış' },
+}[hukum];
+---
+<span class={`rozet ${hukum}`}><span aria-hidden="true">{bilgi.simge}</span> {bilgi.ad}</span>
+<style>
+  .rozet {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 99px;
+    border: 2px solid currentColor;
+  }
+  .dogru { color: var(--dogru); }
+  .kismen { color: var(--kismen); }
+  .yanlis { color: var(--yanlis); }
+</style>
