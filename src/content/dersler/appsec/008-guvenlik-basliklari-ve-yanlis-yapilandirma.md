@@ -24,7 +24,9 @@ gorev:
               self.send_header("Content-Security-Policy", "default-src 'self'")
               self.send_header("X-Frame-Options", "DENY")
               self.end_headers()
-              self.wfile.write(b"<h1>merhaba</h1>")
+              if self.command != "HEAD":
+                  self.wfile.write(b"<h1>merhaba</h1>")
+          do_HEAD = do_GET
           def log_message(self, *a):
               pass
 

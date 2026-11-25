@@ -23,12 +23,16 @@ Ayrıntılı liste: [`docs/mufredat/program.md`](docs/mufredat/program.md).
 | 7 | 📦 Container, Kubernetes, IaC | 12 | K8s RBAC, NetworkPolicy, Pod Security, Terraform, policy-as-code |
 | 8 | ☁️ Bulut ve izleme | 12 | IAM, VPC, S3, KMS, CloudTrail, SIEM, olay müdahalesi, yedekleme |
 
-Her ders: **neden önemli** → **kavram** → **analoji** → **terminal görevi** (ve telefondan
-düşünülebilecek bir soru) → **4 soru** (cevabı açıp kendini puanlarsın) → **derin dalış**.
+Her ders: **neden önemli** → **kavram** → (varsa) **şema** → **hızlı kontrol** (anında puanlanan
+çoktan seçmeli) → **analoji** → **sık yapılan hatalar** → (varsa) **gerçek olay** → **terminal görevi**
+(ve telefondan düşünülebilecek bir soru) → **5 soru** (biri senaryo; her birinde 💡 ipucu, cevabı açıp
+kendini puanlarsın) → **terimler** → **derin dalış**.
 
 Ayrıca:
 
-- **Efsane mi?** Teknoloji ve güvenlik hakkında sık duyulan iddialar; her hüküm birincil kaynağa dayanır.
+- **Efsane mi?** 56 kart: teknoloji ve güvenlik hakkında sık duyulan iddialar. Önce sen tahmin edersin,
+  sonra birincil kaynağa dayanan hüküm açılır.
+- **Sözlük:** 219 terim, aranabilir; her ders kendi terimlerini sonunda listeler.
 - **Atölye:** Bu siteyi yaparken alınan her kararın ne/neden/bedel kaydı.
 
 ## Nasıl çalışır
@@ -37,7 +41,15 @@ Ayrıca:
   sabitlenir; yarıda kalırsa kaldığın yerden devam edilir.
 - **Aralıklı tekrar:** "Bilemedim" denen soru ertesi gün, bilinenler 3, 7, 14, 30, 60 gün sonra geri gelir.
 - **Seri:** Haftada 5 gün çalışmak seriyi sürdürür; bir gün kaçırmak seriyi sıfırlamaz.
-- **Bölge sınavı:** Bölgenin dersleri bitince oturuma girer; %70 sonraki bölgeyi açar.
+- **Bölge sınavı:** Bölgenin dersleri bitince oturuma girer; %70 sonraki bölgeyi açar. Her soruda ipucu
+  var; yanlış yaptığın sorular aralıklı tekrara girer ve sonraki günlerde geri gelir.
+
+## Pratik ortamı
+
+Terminal görevleri Windows üzerinde WSL2 + Ubuntu 22.04 için yazıldı. Docker derslerinde Docker
+Desktop'ın WSL entegrasyonu açık olmalı (Settings → Resources → WSL integration). Linux, Ağ, Temeller,
+DevOps, AppSec ve Pipeline derslerindeki komutların `sudo` ve ek araç gerektirmeyenleri gerçek bir
+Ubuntu 22.04'te çalıştırılıp derste yazanla karşılaştırıldı.
 
 ## Çalıştırma
 
