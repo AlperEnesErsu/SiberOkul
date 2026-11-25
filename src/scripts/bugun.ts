@@ -1,61 +1,76 @@
-// Ana sayfa: seri, Bugün kartı, tekrar soruları, dönem ilerleme şeritleri.
+// Ana sayfa = oturum kapısı: istatistikler, oturumu başlat / devam et / bitti özeti, bölgeler.
 import { bugunSec } from '../lib/ilerleme/bugun';
-import { ilerlemeOku } from '../lib/ilerleme/depo';
-import { seriHesapla, HAFTALIK_HEDEF } from '../lib/ilerleme/seri';
-import { bugunStr } from '../lib/ilerleme/tarih';
-import { dersVerisiniOku, yayimlananlar } from './ders-verisi';
+import { oturumOku, oturumPlanla, oturumYaz, type Oturum } from '../lib/oturum';
+import { durumHesapla, yaz } from './durum';
+import { yayimlananlar } from './ders-verisi';
+import { ADIM_ADI, ADIM_SIMGE, adimUrl, tahminiSure } from './oturum-ortak';
 
-const { dersler, donemler } = dersVerisiniOku();
-const ilerleme = ilerlemeOku();
-const bugun = bugunStr();
-const { ders, tekrarlar } = bugunSec(dersler, ilerleme, bugun);
+const d = durumHesapla();
+const { dersler, kartlar, donemler } = d.veri;
 
-const seri = seriHesapla(ilerleme.calisilanGunler, bugun);
-document.getElementById('seri')!.textContent =
-  `🔥 ${seri.seriHafta} hafta · bu hafta ${seri.buHaftaGun}/${HAFTALIK_HEDEF}`;
+yaz('#tarih', new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' }));
+yaz('#seri', String(d.seri.seriHafta));
+yaz('#xp', String(d.xp));
+yaz('#seviye-no', `Sv. ${d.seviye.no}`);
+yaz('#seviye-ad', d.seviye.ad);
+yaz('#seviye-kalan', `Sonraki seviyeye ${d.seviye.sonrakiIcin - d.seviye.buSeviyeXp} XP`);
+document.getElementById('seviye-cubuk')!.style.width = `${(d.seviye.buSeviyeXp / d.seviye.sonrakiIcin) * 100}%`;
 
-const kutu = document.getElementById('bugun-icerik')!;
-kutu.replaceChildren();
-if (ders) {
-  const h2 = document.createElement('h2');
-  h2.textContent = ders.baslik;
-  const bilgi = document.createElement('p');
-  bilgi.className = 'soluk';
-  bilgi.textContent = `Ders ${String(ders.sira).padStart(3, '0')} · ~${ders.sure} dk · ${ders.soruIdleri.length} soru`;
-  const a = document.createElement('a');
-  a.className = 'dugme birincil';
-  a.href = ders.url;
-  a.textContent = 'Derse başla →';
-  kutu.append(h2, bilgi, a);
-} else {
-  const p = document.createElement('p');
-  p.textContent = dersler.length
-    ? 'Yayımlanan bütün dersleri bitirdin. Yeni ders yarın burada.'
-    : 'Henüz yayımlanmış ders yok.';
-  kutu.append(p);
-}
+// Oturum kapısı
+const kayitli = oturumOku(d.bugun);
+const oturum: Oturum = kayitli ?? oturumPlanla(dersler, kartlar, d.ilerleme, d.bugun);
+const ders = dersler.find((x) => x.kimlik === oturum.ders);
+const dugme = document.getElementById('kapi-dugme') as HTMLAnchorElement;
 
-if (tekrarlar.length) {
-  const soruDersi = new Map(dersler.flatMap((d) => d.soruIdleri.map((id, i) => [id, { d, no: i + 1 }] as const)));
-  document.getElementById('tekrar')!.hidden = false;
-  document.getElementById('tekrar-ozet')!.textContent = `Bugün tekrar edilecek ${tekrarlar.length} soru.`;
-  const liste = document.getElementById('tekrar-liste')!;
-  for (const id of tekrarlar) {
-    const bilgi = soruDersi.get(id)!;
+const liste = document.getElementById('kapi-adimlar')!;
+liste.replaceChildren(
+  ...oturum.adimlar.map((a, i) => {
     const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = `${bilgi.d.url}#soru-${id}`;
-    a.textContent = `${bilgi.d.baslik} · Soru ${bilgi.no}`;
-    li.append(a);
-    liste.append(li);
-  }
+    const ek = a === 'tekrar' ? ` (${oturum.tekrarlar.length})` : a === 'ders' && ders ? ` ${String(ders.sira).padStart(3, '0')}` : '';
+    li.textContent = `${ADIM_SIMGE[a]} ${ADIM_ADI[a]}${ek}`;
+    if (kayitli && (i < oturum.konum || oturum.bitti)) li.classList.add('tamam');
+    if (kayitli && !oturum.bitti && i === oturum.konum) li.classList.add('simdi');
+    return li;
+  }),
+);
+
+if (oturum.bitti) {
+  const kazanilan = d.xp - oturum.baslangicXp;
+  const yarin = bugunSec(dersler, d.ilerleme, d.bugun).ders;
+  yaz('#kapi-durum', 'Bugün tamam ✓');
+  yaz('#kapi-baslik', `Harika iş! +${kazanilan} XP`);
+  yaz('#kapi-alt', yarin ? `Yarın: Ders ${String(yarin.sira).padStart(3, '0')} · ${yarin.baslik}` : 'Yeni ders yarın burada.');
+  dugme.textContent = 'Özeti gör';
+  dugme.href = `${import.meta.env.BASE_URL}oturum/`;
+  dugme.classList.remove('birincil');
+  yaz('#selam-baslik', 'Yarın görüşürüz 👋');
+} else if (kayitli) {
+  yaz('#kapi-durum', `Sürüyor · Adım ${oturum.konum + 1}/${oturum.adimlar.length}`);
+  yaz('#kapi-baslik', ders ? `Bugün: ${ders.baslik}` : 'Bugünün oturumu');
+  dugme.textContent = 'Kaldığın yerden devam et →';
+  dugme.href = adimUrl(oturum, dersler, kartlar);
+  yaz('#kapi-sure', `~${tahminiSure(oturum, dersler)} dk`);
+} else {
+  yaz('#kapi-durum', 'Hazır');
+  yaz('#kapi-baslik', ders ? `Bugün: ${ders.baslik}` : 'Bugün tekrar ve okuma günü');
+  yaz('#kapi-sure', `~${tahminiSure(oturum, dersler)} dk`);
+  dugme.textContent = 'Bugünün oturumunu başlat →';
+  dugme.addEventListener('click', (olay) => {
+    olay.preventDefault();
+    const yeni = oturumPlanla(dersler, kartlar, d.ilerleme, d.bugun);
+    oturumYaz(yeni);
+    location.href = adimUrl(yeni, dersler, kartlar);
+  });
 }
 
+// Bölgeler
 const yayin = yayimlananlar(dersler);
-for (const d of donemler) {
-  const li = document.querySelector<HTMLElement>(`[data-donem="${d.no}"]`);
-  if (!li) continue;
-  const biten = (yayin[d.no] ?? []).filter((k) => k in ilerleme.bitenDersler).length;
-  li.querySelector<HTMLElement>('.dolu')!.style.width = `${Math.min(100, (biten / d.planlananDers) * 100)}%`;
-  li.querySelector('.sayi')!.textContent = `${biten}/${d.planlananDers}`;
-}
+donemler.forEach((dn, i) => {
+  const li = document.querySelector<HTMLElement>(`.bolge[data-donem="${dn.no}"]`);
+  if (!li) return;
+  const biten = (yayin[dn.no] ?? []).filter((k) => Object.hasOwn(d.ilerleme.bitenDersler, k)).length;
+  const oran = dn.planlananDers > 0 ? (biten / dn.planlananDers) * 100 : 0;
+  li.querySelector<HTMLElement>('.dolu')!.style.width = `${Math.min(100, oran)}%`;
+  li.querySelector('.bolge-sayi')!.textContent = `${biten}/${dn.planlananDers}${d.bolgeler[i] === 'kilitli' ? ' · 🔒' : ''}`;
+  if (d.bolgeler[i] === 'kilitli') li.classList.add('kilitli');
+});

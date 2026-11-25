@@ -1,0 +1,74 @@
+---
+import { ROZETLER } from '../lib/oyun';
+const gunler = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'];
+---
+<section class="kart panel" aria-labelledby="hafta-b">
+  <p class="etiket" id="hafta-b">Bu hafta</p>
+  <p class="hafta-sayi"><strong id="hafta-gun">0</strong>/5 gün</p>
+  <ol class="hafta" id="hafta-gunleri">
+    {gunler.map((g) => <li><span class="nokta" aria-hidden="true"></span><span class="g">{g}</span></li>)}
+  </ol>
+  <p class="soluk kucuk">Haftada 5 gün çalışırsan seri sürer.</p>
+</section>
+
+<section class="kart panel" aria-labelledby="tekrar-p-b">
+  <p class="etiket" id="tekrar-p-b">Tekrar</p>
+  <p class="tekrar-sayi"><strong id="tekrar-sayisi">0</strong> soru bugün tekrar bekliyor</p>
+  <p class="soluk kucuk">Tekrarlar günlük oturumun içinde gelir.</p>
+</section>
+
+<section class="kart panel" aria-labelledby="rozet-b">
+  <p class="etiket" id="rozet-b">Rozetler <span id="rozet-sayi" class="soluk"></span></p>
+  <ul class="rozetler">
+    {ROZETLER.map((r) => (
+      <li data-rozet={r.kimlik} title={r.aciklama}>
+        <span class="rozet-simge" aria-hidden="true">{r.simge}</span>
+        <span class="rozet-ad">{r.ad}</span>
+        <span class="gizli-ekran rozet-durum">kilitli</span>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<script>
+  import { bugunSec } from '../lib/ilerleme/bugun';
+  import { gunEkle, haftaBasi } from '../lib/ilerleme/tarih';
+  import { durumHesapla } from '../scripts/durum';
+
+  const d = durumHesapla();
+  document.getElementById('hafta-gun')!.textContent = String(d.seri.buHaftaGun);
+  const calisilan = new Set(d.ilerleme.calisilanGunler);
+  const bas = haftaBasi(d.bugun);
+  document.querySelectorAll('#hafta-gunleri li').forEach((li, i) => {
+    const g = gunEkle(bas, i);
+    if (calisilan.has(g)) li.classList.add('dolu');
+    if (g === d.bugun) li.classList.add('bugun');
+  });
+  document.getElementById('tekrar-sayisi')!.textContent = String(
+    bugunSec(d.veri.dersler, d.ilerleme, d.bugun).tekrarlar.length,
+  );
+  document.getElementById('rozet-sayi')!.textContent = `${d.rozetler.length}/5`;
+  for (const k of d.rozetler) {
+    const li = document.querySelector<HTMLElement>(`[data-rozet="${k}"]`);
+    li?.classList.add('kazanildi');
+    const durum = li?.querySelector('.rozet-durum');
+    if (durum) durum.textContent = 'kazanıldı';
+  }
+</script>
+
+<style>
+  .panel { padding: 1rem 1.1rem; }
+  .kucuk { font-size: 0.85rem; margin: 0.5rem 0 0; }
+  .hafta-sayi, .tekrar-sayi { margin: 0.3rem 0 0.6rem; font-size: 1.05rem; }
+  .hafta-sayi strong, .tekrar-sayi strong { font-size: 1.6rem; }
+  .hafta { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.25rem; text-align: center; }
+  .nokta { display: block; width: 1.6rem; height: 1.6rem; margin: 0 auto 0.2rem; border-radius: 50%; background: var(--yuzey-2); border: 2px solid var(--cizgi); }
+  .hafta li.dolu .nokta { background: var(--seri); border-color: var(--seri); }
+  .hafta li.bugun .nokta { outline: 2px solid var(--birincil); outline-offset: 2px; }
+  .g { font-size: 0.72rem; color: var(--metin-soluk); }
+  .rozetler { list-style: none; padding: 0; margin: 0.6rem 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(4.6rem, 1fr)); gap: 0.5rem; }
+  .rozetler li { text-align: center; padding: 0.5rem 0.2rem; border-radius: 11px; background: var(--yuzey-2); filter: grayscale(1); opacity: 0.55; }
+  .rozetler li.kazanildi { filter: none; opacity: 1; background: var(--birincil-zemin); }
+  .rozet-simge { display: block; font-size: 1.5rem; }
+  .rozet-ad { font-size: 0.72rem; font-weight: 600; }
+</style>

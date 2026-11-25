@@ -1,8 +1,10 @@
 ---
 import Temel from '../layouts/Temel.astro';
 import DersVerisi from '../components/DersVerisi.astro';
+import DurumPaneli from '../components/DurumPaneli.astro';
 import { dersOzetleri } from '../lib/ders-listesi';
 import { DONEMLER } from '../data/donemler';
+import { DONEM_GORSEL } from '../data/donem-gorsel';
 
 const dersler = await dersOzetleri();
 ---
@@ -10,41 +12,46 @@ const dersler = await dersOzetleri();
 <Temel baslik="Yolculuk" aciklama="Linux'tan buluta, sekiz bölgelik DevSecOps haritası.">
   <DersVerisi />
   <h1>Yolculuk</h1>
-  <p class="soluk">Sekiz bölge, tek yol. Bir bölgeyi bitirince sonraki açılır.</p>
+  <p class="soluk">Sekiz bölge, tek patika. Her taş bir ders; bir bölgeyi bitirince sonraki açılır.</p>
 
-  <ol class="harita">
+  <ol class="patika">
     {
-      DONEMLER.map((d) => {
+      DONEMLER.map((d, i) => {
+        const g = DONEM_GORSEL[d.no];
         const bolgeDersleri = dersler.filter((x) => x.donem === d.no);
+        const bos = Math.max(0, Math.min(d.planlananDers, 40) - bolgeDersleri.length);
         return (
-          <li class="bolge" data-donem={d.no} data-durum="">
-            <details>
-              <summary>
-                <span class="no">{String(d.no).padStart(2, '0')}</span>
-                <span class="ad">{d.ad}</span>
-                <span class="durum" />
-                <span class="sayi">
-                  <span class="biten">0</span>/{d.planlananDers}
-                </span>
-              </summary>
+          <li class={`bolge ${i % 2 ? 'sag' : 'sol'}`} data-donem={d.no} data-durum="" style={`--renk:${g.renk}`}>
+            <div class="dugum" aria-hidden="true">{g.simge}</div>
+            <div class="kart bolge-kart">
+              <p class="etiket">Bölge {d.no} · {g.bolge}</p>
+              <h2>{d.ad}</h2>
               <p class="soluk">{d.aciklama}</p>
-              {bolgeDersleri.length ? (
-                <ol class="dersler">
-                  {bolgeDersleri.map((x) => (
-                    <li data-kimlik={x.kimlik}>
-                      <a href={x.url}>{x.baslik}</a>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <p class="soluk">Bu bölgenin dersleri sırası gelince yazılacak.</p>
-              )}
-            </details>
+              <p class="durum-satiri">
+                <span class="durum"></span>
+                <span class="sayi"><span class="biten">0</span>/{d.planlananDers} ders</span>
+              </p>
+              <ol class="taslar" aria-label={`${d.ad} dersleri`}>
+                {bolgeDersleri.map((x) => (
+                  <li data-kimlik={x.kimlik}>
+                    <a href={x.url} title={x.baslik}>
+                      <span class="gizli-ekran">{x.baslik}</span>
+                      <span aria-hidden="true">{x.sira}</span>
+                    </a>
+                  </li>
+                ))}
+                {Array.from({ length: bos }, () => (
+                  <li class="yazilmadi" aria-hidden="true"><span></span></li>
+                ))}
+              </ol>
+            </div>
           </li>
         );
       })
     }
   </ol>
+
+  <DurumPaneli slot="sag" />
 </Temel>
 
 <script>
@@ -52,55 +59,34 @@ const dersler = await dersOzetleri();
 </script>
 
 <style>
-  .harita { list-style: none; padding: 0; position: relative; }
-  .harita::before {
-    content: '';
-    position: absolute;
-    left: 1.35rem;
-    top: 1rem;
-    bottom: 1rem;
-    border-left: 2px dashed var(--cizgi);
+  .patika { list-style: none; padding: 0; margin: 1.5rem 0 0; position: relative; }
+  .patika::before {
+    content: ''; position: absolute; left: 1.75rem; top: 1rem; bottom: 1rem;
+    border-left: 4px dotted var(--cizgi);
   }
-  .bolge { position: relative; margin: 0.8rem 0; }
-  details {
-    background: var(--yuzey);
-    border: 1px solid var(--cizgi);
-    border-radius: var(--r);
-    padding: 0.2rem 1rem 0.2rem 0;
+  .bolge { position: relative; display: grid; grid-template-columns: 3.5rem 1fr; gap: 1rem; margin-bottom: 1.3rem; }
+  .dugum {
+    z-index: 1; width: 3.5rem; height: 3.5rem; border-radius: 50%;
+    display: grid; place-items: center; font-size: 1.6rem;
+    background: var(--yuzey); border: 4px solid var(--cizgi);
   }
-  summary {
-    display: grid;
-    grid-template-columns: 2.7rem 1fr auto auto;
-    gap: 0.7rem;
-    align-items: center;
-    cursor: pointer;
-    padding: 0.6rem 0;
-    list-style: none;
+  .bolge-kart { border-left: 5px solid var(--renk); }
+  .bolge-kart h2 { margin: 0.2rem 0 0.2rem; }
+  .bolge-kart p { margin: 0.2rem 0; }
+  .durum-satiri { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; font-weight: 600; font-size: 0.9rem; }
+  .sayi { font-family: var(--yazi-kod); color: var(--metin-soluk); }
+  .taslar { list-style: none; padding: 0; margin: 0.8rem 0 0; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .taslar a, .taslar .yazilmadi span {
+    display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 9px;
+    font: 700 0.75rem/1 var(--yazi-kod); text-decoration: none;
+    background: var(--yuzey-2); color: var(--metin); border: 2px solid var(--cizgi);
   }
-  summary::-webkit-details-marker { display: none; }
-  .no {
-    justify-self: center;
-    width: 2.1rem;
-    height: 2.1rem;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    font: 700 0.85rem/1 var(--yazi-kod);
-    background: var(--yuzey-2);
-    border: 2px solid var(--cizgi);
-  }
-  .ad { font-weight: 600; }
-  .sayi { font: 0.85rem var(--yazi-kod); color: var(--metin-soluk); }
-  .durum { font-size: 0.82rem; color: var(--metin-soluk); }
-  details > :not(summary) { margin-left: 3.4rem; }
-  .dersler { padding-left: 1.1rem; }
-  .dersler li.bitti::marker { content: '✓  '; color: var(--vurgu); }
+  .taslar .yazilmadi span { border-style: dashed; opacity: 0.8; }
+  .taslar li.bitti a { background: var(--renk); border-color: var(--renk); color: #111; }
+  .taslar li.siradaki a { border-color: var(--birincil); outline: 3px solid var(--birincil-zemin); }
 
-  [data-durum='devam'] .no { border-color: var(--vurgu); color: var(--vurgu); }
-  [data-durum='tamamlandi'] .no { background: var(--vurgu); border-color: var(--vurgu); color: var(--zemin); }
-  [data-durum='kilitli'] details { opacity: 0.6; }
-  @media (max-width: 30rem) {
-    summary { grid-template-columns: 2.7rem 1fr auto; }
-    .durum { display: none; }
-  }
+  [data-durum='devam'] .dugum { border-color: var(--renk); box-shadow: 0 0 0 6px color-mix(in srgb, var(--renk) 25%, transparent); }
+  [data-durum='tamamlandi'] .dugum { background: var(--renk); border-color: var(--renk); }
+  [data-durum='kilitli'] .bolge-kart { opacity: 0.6; }
+  [data-durum='kilitli'] .dugum { filter: grayscale(1); opacity: 0.6; }
 </style>

@@ -1,10 +1,17 @@
 // DersVerisi.astro'nun gömdüğü JSON'u okur.
 import type { Donem } from '../data/donemler';
 import type { DersOzet } from '../lib/ilerleme/bugun';
+import type { KartOzet } from '../lib/oturum';
 
-export function dersVerisiniOku(): { dersler: DersOzet[]; donemler: Donem[] } {
+export interface DersVerisi {
+  dersler: DersOzet[];
+  donemler: Donem[];
+  kartlar: KartOzet[];
+}
+
+export function dersVerisiniOku(): DersVerisi {
   const el = document.getElementById('ders-listesi');
-  return el?.textContent ? JSON.parse(el.textContent) : { dersler: [], donemler: [] };
+  return el?.textContent ? JSON.parse(el.textContent) : { dersler: [], donemler: [], kartlar: [] };
 }
 
 /** Dönem no → o dönemde yayımlanmış ders kimlikleri. */
