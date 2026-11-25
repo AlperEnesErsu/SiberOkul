@@ -15,7 +15,7 @@ const terimler = await butunTerimler();
     <input id="ara" type="search" placeholder="ör. hash, port, RBAC" autocomplete="off" />
     <dl class="liste" id="liste">
       {terimler.map((t) => (
-        <div id={terimKimligi(t.terim)} data-ara={`${t.terim} ${t.ingilizce ?? ''} ${t.tanim}`.toLocaleLowerCase('tr-TR')}>
+        <div id={terimKimligi(t.terim)} data-ara={`${t.terim} ${t.ingilizce ?? ''} ${t.tanim}`.toLocaleLowerCase('tr-TR')} data-ad={`${t.terim}|${t.ingilizce ?? ''}`.toLocaleLowerCase('tr-TR')}>
           <dt>
             <span aria-hidden="true">{DONEM_GORSEL[t.donem]?.simge}</span> {t.terim}
             {t.ingilizce && <span class="soluk"> ({t.ingilizce})</span>}
@@ -41,6 +41,9 @@ const terimler = await butunTerimler();
     for (const o of ogeler) {
       const eslesir = !q || (o.dataset.ara ?? '').includes(q);
       o.hidden = !eslesir;
+      // Adı aranan kelimeyle başlayan terim önce, adında geçen sonra, yalnız tanımında geçen en sonda.
+      const ad = o.dataset.ad ?? '';
+      o.style.order = !q ? '0' : ad.split('|').some((x) => x.startsWith(q)) ? '0' : ad.includes(q) ? '1' : '2';
       if (eslesir) gorunen++;
     }
     document.getElementById('bos')!.hidden = gorunen > 0;
@@ -52,6 +55,7 @@ const terimler = await butunTerimler();
     width: 100%; font: inherit; padding: 0.7rem 0.9rem; margin: 0.6rem 0 1rem;
     border: 1px solid var(--cizgi); border-radius: 11px; background: var(--yuzey); color: var(--metin);
   }
+  #liste { display: flex; flex-direction: column; }
   .liste > div { padding: 0.7rem 0; border-bottom: 1px solid var(--cizgi); scroll-margin-top: 5rem; }
   .liste > div:target { background: var(--birincil-zemin); border-radius: 8px; padding-inline: 0.6rem; }
   dt { font-weight: 700; }

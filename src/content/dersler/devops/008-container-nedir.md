@@ -9,7 +9,7 @@ analoji:
   baslik: "Apartmandaki daireler ve müstakil evler"
   metin: "Sanal makine müstakil evdir: kendi çatısı, tesisatı, her şeyi var; pahalı ve yavaş yapılır. Container apartman dairesidir: bina (çekirdek, kernel) ortaktır, ama her dairenin kendi kapısı ve duvarı vardır. Ucuz ve hızlıdır. Sınır: ortak bina ortak risk demektir; temeldeki bir çatlak bütün daireleri etkiler."
 gorev:
-  aciklama: "Docker kurulu olmalı. WSL2'de en kolay yol Windows'a Docker Desktop kurup WSL entegrasyonunu açmaktır (ya da Ubuntu'ya `docker.io` paketi). `docker --version` çalışıyorsa hazırsın. `hello-world` ve `alpine` imajları küçük ve zararsızdır:"
+  aciklama: "Docker kurulu olmalı. WSL2'de en kolay yol Windows'a Docker Desktop kurup WSL entegrasyonunu açmaktır: Docker Desktop → Settings → Resources → WSL integration → `Ubuntu-22.04` anahtarını aç ve Apply & restart. Açık değilse Ubuntu'da `docker` komutu bulunur ama çalışmaz (\"could not be found in this WSL 2 distro\" der). `docker --version` çalışıyorsa hazırsın. `hello-world` ve `alpine` imajları küçük ve zararsızdır:"
   komutlar:
     - docker --version
     - docker run hello-world
