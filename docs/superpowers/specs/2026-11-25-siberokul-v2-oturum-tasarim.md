@@ -78,3 +78,12 @@ Ses, animasyonlu karakter, liderlik tablosu, hesap/senkron.
 
 - XP, seviye, rozet, oturum planı ve oturum kaydı saf fonksiyonlar; önce testle yazılır.
 - 1440px, 768px, 375px genişlikte, açık ve koyu temada ekran görüntüsüyle kontrol.
+
+## 8. Değişiklik (2026-11-25, Alper)
+
+- **Koyu tema kaldırıldı.** Tek, açık tema; tema düğmesi yok.
+- **XP ve seviye kaldırıldı.** Sayaç yok. Ana sayfada seri, biten ders ve rozet sayısı; oturum
+  özetinde "bugün kaç soru puanladın, kaç ders bitirdin, bu hafta kaç gün". Rozetler (XP'ye bağlı
+  değiller) kalıyor.
+- Kayıt alanları (`ilkPuan`, `puanSayisi`, `sonGun`, `okunanKartlar`) kalıyor: tekrar sayısı, oturum
+  kapıları ve özet bunlara dayanıyor.

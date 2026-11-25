@@ -1,0 +1,115 @@
+---
+import { getCollection } from 'astro:content';
+import Temel from '../layouts/Temel.astro';
+import DersVerisi from '../components/DersVerisi.astro';
+import OturumCercevesi from '../components/OturumCercevesi.astro';
+import { ROZETLER } from '../lib/oyun';
+import { satirIci } from '../lib/satir-ici';
+import { sirala } from '../lib/icerik';
+import { dersUrl } from '../lib/ders-listesi';
+
+const kok = import.meta.env.BASE_URL;
+// Tekrar adımı için bütün soruları gömeriz; betik yalnız bugün tekrarı gelenleri gösterir.
+const dersler = sirala((await getCollection('dersler')).map((d) => d.data));
+const sorular = dersler.flatMap((d) => d.sorular.map((s) => ({ ...s, dersBaslik: d.baslik, dersKimlik: d.kimlik })));
+---
+
+<Temel baslik="Bugünün oturumu" duzen="okuma">
+  <DersVerisi />
+  <div class="okuma-izgara">
+    <aside class="okuma-yan"><OturumCercevesi parca="adimlar" her /></aside>
+    <div class="okuma-ana">
+      <section class="okuma" id="oturum-yok" hidden>
+        <h1>Bugün henüz oturum başlamadı</h1>
+        <p><a class="dugme birincil buyuk" href={kok}>Ana sayfaya dön ve başlat →</a></p>
+      </section>
+
+      <section class="okuma" id="adim-isinma" hidden>
+        <p class="etiket">Adım 1 · Isınma ☕</p>
+        <h1 id="isinma-baslik">Hoş geldin!</h1>
+        <div class="okuma-metni">
+          <p id="isinma-seri"></p>
+          <p>Bugünün planı:</p>
+          <ol id="isinma-plan" class="plan"></ol>
+          <p class="soluk">Hazırsan aşağıdan ilk adıma geç. Acele yok; önemli olan her gün biraz.</p>
+        </div>
+      </section>
+
+      <section class="okuma" id="adim-tekrar" hidden>
+        <p class="etiket">Tekrar 🔁</p>
+        <h1>Unutmadan önce hatırla</h1>
+        <p class="soluk">Bu sorular daha önce gördüğün derslerden. Önce cevabı kafanda kur, sonra aç ve kendine dürüstçe not ver.</p>
+        <ol class="tekrar-listesi" id="tekrar-listesi">
+          {sorular.map((s) => (
+            <li class="kart soru" data-soru-id={s.id} hidden>
+              <p class="etiket"><a href={dersUrl(s.dersKimlik)}>{s.dersBaslik}</a></p>
+              <p class="soru-metni" set:html={satirIci(s.soru)} />
+              <details>
+                <summary>Cevabı göster</summary>
+                <p class="cevap" set:html={satirIci(s.cevap)} />
+                <div class="puanlar" role="group" aria-label="Kendine not ver" hidden>
+                  <button type="button" data-puan="bildim">Bildim</button>
+                  <button type="button" data-puan="kismen">Kısmen</button>
+                  <button type="button" data-puan="bilemedim">Bilemedim</button>
+                </div>
+              </details>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section class="okuma" id="adim-ozet" hidden>
+        <p class="etiket">Özet 🏆</p>
+        <h1 id="ozet-baslik">Bugünkü oturum</h1>
+        <div class="ozet-izgara">
+          <div class="kart buyuk-sayi"><span aria-hidden="true">❓</span><strong id="ozet-soru">0</strong><span>soru puanladın</span></div>
+          <div class="kart buyuk-sayi"><span aria-hidden="true">📘</span><strong id="ozet-ders">0</strong><span>ders bitirdin</span></div>
+          <div class="kart buyuk-sayi"><span aria-hidden="true">🔥</span><strong id="ozet-seri">0/5</strong><span>bu hafta</span></div>
+        </div>
+        <h2>Rozetler</h2>
+        <ul class="ozet-rozetler">
+          {ROZETLER.map((r) => (
+            <li data-rozet={r.kimlik}>
+              <span class="rs" aria-hidden="true">{r.simge}</span>
+              <span><strong>{r.ad}</strong><br /><span class="soluk">{r.aciklama}</span></span>
+              <span class="yeni" hidden>Yeni!</span>
+            </li>
+          ))}
+        </ul>
+        <p class="yarin" id="ozet-yarin"></p>
+        <p id="ozet-bitti" hidden><a class="dugme" href={kok}>Ana sayfaya dön</a></p>
+      </section>
+
+      <OturumCercevesi parca="cubuk" her />
+    </div>
+  </div>
+</Temel>
+
+<script>
+  import '../scripts/oturum.ts';
+</script>
+
+<style>
+  .okuma h1 { margin-top: 0.3rem; }
+  .plan { font-family: var(--yazi); font-weight: 600; }
+  .plan li { margin: 0.3rem 0; }
+  .tekrar-listesi { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.9rem; }
+  .soru-metni { font-weight: 650; margin: 0.4rem 0 0.6rem; }
+  summary { cursor: pointer; color: var(--birincil); font-weight: 650; }
+  .cevap { margin: 0.6rem 0; }
+  .puanlar { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .puanlar button[aria-pressed='true'][data-puan='bildim'] { background: var(--dogru); border-color: var(--dogru); color: var(--zemin); }
+  .puanlar button[aria-pressed='true'][data-puan='kismen'] { background: var(--kismen); border-color: var(--kismen); color: var(--zemin); }
+  .puanlar button[aria-pressed='true'][data-puan='bilemedim'] { background: var(--yanlis); border-color: var(--yanlis); color: var(--zemin); }
+  .ozet-izgara { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 0.8rem; margin-top: 1rem; }
+  .buyuk-sayi { display: flex; flex-direction: column; gap: 0.15rem; }
+  .buyuk-sayi > span:first-child { font-size: 1.6rem; }
+  .buyuk-sayi strong { font-size: 1.8rem; line-height: 1.1; }
+  .buyuk-sayi > span:not(:first-child) { color: var(--metin-soluk); font-size: 0.9rem; }
+  .ozet-rozetler { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.6rem; }
+  .ozet-rozetler li { display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 0.9rem; border-radius: 12px; background: var(--yuzey-2); filter: grayscale(1); opacity: 0.55; font-size: 0.92rem; }
+  .ozet-rozetler li.kazanildi { filter: none; opacity: 1; background: var(--birincil-zemin); }
+  .rs { font-size: 1.6rem; }
+  .yeni { margin-left: auto; background: var(--seri); color: #fff; font-weight: 700; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 99px; }
+  .yarin { font-weight: 650; font-size: 1.05rem; margin-top: 1.5rem; }
+</style>

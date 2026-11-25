@@ -20,14 +20,8 @@ const ilk = (await dersOzetleri())[0];
     </div>
     <ul class="istatistik" aria-label="Özet">
       <li class="kart"><span aria-hidden="true">🔥</span><strong id="seri">0</strong><span>hafta seri</span></li>
-      <li class="kart"><span aria-hidden="true">⭐</span><strong id="xp">0</strong><span>XP</span></li>
-      <li class="kart seviye">
-        <span aria-hidden="true">🎓</span>
-        <strong id="seviye-no">Sv. 1</strong>
-        <span id="seviye-ad">Çaylak</span>
-        <span class="cubuk" aria-hidden="true"><span id="seviye-cubuk"></span></span>
-        <span class="soluk kucuk" id="seviye-kalan"></span>
-      </li>
+      <li class="kart"><span aria-hidden="true">📘</span><strong id="biten-ders">0</strong><span>ders bitti</span></li>
+      <li class="kart"><span aria-hidden="true">🏅</span><strong id="rozet-ozet">0/5</strong><span>rozet</span></li>
     </ul>
   </header>
 
@@ -78,10 +72,6 @@ const ilk = (await dersOzetleri())[0];
   .istatistik li > span:first-child { grid-row: span 2; font-size: 1.5rem; }
   .istatistik strong { font-size: 1.25rem; line-height: 1.1; }
   .istatistik li > span:not(:first-child) { font-size: 0.8rem; color: var(--metin-soluk); }
-  .seviye { min-width: 13rem; }
-  .seviye .cubuk { grid-column: 2; margin-top: 0.35rem; }
-  .seviye .cubuk > span { background: var(--xp); }
-  .kucuk { font-size: 0.75rem; }
 
   .kapi {
     padding: clamp(1.3rem, 3vw, 2.2rem);

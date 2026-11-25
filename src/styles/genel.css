@@ -1,6 +1,6 @@
 /* SiberOkul v2 görsel dil.
    Pano: canlı, oyunlaştırılmış. Okuma: kâğıt hissi, ~70 karakterlik sütun.
-   Tema: <html data-tema="acik|koyu">; seçim yoksa sistem tercihi. Metin/zemin kontrastı ≥ 4.5:1. */
+   Tek (açık) tema. Metin/zemin kontrastı ≥ 4.5:1. */
 
 :root {
   --zemin: #f4f5fa;
@@ -17,7 +17,6 @@
   --kismen: #8a5a00;
   --yanlis: #c0262d;
   --seri: #e8590c;
-  --xp: #b7791f;
   --kod-zemin: #161b26;
   --kod-metin: #e3e8f5;
   --golge: 0 1px 2px rgb(20 24 40 / 6%), 0 6px 20px rgb(20 24 40 / 6%);
@@ -30,49 +29,6 @@
   --r-k: 9px;
   --yan-genislik: 15.5rem;
   color-scheme: light;
-}
-
-:root[data-tema='koyu'] {
-  --zemin: #0e1016;
-  --yuzey: #171a23;
-  --yuzey-2: #1f2330;
-  --kagit: #1a1c22;
-  --cizgi: #2b3040;
-  --metin: #e9ebf2;
-  --metin-soluk: #a4abbd;
-  --birincil: #8f85ff;
-  --birincil-metin: #0e1016;
-  --birincil-zemin: #26234a;
-  --dogru: #4ad48a;
-  --kismen: #f2b84b;
-  --yanlis: #ff8a8a;
-  --seri: #ff8c42;
-  --xp: #f5c451;
-  --kod-zemin: #0a0c11;
-  --golge: 0 1px 2px rgb(0 0 0 / 30%), 0 8px 24px rgb(0 0 0 / 25%);
-  color-scheme: dark;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-tema]) {
-    --zemin: #0e1016;
-    --yuzey: #171a23;
-    --yuzey-2: #1f2330;
-    --kagit: #1a1c22;
-    --cizgi: #2b3040;
-    --metin: #e9ebf2;
-    --metin-soluk: #a4abbd;
-    --birincil: #8f85ff;
-    --birincil-metin: #0e1016;
-    --birincil-zemin: #26234a;
-    --dogru: #4ad48a;
-    --kismen: #f2b84b;
-    --yanlis: #ff8a8a;
-    --seri: #ff8c42;
-    --xp: #f5c451;
-    --kod-zemin: #0a0c11;
-    color-scheme: dark;
-  }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -175,3 +131,16 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* Okuma ızgarası: solda oturum adımları / içindekiler, sağda kâğıt */
+.okuma-izgara { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 1.6rem; align-items: start; max-width: 74rem; }
+.okuma-yan { position: sticky; top: 1.8rem; }
+.okuma-yan:empty { display: none; }
+@media (max-width: 1023px) {
+  .okuma-izgara { grid-template-columns: 1fr; }
+  .okuma-yan { position: static; }
+  .okuma-yan .icindekiler { display: none; }
+}
+/* Oturum dışında adım listesi gizliyse sol sütun yer kaplamasın */
+.okuma-izgara:has(> .okuma-yan > nav[hidden]:only-child) { grid-template-columns: minmax(0, 1fr); }
+.okuma-yan:has(> nav[hidden]:only-child) { display: none; }

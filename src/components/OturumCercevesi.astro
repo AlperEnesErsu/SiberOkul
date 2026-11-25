@@ -1,0 +1,56 @@
+---
+// Oturum adım listesi + "Sonraki adım" çubuğu. Yalnız bugünün oturumu sürerken ve sayfa oturum
+// içinde açıldığında (?oturum ya da /oturum/) görünür; aksi halde gizli kalır.
+interface Props {
+  /** Bu sayfanın her zaman oturum sayfası olup olmadığı (/oturum/). */
+  her?: boolean;
+  /** adimlar: sol sütundaki adım listesi; cubuk: içeriğin altındaki "Sonraki adım" çubuğu. */
+  parca: 'adimlar' | 'cubuk';
+}
+const { her = false, parca } = Astro.props;
+---
+{parca === 'adimlar' && (
+  <nav class="oturum-adimlari kart" id="oturum-adimlari" aria-label="Bugünün oturumu" data-her={her ? '1' : ''} hidden>
+    <p class="etiket">Bugünün oturumu</p>
+    <ol id="oturum-adim-listesi"></ol>
+  </nav>
+)}
+
+{parca === 'cubuk' && (
+  <div class="oturum-cubugu" id="oturum-cubugu" hidden>
+    <span id="oturum-cubugu-metin" class="soluk" aria-live="polite"></span>
+    <button type="button" class="birincil buyuk" id="sonraki-adim" disabled>Sonraki adım →</button>
+  </div>
+)}
+
+<script>
+  import '../scripts/oturum-cercevesi.ts';
+</script>
+
+<style>
+  .oturum-adimlari { padding: 1rem; margin-bottom: 1rem; }
+  .oturum-adimlari ol { list-style: none; padding: 0; margin: 0.6rem 0 0; display: flex; flex-direction: column; gap: 0.3rem; }
+  .oturum-adimlari :global(li) {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.45rem 0.6rem; border-radius: 10px; font-weight: 600; font-size: 0.92rem;
+    color: var(--metin-soluk);
+  }
+  .oturum-adimlari :global(li.tamam) { color: var(--metin); }
+  .oturum-adimlari :global(li.tamam .no) { background: var(--dogru); border-color: var(--dogru); color: var(--zemin); }
+  .oturum-adimlari :global(li.simdi) { background: var(--birincil-zemin); color: var(--metin); }
+  .oturum-adimlari :global(li.simdi .no) { border-color: var(--birincil); }
+  .oturum-adimlari :global(.no) {
+    display: grid; place-items: center; width: 1.6rem; height: 1.6rem; flex: none;
+    border-radius: 50%; border: 2px solid var(--cizgi); font-size: 0.8rem;
+  }
+  .oturum-cubugu {
+    position: sticky; bottom: 1rem; z-index: 5;
+    display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 0.6rem 1rem;
+    margin-top: 2rem; padding: 0.8rem 1rem;
+    background: var(--yuzey); border: 1px solid var(--cizgi); border-radius: var(--r); box-shadow: var(--golge);
+  }
+  @media (max-width: 767px) {
+    .oturum-cubugu { bottom: calc(4.4rem + env(safe-area-inset-bottom, 0px)); }
+    .oturum-cubugu button { width: 100%; justify-content: center; }
+  }
+</style>

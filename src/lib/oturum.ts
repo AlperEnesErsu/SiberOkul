@@ -4,7 +4,6 @@
 import { bugunSec, type DersOzet } from './ilerleme/bugun';
 import type { Ilerleme } from './ilerleme/model';
 import type { Gun } from './ilerleme/tarih';
-import { xpHesapla } from './oyun';
 
 export type AdimTuru = 'isinma' | 'tekrar' | 'ders' | 'kart' | 'ozet';
 
@@ -26,7 +25,6 @@ export interface Oturum {
   tekrarlar: string[];
   ders: string | null;
   kart: string | null;
-  baslangicXp: number;
   bitti: boolean;
 }
 
@@ -60,7 +58,6 @@ export function oturumPlanla(dersler: DersOzet[], kartlar: KartOzet[], i: Ilerle
     tekrarlar,
     ders: ders?.kimlik ?? null,
     kart,
-    baslangicXp: xpHesapla(i),
     bitti: false,
   };
 }
@@ -96,7 +93,6 @@ function oturumMu(x: unknown): x is Oturum {
     Array.isArray(o.tekrarlar) && o.tekrarlar.every((t) => typeof t === 'string') &&
     (o.ders === null || typeof o.ders === 'string') &&
     (o.kart === null || typeof o.kart === 'string') &&
-    typeof o.baslangicXp === 'number' &&
     typeof o.bitti === 'boolean'
   );
 }

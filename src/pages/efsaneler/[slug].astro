@@ -1,6 +1,9 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Temel from '../../layouts/Temel.astro';
+import DersVerisi from '../../components/DersVerisi.astro';
+import OturumCercevesi from '../../components/OturumCercevesi.astro';
+import KartOkundu from '../../components/KartOkundu.astro';
 import HukumRozeti from '../../components/HukumRozeti.astro';
 import { dersUrl } from '../../lib/ders-listesi';
 import { satirIci } from '../../lib/satir-ici';
@@ -14,8 +17,12 @@ const { Content } = await render(e);
 const dersler = await getCollection('dersler');
 const ilgili = d.ilgiliDers ? dersler.find((x) => x.data.kimlik === d.ilgiliDers) : undefined;
 ---
-<Temel baslik={d.iddia} aciklama={d.ozet}>
-  <article>
+<Temel baslik={d.iddia} aciklama={d.ozet} duzen="okuma">
+  <DersVerisi />
+  <div class="okuma-izgara">
+  <aside class="okuma-yan"><OturumCercevesi parca="adimlar" /></aside>
+  <div class="okuma-ana">
+  <article class="okuma"><div class="okuma-metni">
     <p class="etiket">İddia</p>
     <h1>“{d.iddia}”</h1>
     <p><span class="etiket">Hüküm</span><br /><HukumRozeti hukum={d.hukum} /></p>
@@ -35,7 +42,12 @@ const ilgili = d.ilgiliDers ? dersler.find((x) => x.data.kimlik === d.ilgiliDers
     </section>
     {ilgili && <p>İlgili ders: <a href={dersUrl(ilgili.data.kimlik)}>{ilgili.data.baslik}</a></p>}
     {d.ilgiliDers && !ilgili && <p class="soluk">İlgili ders yakında: {d.ilgiliDers}</p>}
+  </div>
+  <KartOkundu kimlik={`efsane:${e.id}`} />
   </article>
+  <OturumCercevesi parca="cubuk" />
+  </div>
+  </div>
 </Temel>
 <style>
   .ozet { font-size: 1.1rem; font-weight: 500; }

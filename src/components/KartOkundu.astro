@@ -1,0 +1,39 @@
+---
+// Efsane/Atölye kartının sonunda "Okudum" düğmesi: kartı okunanlara ekler (oturum kapısı).
+interface Props { kimlik: string }
+const { kimlik } = Astro.props;
+---
+<div class="okundu" data-kart={kimlik}>
+  <button type="button" class="birincil" id="okudum">Okudum ✓</button>
+  <span id="okundu-durum" class="soluk" aria-live="polite"></span>
+</div>
+<script>
+  import { ilerlemeOku } from '../lib/ilerleme/depo';
+  import { gunuIsaretle } from '../lib/ilerleme/bugun';
+  import { bugunStr } from '../lib/ilerleme/tarih';
+  import { kaydetVeBildir } from '../scripts/puanlama';
+
+  const kok = document.querySelector<HTMLElement>('.okundu[data-kart]');
+  const dugme = document.getElementById('okudum') as HTMLButtonElement | null;
+  if (kok && dugme) {
+    const kimlik = kok.dataset.kart!;
+    const ciz = () => {
+      const okundu = (ilerlemeOku().okunanKartlar ?? []).includes(kimlik);
+      dugme.disabled = okundu;
+      dugme.textContent = okundu ? 'Okundu ✓' : 'Okudum ✓';
+    };
+    dugme.addEventListener('click', () => {
+      const i = ilerlemeOku();
+      const liste = i.okunanKartlar ?? [];
+      if (!liste.includes(kimlik)) {
+        const tamam = kaydetVeBildir(gunuIsaretle({ ...i, okunanKartlar: [...liste, kimlik] }, bugunStr()));
+        document.getElementById('okundu-durum')!.textContent = tamam ? '' : 'Kaydedilemedi (tarayıcı depolaması kapalı olabilir).';
+      }
+      ciz();
+    });
+    ciz();
+  }
+</script>
+<style>
+  .okundu { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-top: 2rem; }
+</style>

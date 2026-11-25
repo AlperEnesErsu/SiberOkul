@@ -1,9 +1,9 @@
-// Ders sayfası: soruları puanlama, puanlama kapısı, "Dersi bitirdim".
-import { dersiBitir, gunuIsaretle } from '../lib/ilerleme/bugun';
-import { ilerlemeOku, ilerlemeYaz } from '../lib/ilerleme/depo';
-import type { Ilerleme, Puan } from '../lib/ilerleme/model';
+// Ders sayfası: soruları puanlama, puanlama kapısı, "Dersi bitirdim", içindekiler sayacı.
+import { dersiBitir } from '../lib/ilerleme/bugun';
+import { ilerlemeOku } from '../lib/ilerleme/depo';
+import type { Ilerleme } from '../lib/ilerleme/model';
 import { bugunStr } from '../lib/ilerleme/tarih';
-import { puanla } from '../lib/ilerleme/tekrar';
+import { kaydetVeBildir, puanlamayiBagla, puanlariCiz } from './puanlama';
 
 const makale = document.querySelector<HTMLElement>('article[data-ders]');
 
@@ -11,32 +11,22 @@ if (makale) {
   const kimlik = makale.dataset.ders!;
   const soruIdleri: string[] = JSON.parse(makale.dataset.sorular ?? '[]');
   const sonrakiUrl = makale.dataset.sonraki ?? '';
+  const oturumda = new URLSearchParams(location.search).has('oturum');
   const bitirDugmesi = document.getElementById('bitir') as HTMLButtonElement;
   const durum = document.getElementById('bitir-durum')!;
   const sonrakiBag = document.getElementById('sonraki-ders') as HTMLAnchorElement;
   const uyari = document.getElementById('kayit-uyarisi')!;
+  const sayac = document.getElementById('soru-sayaci');
 
-  let ilerleme: Ilerleme = ilerlemeOku();
-
-  const kaydet = (yeni: Ilerleme) => {
-    ilerleme = yeni;
-    uyari.hidden = ilerlemeYaz(yeni);
-  };
-
-  const ciz = () => {
-    for (const li of makale.querySelectorAll<HTMLElement>('[data-soru-id]')) {
-      const secili = ilerleme.sorular[li.dataset.soruId!]?.puan;
-      for (const b of li.querySelectorAll<HTMLButtonElement>('[data-puan]')) {
-        b.setAttribute('aria-pressed', String(b.dataset.puan === secili));
-      }
-    }
-    const puanlanan = soruIdleri.filter((id) => id in ilerleme.sorular).length;
-    const bitti = kimlik in ilerleme.bitenDersler;
-    if (bitti) {
+  const ciz = (i: Ilerleme) => {
+    puanlariCiz(makale, i);
+    const puanlanan = soruIdleri.filter((id) => Object.hasOwn(i.sorular, id)).length;
+    if (sayac) sayac.textContent = `${puanlanan}/${soruIdleri.length} soru puanlandı`;
+    if (Object.hasOwn(i.bitenDersler, kimlik)) {
       bitirDugmesi.disabled = true;
       bitirDugmesi.textContent = 'Bitti ✓';
-      durum.textContent = '';
-      if (sonrakiUrl) {
+      durum.textContent = oturumda ? 'Oturumda sonraki adıma geçebilirsin.' : '';
+      if (sonrakiUrl && !oturumda) {
         sonrakiBag.href = sonrakiUrl;
         sonrakiBag.hidden = false;
       }
@@ -46,22 +36,16 @@ if (makale) {
     }
   };
 
-  for (const grup of makale.querySelectorAll<HTMLElement>('.puanlar')) grup.hidden = false;
-
-  makale.addEventListener('click', (olay) => {
-    const dugme = (olay.target as HTMLElement).closest<HTMLButtonElement>('[data-puan]');
-    if (!dugme) return;
-    const id = dugme.closest<HTMLElement>('[data-soru-id]')!.dataset.soruId!;
-    const bugun = bugunStr();
-    const durumu = puanla(ilerleme.sorular[id], dugme.dataset.puan as Puan, bugun);
-    kaydet(gunuIsaretle({ ...ilerleme, sorular: { ...ilerleme.sorular, [id]: durumu } }, bugun));
-    ciz();
+  puanlamayiBagla(makale, (i, kaydedildi) => {
+    uyari.hidden = kaydedildi;
+    ciz(i);
   });
 
   bitirDugmesi.addEventListener('click', () => {
-    kaydet(dersiBitir(ilerleme, kimlik, bugunStr()));
-    ciz();
+    const yeni = dersiBitir(ilerlemeOku(), kimlik, bugunStr());
+    uyari.hidden = kaydetVeBildir(yeni);
+    ciz(yeni);
   });
 
-  ciz();
+  ciz(ilerlemeOku());
 }

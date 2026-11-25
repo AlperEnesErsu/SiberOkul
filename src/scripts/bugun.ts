@@ -10,11 +10,8 @@ const { dersler, kartlar, donemler } = d.veri;
 
 yaz('#tarih', new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' }));
 yaz('#seri', String(d.seri.seriHafta));
-yaz('#xp', String(d.xp));
-yaz('#seviye-no', `Sv. ${d.seviye.no}`);
-yaz('#seviye-ad', d.seviye.ad);
-yaz('#seviye-kalan', `Sonraki seviyeye ${d.seviye.sonrakiIcin - d.seviye.buSeviyeXp} XP`);
-document.getElementById('seviye-cubuk')!.style.width = `${(d.seviye.buSeviyeXp / d.seviye.sonrakiIcin) * 100}%`;
+yaz('#biten-ders', String(Object.keys(d.ilerleme.bitenDersler).length));
+yaz('#rozet-ozet', `${d.rozetler.length}/5`);
 
 // Oturum kapısı
 const kayitli = oturumOku(d.bugun);
@@ -35,10 +32,9 @@ liste.replaceChildren(
 );
 
 if (oturum.bitti) {
-  const kazanilan = d.xp - oturum.baslangicXp;
   const yarin = bugunSec(dersler, d.ilerleme, d.bugun).ders;
   yaz('#kapi-durum', 'Bugün tamam ✓');
-  yaz('#kapi-baslik', `Harika iş! +${kazanilan} XP`);
+  yaz('#kapi-baslik', 'Harika iş! Bugünkü oturum bitti.');
   yaz('#kapi-alt', yarin ? `Yarın: Ders ${String(yarin.sira).padStart(3, '0')} · ${yarin.baslik}` : 'Yeni ders yarın burada.');
   dugme.textContent = 'Özeti gör';
   dugme.href = `${import.meta.env.BASE_URL}oturum/`;

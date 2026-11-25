@@ -6,8 +6,11 @@ import TerminalGorevi from '../../components/TerminalGorevi.astro';
 import Sorular from '../../components/Sorular.astro';
 import DerinDalis from '../../components/DerinDalis.astro';
 import HataBildir from '../../components/HataBildir.astro';
+import DersVerisi from '../../components/DersVerisi.astro';
+import OturumCercevesi from '../../components/OturumCercevesi.astro';
 import { dersOzetleri, dersUrl } from '../../lib/ders-listesi';
 import { DONEMLER } from '../../data/donemler';
+import { DONEM_GORSEL } from '../../data/donem-gorsel';
 import { satirIci } from '../../lib/satir-ici';
 
 export async function getStaticPaths() {
@@ -26,51 +29,78 @@ const { ders, onceki, sonraki } = Astro.props;
 const d = ders.data;
 const { Content } = await render(ders);
 const donem = DONEMLER.find((x) => x.no === d.donem);
+const gorsel = DONEM_GORSEL[d.donem];
+const icindekiler = [
+  { id: 'neden-b', ad: 'Neden önemli' },
+  { id: 'kavram-b', ad: 'Kavram' },
+  { id: 'analoji-b', ad: 'Analoji' },
+  { id: 'gorev-b', ad: 'Terminal görevi' },
+  { id: 'sorular-b', ad: 'Sorular' },
+  ...(d.derinDalis?.length ? [{ id: 'derin-b', ad: 'Derin dalış' }] : []),
+];
 ---
 
-<Temel baslik={d.baslik} aciklama={d.neden}>
-  <article
-    data-ders={d.kimlik}
-    data-sorular={JSON.stringify(d.sorular.map((s) => s.id))}
-    data-sonraki={sonraki ? dersUrl(sonraki.kimlik) : ''}
-  >
-    <header class="ders-ust">
-      <p class="etiket">
-        {donem?.ad} · Ders {String(d.sira).padStart(3, '0')} · ~{d.sure} dk
-      </p>
-      <h1>{d.baslik}</h1>
-      <nav class="komsu" aria-label="Ders gezinme">
-        {onceki ? <a href={onceki.url}>← {onceki.baslik}</a> : <span />}
-        {sonraki && <a href={sonraki.url}>{sonraki.baslik} →</a>}
+<Temel baslik={d.baslik} aciklama={d.neden} duzen="okuma">
+  <DersVerisi />
+  <div class="okuma-izgara" style={`--renk:${gorsel.renk}`}>
+    <aside class="okuma-yan">
+      <OturumCercevesi parca="adimlar" />
+      <nav class="kart icindekiler" aria-label="Bu derste">
+        <p class="etiket">Bu derste</p>
+        <ol>
+          {icindekiler.map((b) => <li><a href={`#${b.id}`}>{b.ad}</a></li>)}
+        </ol>
+        <p class="soluk sayac" id="soru-sayaci" aria-live="polite"></p>
       </nav>
-    </header>
+    </aside>
 
-    <section class="neden" aria-labelledby="neden-b">
-      <h2 id="neden-b">Neden önemli</h2>
-      <p set:html={satirIci(d.neden)} />
-    </section>
+    <div class="okuma-ana">
+      <article
+        class="okuma"
+        data-ders={d.kimlik}
+        data-sorular={JSON.stringify(d.sorular.map((s) => s.id))}
+        data-sonraki={sonraki ? dersUrl(sonraki.kimlik) : ''}
+      >
+        <header class="ders-ust">
+          <p class="etiket"><span aria-hidden="true">{gorsel.simge}</span> {donem?.ad} · Ders {String(d.sira).padStart(3, '0')} · ~{d.sure} dk</p>
+          <h1>{d.baslik}</h1>
+        </header>
 
-    <section aria-labelledby="kavram-b">
-      <h2 id="kavram-b">Kavram</h2>
-      <div class="kavram"><Content /></div>
-    </section>
+        <div class="okuma-metni">
+          <section class="neden" aria-labelledby="neden-b">
+            <h2 id="neden-b">Neden önemli</h2>
+            <p set:html={satirIci(d.neden)} />
+          </section>
 
-    <Analoji {...d.analoji} />
-    <TerminalGorevi {...d.gorev} />
-    <Sorular sorular={d.sorular} />
-    {d.derinDalis && d.derinDalis.length > 0 && <DerinDalis ogeler={d.derinDalis} />}
+          <section aria-labelledby="kavram-b">
+            <h2 id="kavram-b">Kavram</h2>
+            <div class="kavram"><Content /></div>
+          </section>
 
-    <div class="bitir">
-      <button type="button" class="birincil" id="bitir" disabled>Dersi bitirdim</button>
-      <span id="bitir-durum" class="soluk" aria-live="polite"></span>
-      <a id="sonraki-ders" class="dugme" hidden>Sıradaki ders →</a>
+          <Analoji {...d.analoji} />
+          <TerminalGorevi {...d.gorev} />
+          <Sorular sorular={d.sorular} />
+          {d.derinDalis && d.derinDalis.length > 0 && <DerinDalis ogeler={d.derinDalis} />}
+
+          <div class="bitir">
+            <button type="button" class="birincil buyuk" id="bitir" disabled>Dersi bitirdim</button>
+            <span id="bitir-durum" class="soluk" aria-live="polite"></span>
+            <a id="sonraki-ders" class="dugme" hidden>Sıradaki ders →</a>
+          </div>
+          <p id="kayit-uyarisi" class="uyari" role="alert" hidden>
+            İlerleme kaydedilemedi (tarayıcı depolaması kapalı olabilir).
+          </p>
+        </div>
+
+        <nav class="komsu" aria-label="Ders gezinme">
+          {onceki ? <a href={onceki.url}>← {onceki.baslik}</a> : <span />}
+          {sonraki && <a href={sonraki.url}>{sonraki.baslik} →</a>}
+        </nav>
+        <HataBildir kimlik={d.kimlik} />
+      </article>
+      <OturumCercevesi parca="cubuk" />
     </div>
-    <p id="kayit-uyarisi" class="uyari" role="alert" hidden>
-      İlerleme kaydedilemedi (tarayıcı depolaması kapalı olabilir).
-    </p>
-
-    <HataBildir kimlik={d.kimlik} />
-  </article>
+  </div>
 </Temel>
 
 <script>
@@ -78,10 +108,17 @@ const donem = DONEMLER.find((x) => x.no === d.donem);
 </script>
 
 <style>
-  .ders-ust { border-bottom: 1px solid var(--cizgi); padding-bottom: 0.8rem; }
-  .komsu { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; flex-wrap: wrap; }
-  .neden { background: var(--yuzey-2); border-radius: var(--r); padding: 0.2rem 1.1rem 0.4rem; margin-top: 1.2rem; }
+  .ders-ust { border-bottom: 1px solid var(--cizgi); padding-bottom: 0.6rem; margin-bottom: 1rem; }
+  .ders-ust h1 { margin: 0.3rem 0 0.2rem; }
+  .okuma { border-top: 6px solid var(--renk); }
+  .neden { background: var(--birincil-zemin); border-radius: var(--r-k); padding: 0.1rem 1.1rem 0.3rem; font-family: var(--yazi); font-size: 1rem; }
   .neden h2 { margin-top: 0.8rem; }
-  .bitir { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-top: 2rem; }
-  .uyari { color: var(--yanlis); font-weight: 600; }
+  .bitir { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-top: 2.2rem; font-family: var(--yazi); font-size: 1rem; }
+  .uyari { color: var(--yanlis); font-weight: 600; font-family: var(--yazi); }
+  .komsu { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--cizgi); font-size: 0.92rem; }
+  .icindekiler { padding: 1rem; }
+  .icindekiler ol { margin: 0.5rem 0 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.25rem; }
+  .icindekiler a { color: var(--metin); text-decoration: none; }
+  .icindekiler a:hover { color: var(--birincil); text-decoration: underline; }
+  .sayac { font-size: 0.85rem; margin: 0.7rem 0 0; }
 </style>

@@ -8,7 +8,7 @@ export interface SoruDurumu {
   seviye: number;
   /** Sorunun yeniden sorulacağı gün. */
   sonraki: Gun;
-  /** İlk puanlamadaki puan (XP için). v1 kayıtlarında yok; yoksa `puan` sayılır. */
+  /** İlk puanlamadaki puan. v1 kayıtlarında yok; yoksa `puan` sayılır. */
   ilkPuan?: Puan;
   /** Farklı günlerde kaç kez puanlandığı. Yoksa 1 sayılır. */
   puanSayisi?: number;

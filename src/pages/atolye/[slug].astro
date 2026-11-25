@@ -1,6 +1,9 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Temel from '../../layouts/Temel.astro';
+import DersVerisi from '../../components/DersVerisi.astro';
+import OturumCercevesi from '../../components/OturumCercevesi.astro';
+import KartOkundu from '../../components/KartOkundu.astro';
 import { dersUrl } from '../../lib/ders-listesi';
 import { satirIci } from '../../lib/satir-ici';
 
@@ -13,8 +16,12 @@ const { Content } = await render(k);
 const dersler = await getCollection('dersler');
 const ilgili = d.ilgiliDers ? dersler.find((x) => x.data.kimlik === d.ilgiliDers) : undefined;
 ---
-<Temel baslik={d.baslik} aciklama={d.sorun}>
-  <article>
+<Temel baslik={d.baslik} aciklama={d.sorun} duzen="okuma">
+  <DersVerisi />
+  <div class="okuma-izgara">
+  <aside class="okuma-yan"><OturumCercevesi parca="adimlar" /></aside>
+  <div class="okuma-ana">
+  <article class="okuma"><div class="okuma-metni">
     <p class="etiket">Atölye · Karar {String(d.no).padStart(3, '0')} · {d.tarih}</p>
     <h1>{d.baslik}</h1>
     <dl>
@@ -45,7 +52,12 @@ const ilgili = d.ilgiliDers ? dersler.find((x) => x.data.kimlik === d.ilgiliDers
       </details>
     </section>
     {ilgili && <p>İlgili ders: <a href={dersUrl(ilgili.data.kimlik)}>{ilgili.data.baslik}</a></p>}
+  </div>
+  <KartOkundu kimlik={`atolye:${k.id}`} />
   </article>
+  <OturumCercevesi parca="cubuk" />
+  </div>
+  </div>
 </Temel>
 <style>
   dt { font: 600 0.75rem/1 var(--yazi-kod); letter-spacing: 0.08em; text-transform: uppercase; color: var(--metin-soluk); margin-top: 1.3rem; }

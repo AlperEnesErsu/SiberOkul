@@ -3,9 +3,24 @@ import { satirIci } from '../lib/satir-ici';
 interface Props { aciklama: string; komutlar: string[]; soru: string }
 const { aciklama, komutlar, soru } = Astro.props;
 ---
-<section aria-labelledby="gorev-b">
+<section class="gorev" aria-labelledby="gorev-b">
   <h2 id="gorev-b">Terminal görevi</h2>
   <p set:html={satirIci(aciklama)} />
-  <pre><code>{komutlar.map((k) => `$ ${k}`).join('\n')}</code></pre>
-  <p><strong>Düşün:</strong> <Fragment set:html={satirIci(soru)} /></p>
+  <div class="pencere">
+    <div class="pencere-ust" aria-hidden="true">
+      <span class="d k"></span><span class="d s"></span><span class="d y"></span>
+      <span class="pencere-ad">ubuntu — bash</span>
+    </div>
+    <pre><code>{komutlar.map((k) => `$ ${k}`).join('\n')}</code></pre>
+  </div>
+  <p class="dusun"><strong>Düşün:</strong> <Fragment set:html={satirIci(soru)} /></p>
 </section>
+<style>
+  .pencere { border-radius: 12px; overflow: hidden; border: 1px solid #2b3040; box-shadow: var(--golge); margin: 1rem 0; }
+  .pencere-ust { display: flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.8rem; background: #232838; }
+  .d { width: 0.7rem; height: 0.7rem; border-radius: 50%; }
+  .k { background: #ff5f57; } .s { background: #febc2e; } .y { background: #28c840; }
+  .pencere-ad { margin-left: 0.6rem; font: 0.75rem var(--yazi-kod); color: #b8c0d4; }
+  .pencere pre { margin: 0; border-radius: 0; }
+  .dusun { font-family: var(--yazi); font-size: 1rem; }
+</style>

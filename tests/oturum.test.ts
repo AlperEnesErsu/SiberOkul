@@ -25,7 +25,7 @@ class Depo implements Storage {
 // Korur: yeni kullanıcının oturumunun ısınma, ders, kart, özet olmasını
 test('boş ilerleme planı', () => {
   const o = oturumPlanla(dersler, kartlar, bosIlerleme(), B);
-  expect(o).toMatchObject({ gun: B, adimlar: ['isinma', 'ders', 'kart', 'ozet'], konum: 0, ders: 'linux-001', tekrarlar: [], bitti: false, baslangicXp: 0 });
+  expect(o).toMatchObject({ gun: B, adimlar: ['isinma', 'ders', 'kart', 'ozet'], konum: 0, ders: 'linux-001', tekrarlar: [], bitti: false });
 });
 
 // Korur: zamanı gelen soruların tekrar adımına girmesini
@@ -35,7 +35,6 @@ test('tekrar adımı', () => {
   expect(o.adimlar).toEqual(['isinma', 'tekrar', 'ders', 'kart', 'ozet']);
   expect(o.tekrarlar).toEqual(['linux-001-s1']);
   expect(o.ders).toBe('linux-002');
-  expect(o.baslangicXp).toBe(50);
 });
 
 // Korur: yapılacak bir şey kalmayınca yalnız ısınma ve özetin olmasını

@@ -30,16 +30,9 @@ const aktifMi = (href: string) =>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={aciklama} />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <link rel="icon" href={`${kok}favicon.svg`} type="image/svg+xml" />
     <title>{baslik === 'SiberOkul' ? baslik : `${baslik} · SiberOkul`}</title>
-    <script is:inline>
-      // İlk boyamadan önce kayıtlı temayı uygula (yanıp sönmesin).
-      try {
-        var t = localStorage.getItem('siberokul.tema');
-        if (t === 'acik' || t === 'koyu') document.documentElement.dataset.tema = t;
-      } catch (e) {}
-    </script>
   </head>
   <body class={`duzen-${duzen}`}>
     <a class="atla gizli-ekran" href="#icerik">İçeriğe geç</a>
@@ -60,9 +53,6 @@ const aktifMi = (href: string) =>
             }
           </ul>
         </nav>
-        <button type="button" id="tema-dugmesi" class="tema-dugmesi" aria-label="Temayı değiştir">
-          <span aria-hidden="true" class="tema-simge">◐</span><span class="ad">Tema</span>
-        </button>
       </aside>
 
       <div class={`orta ${sagVar ? 'sagli' : ''}`}>
@@ -72,9 +62,6 @@ const aktifMi = (href: string) =>
         {sagVar && <aside class="sag" aria-label="Durum"><slot name="sag" /></aside>}
       </div>
     </div>
-    <script>
-      import '../scripts/tema.ts';
-    </script>
   </body>
 </html>
 
@@ -108,7 +95,6 @@ const aktifMi = (href: string) =>
   nav a:hover { background: var(--yuzey-2); color: var(--metin); }
   nav a[aria-current='page'] { background: var(--birincil-zemin); color: var(--metin); box-shadow: inset 3px 0 0 var(--birincil); }
   .simge { font-size: 1.15rem; width: 1.5rem; text-align: center; }
-  .tema-dugmesi { margin-top: auto; justify-content: flex-start; }
 
   .orta { margin-left: var(--yan-genislik); padding: 1.8rem clamp(1.2rem, 3vw, 3rem) 3rem; min-height: 100vh; }
   .orta.sagli { display: grid; grid-template-columns: minmax(0, 1fr) 20rem; gap: 1.8rem; align-items: start; }
@@ -126,7 +112,6 @@ const aktifMi = (href: string) =>
     nav ul { flex-direction: row; flex-wrap: wrap; justify-content: center; }
     nav a { padding: 0.45rem 0.7rem; }
     nav a[aria-current='page'] { box-shadow: inset 0 -3px 0 var(--birincil); }
-    .tema-dugmesi { margin-top: 0; }
     .orta { margin-left: 0; padding-top: 1.4rem; }
   }
   /* Telefon: alta sabit sekme çubuğu */
@@ -141,7 +126,6 @@ const aktifMi = (href: string) =>
     nav a { flex-direction: column; gap: 0.1rem; font-size: 0.68rem; padding: 0.35rem 0.4rem; }
     nav a[aria-current='page'] { box-shadow: none; }
     .marka { flex: 1; }
-    .tema-dugmesi .ad { display: none; }
     .orta { padding: 1rem 1rem 6rem; }
   }
 </style>

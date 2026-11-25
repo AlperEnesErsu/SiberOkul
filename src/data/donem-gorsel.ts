@@ -1,5 +1,5 @@
 // Her dönemin simgesi ve rengi. Renk yalnız zemin, kenar ve simge vurgusunda kullanılır; metin rengi
-// olarak kullanılmaz (iki temada da kontrastı garanti etmek için).
+// olarak kullanılmaz (kontrastı garanti etmek için).
 export const DONEM_GORSEL: Record<number, { simge: string; renk: string; bolge: string }> = {
   1: { simge: '🐧', renk: '#f08c00', bolge: 'Linux Ormanı' },
   2: { simge: '🌐', renk: '#1c7ed6', bolge: 'Ağ Limanı' },
