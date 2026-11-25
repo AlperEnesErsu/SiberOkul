@@ -137,7 +137,7 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .okuma-yan { position: sticky; top: 1.8rem; }
 .okuma-yan:empty { display: none; }
 @media (max-width: 1023px) {
-  .okuma-izgara { grid-template-columns: 1fr; }
+  .okuma-izgara { grid-template-columns: minmax(0, 1fr); }
   .okuma-yan { position: static; }
   .okuma-yan .icindekiler { display: none; }
 }
@@ -148,3 +148,10 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 @media (max-width: 1023px) {
   .okuma-yan:not(:has(> nav.oturum-adimlari:not([hidden]))) { display: none; }
 }
+
+/* Dar ekranda taşmayı önle: tablolar kendi içinde kayar, uzun satır içi kod kırılabilir */
+.okuma-metni table { display: block; max-width: 100%; overflow-x: auto; }
+:not(pre) > code { overflow-wrap: anywhere; }
+.okuma-metni img { max-width: 100%; height: auto; }
+/* Son güvenlik ağı: kaydırılabilir kutuların (kod, tablo) içeriği mobil tarayıcıda görünüm alanını genişletmesin */
+html, body { overflow-x: clip; }

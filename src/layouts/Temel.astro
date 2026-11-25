@@ -103,7 +103,7 @@ const aktifMi = (href: string) =>
 
   /* Tablet: gezinme üstte, sağ panel aşağıda */
   @media (max-width: 1279px) {
-    .orta.sagli { grid-template-columns: 1fr; }
+    .orta.sagli { grid-template-columns: minmax(0, 1fr); }
     .sag { position: static; display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
   }
   @media (max-width: 1023px) {

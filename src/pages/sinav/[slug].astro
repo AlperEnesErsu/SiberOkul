@@ -72,7 +72,8 @@ const anahtar = sinav.sorular.map((s) => s.dogru);
 <style>
   .okuma { border-top: 6px solid var(--renk); }
   .sorular { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.9rem; margin-top: 1.5rem; }
-  fieldset { border: 0; margin: 0; padding: 0; }
+  fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .secenek span, legend { overflow-wrap: anywhere; }
   legend { font-weight: 650; margin-bottom: 0.6rem; padding: 0; }
   .secenek {
     display: flex; align-items: flex-start; gap: 0.7rem;
