@@ -3,7 +3,6 @@ import { getCollection } from 'astro:content';
 import Temel from '../layouts/Temel.astro';
 import DersVerisi from '../components/DersVerisi.astro';
 import OturumCercevesi from '../components/OturumCercevesi.astro';
-import { ROZETLER } from '../lib/oyun';
 import { satirIci } from '../lib/satir-ici';
 import { sirala } from '../lib/icerik';
 import { dersUrl } from '../lib/ders-listesi';
@@ -66,16 +65,6 @@ const sorular = dersler.flatMap((d) => d.sorular.map((s) => ({ ...s, dersBaslik:
           <div class="kart buyuk-sayi"><span aria-hidden="true">📘</span><strong id="ozet-ders">0</strong><span>ders bitirdin</span></div>
           <div class="kart buyuk-sayi"><span aria-hidden="true">🔥</span><strong id="ozet-seri">0/5</strong><span>bu hafta</span></div>
         </div>
-        <h2>Rozetler</h2>
-        <ul class="ozet-rozetler">
-          {ROZETLER.map((r) => (
-            <li data-rozet={r.kimlik}>
-              <span class="rs" aria-hidden="true">{r.simge}</span>
-              <span><strong>{r.ad}</strong><br /><span class="soluk">{r.aciklama}</span></span>
-              <span class="yeni" hidden>Yeni!</span>
-            </li>
-          ))}
-        </ul>
         <p class="yarin" id="ozet-yarin"></p>
         <p id="ozet-bitti" hidden><a class="dugme" href={kok}>Ana sayfaya dön</a></p>
       </section>
@@ -106,10 +95,5 @@ const sorular = dersler.flatMap((d) => d.sorular.map((s) => ({ ...s, dersBaslik:
   .buyuk-sayi > span:first-child { font-size: 1.6rem; }
   .buyuk-sayi strong { font-size: 1.8rem; line-height: 1.1; }
   .buyuk-sayi > span:not(:first-child) { color: var(--metin-soluk); font-size: 0.9rem; }
-  .ozet-rozetler { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.6rem; }
-  .ozet-rozetler li { display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 0.9rem; border-radius: 12px; background: var(--yuzey-2); filter: grayscale(1); opacity: 0.55; font-size: 0.92rem; }
-  .ozet-rozetler li.kazanildi { filter: none; opacity: 1; background: var(--birincil-zemin); }
-  .rs { font-size: 1.6rem; }
-  .yeni { margin-left: auto; background: var(--seri); color: #fff; font-weight: 700; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 99px; }
   .yarin { font-weight: 650; font-size: 1.05rem; margin-top: 1.5rem; }
 </style>

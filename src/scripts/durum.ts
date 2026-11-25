@@ -1,10 +1,9 @@
-// Pano sayfalarının ortak durum özeti: seri, rozetler, bölge durumları.
+// Pano sayfalarının ortak durum özeti: seri, bölge durumları.
 import { bolgeDurumlari } from '../lib/bolge';
 import { ilerlemeOku } from '../lib/ilerleme/depo';
 import type { Ilerleme } from '../lib/ilerleme/model';
 import { seriHesapla } from '../lib/ilerleme/seri';
 import { bugunStr } from '../lib/ilerleme/tarih';
-import { rozetler, type RozetKimligi } from '../lib/oyun';
 import { dersVerisiniOku, yayimlananlar, type DersVerisi } from './ders-verisi';
 
 export interface Durum {
@@ -13,7 +12,6 @@ export interface Durum {
   bugun: string;
   seri: ReturnType<typeof seriHesapla>;
   bolgeler: ReturnType<typeof bolgeDurumlari>;
-  rozetler: RozetKimligi[];
 }
 
 export function durumHesapla(): Durum {
@@ -27,7 +25,6 @@ export function durumHesapla(): Durum {
     bugun,
     seri: seriHesapla(ilerleme.calisilanGunler, bugun),
     bolgeler,
-    rozetler: rozetler(ilerleme, bolgeler.includes('tamamlandi')),
   };
 }
 

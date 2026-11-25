@@ -90,3 +90,5 @@ Ses, animasyonlu karakter, liderlik tablosu, hesap/senkron.
   değiller) kalıyor.
 - Kayıt alanları (`ilkPuan`, `puanSayisi`, `sonGun`, `okunanKartlar`) kalıyor: tekrar sayısı, oturum
   kapıları ve özet bunlara dayanıyor.
+- **Rozetler de kaldırıldı** (Alper, 2026-11-25). Ana sayfada seri ve biten ders sayısı; oturum
+  özetinde bugünkü çalışma ve yarının dersi.

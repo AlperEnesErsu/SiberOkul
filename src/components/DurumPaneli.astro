@@ -1,5 +1,4 @@
 ---
-import { ROZETLER } from '../lib/oyun';
 const gunler = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'];
 ---
 <section class="kart panel" aria-labelledby="hafta-b">
@@ -15,19 +14,6 @@ const gunler = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'];
   <p class="etiket" id="tekrar-p-b">Tekrar</p>
   <p class="tekrar-sayi"><strong id="tekrar-sayisi">0</strong> soru bugün tekrar bekliyor</p>
   <p class="soluk kucuk">Tekrarlar günlük oturumun içinde gelir.</p>
-</section>
-
-<section class="kart panel" aria-labelledby="rozet-b">
-  <p class="etiket" id="rozet-b">Rozetler <span id="rozet-sayi" class="soluk"></span></p>
-  <ul class="rozetler">
-    {ROZETLER.map((r) => (
-      <li data-rozet={r.kimlik} title={r.aciklama}>
-        <span class="rozet-simge" aria-hidden="true">{r.simge}</span>
-        <span class="rozet-ad">{r.ad}</span>
-        <span class="gizli-ekran rozet-durum">kilitli</span>
-      </li>
-    ))}
-  </ul>
 </section>
 
 <script>
@@ -47,13 +33,6 @@ const gunler = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'];
   document.getElementById('tekrar-sayisi')!.textContent = String(
     bugunSec(d.veri.dersler, d.ilerleme, d.bugun).tekrarlar.length,
   );
-  document.getElementById('rozet-sayi')!.textContent = `${d.rozetler.length}/5`;
-  for (const k of d.rozetler) {
-    const li = document.querySelector<HTMLElement>(`[data-rozet="${k}"]`);
-    li?.classList.add('kazanildi');
-    const durum = li?.querySelector('.rozet-durum');
-    if (durum) durum.textContent = 'kazanıldı';
-  }
 </script>
 
 <style>
@@ -66,9 +45,4 @@ const gunler = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'];
   .hafta li.dolu .nokta { background: var(--seri); border-color: var(--seri); }
   .hafta li.bugun .nokta { outline: 2px solid var(--birincil); outline-offset: 2px; }
   .g { font-size: 0.72rem; color: var(--metin-soluk); }
-  .rozetler { list-style: none; padding: 0; margin: 0.6rem 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(4.6rem, 1fr)); gap: 0.5rem; }
-  .rozetler li { text-align: center; padding: 0.5rem 0.2rem; border-radius: 11px; background: var(--yuzey-2); filter: grayscale(1); opacity: 0.55; }
-  .rozetler li.kazanildi { filter: none; opacity: 1; background: var(--birincil-zemin); }
-  .rozet-simge { display: block; font-size: 1.5rem; }
-  .rozet-ad { font-size: 0.72rem; font-weight: 600; }
 </style>

@@ -11,7 +11,6 @@ const { dersler, kartlar, donemler } = d.veri;
 yaz('#tarih', new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' }));
 yaz('#seri', String(d.seri.seriHafta));
 yaz('#biten-ders', String(Object.keys(d.ilerleme.bitenDersler).length));
-yaz('#rozet-ozet', `${d.rozetler.length}/5`);
 
 // Oturum kapısı
 // Sayfası bulunamayan (ör. ders silinmiş) oturum geçersiz sayılır ve yeniden planlanır.

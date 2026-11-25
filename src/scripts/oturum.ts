@@ -8,7 +8,6 @@ import { durumHesapla, yaz } from './durum';
 import { ADIM_ADI, ADIM_SIMGE, adimAdresi, tahminiSure } from './oturum-ortak';
 import { puanlamayiBagla, puanlariCiz } from './puanlama';
 
-const GORULEN = 'siberokul.gorulenRozetler';
 const bugun = bugunStr();
 const bolumler = ['oturum-yok', 'adim-isinma', 'adim-tekrar', 'adim-ozet'] as const;
 const goster = (id: (typeof bolumler)[number]) => {
@@ -68,24 +67,6 @@ function ciz() {
     yaz('#ozet-ders', String(Object.values(i.bitenDersler).filter((g) => g === bugun).length));
     yaz('#ozet-seri', `${seriHesapla(i.calisilanGunler, bugun).buHaftaGun}/5`);
 
-    let gorulen: string[] = [];
-    try {
-      gorulen = JSON.parse(localStorage.getItem(GORULEN) ?? '[]');
-    } catch {
-      gorulen = [];
-    }
-    for (const k of d.rozetler) {
-      const li = document.querySelector<HTMLElement>(`.ozet-rozetler [data-rozet="${k}"]`);
-      li?.classList.add('kazanildi');
-      if (!gorulen.includes(k)) li?.querySelector<HTMLElement>('.yeni')?.removeAttribute('hidden');
-    }
-    if (oturum.bitti) {
-      try {
-        localStorage.setItem(GORULEN, JSON.stringify(d.rozetler));
-      } catch {
-        /* yalnız "Yeni!" etiketi etkilenir */
-      }
-    }
     const yarin = bugunSec(d.veri.dersler, i, bugun).ders;
     yaz('#ozet-yarin', yarin ? `Yarın: Ders ${String(yarin.sira).padStart(3, '0')} · ${yarin.baslik}` : 'Yeni ders yarın burada.');
     document.getElementById('ozet-bitti')!.hidden = !oturum.bitti;

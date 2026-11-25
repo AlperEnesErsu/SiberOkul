@@ -38,7 +38,7 @@ test('ertesi gün tekrar', () => {
   expect(puanla(ilk, 'bildim', '2026-11-26')).toMatchObject({ ilkPuan: 'bilemedim', puanSayisi: 2, sonGun: '2026-11-26' });
 });
 
-// Korur: aynı gün ikinci puanlamanın tekrar sayılmamasını (rozet sayacı şişmesin)
+// Korur: aynı gün ikinci puanlamanın tekrar sayılmamasını (tekrar sayısı şişmesin)
 test('aynı gün ikinci puan', () => {
   const ilk = puanla(undefined, 'bilemedim', B);
   expect(puanla(ilk, 'bildim', B)).toMatchObject({ ilkPuan: 'bilemedim', puanSayisi: 1, puan: 'bildim' });
