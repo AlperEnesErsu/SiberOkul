@@ -21,6 +21,9 @@ gorev:
     - cd
     - ls -a
   soru: "`ls` ile `ls -a` arasındaki fark ne? Noktayla başlayan dosyalar kimin için orada?"
+  telefon:
+    soru: "`/home/ayse/notlar` dizinindesin. Sırayla `cd ..`, `cd ..`, `pwd` yazarsan ekranda ne görürsün?"
+    cevap: "`/home`. İlk `cd ..` seni `/home/ayse`ye, ikincisi `/home`a çıkarır; `pwd` bulunduğun yeri yazar."
 sorular:
   - id: linux-002-s1
     soru: "`/var/log` ile `var/log` arasındaki fark nedir?"

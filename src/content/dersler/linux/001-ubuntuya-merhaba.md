@@ -17,6 +17,9 @@ gorev:
     - ls
     - echo "Merhaba SiberOkul"
   soru: "`pwd` çıktısındaki yol ile istem satırındaki `~` işareti arasında nasıl bir ilişki var?"
+  telefon:
+    soru: "İstem satırı `ayse@lab:~$` ise `whoami` ve `pwd` komutları büyük ihtimalle ne yazar?"
+    cevap: "`whoami` → `ayse`. `pwd` → `/home/ayse`, çünkü `~` kullanıcının ev dizini demek ve Ubuntu'da ev dizinleri `/home/<kullanıcı>` altındadır."
 sorular:
   - id: linux-001-s1
     soru: "`kullanici@makine:~$` istem satırında `kullanici`, `makine`, `~` ve `$` ne anlatır?"
