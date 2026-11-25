@@ -1,13 +1,14 @@
 // Bölge sınavı sayfası: cevapları topla, puanla, doğru/yanlışı ve açıklamaları göster, sonucu kaydet.
 import { ilerlemeOku } from '../lib/ilerleme/depo';
 import { bugunStr } from '../lib/ilerleme/tarih';
-import { GECME_YUZDESI, sinavKaydet, sinavSonucu } from '../lib/sinav';
+import { GECME_YUZDESI, sinavKaydet, sinavSonucu, sinavYanlislariniKaydet } from '../lib/sinav';
 import { kaydetVeBildir } from './puanlama';
 
 const makale = document.querySelector<HTMLElement>('article[data-sinav]');
 
 if (makale) {
   const donem = Number(makale.dataset.sinav);
+  const slug = makale.dataset.slug!;
   const anahtar: number[] = JSON.parse(makale.dataset.anahtar ?? '[]');
   const bitir = document.getElementById('sinavi-bitir') as HTMLButtonElement;
   const yeniden = document.getElementById('yeniden') as HTMLButtonElement;
@@ -45,13 +46,17 @@ if (makale) {
       li.querySelectorAll<HTMLLabelElement>('.secenek')[anahtar[i]]?.classList.add('dogru-secenek');
       li.querySelectorAll<HTMLInputElement>('input').forEach((x) => (x.disabled = true));
     });
-    const kaydedildi = kaydetVeBildir(sinavKaydet(ilerlemeOku(), donem, sonuc.yuzde, bugunStr()));
+    const bugun = bugunStr();
+    const dogruMu = anahtar.map((dogru, i) => c[i] === dogru);
+    // Yanlışlar aralıklı tekrara girer; sonraki günlerde oturumun tekrar adımında gelir.
+    const kaydedildi = kaydetVeBildir(sinavYanlislariniKaydet(sinavKaydet(ilerlemeOku(), donem, sonuc.yuzde, bugun), slug, dogruMu, bugun));
     const kutu = document.getElementById('sonuc-kutu')!;
     kutu.hidden = false;
     document.getElementById('sonuc-yuzde')!.textContent = `%${sonuc.yuzde}`;
     document.getElementById('sonuc-metin')!.textContent =
       `${sonuc.toplam} sorudan ${sonuc.dogru} doğru. ` +
       (sonuc.gecti ? 'Geçtin! Sonraki bölge açıldı. 🎉' : `Geçmek için %${GECME_YUZDESI} gerekiyor. Açıklamaları oku, sonra yeniden dene.`) +
+      (sonuc.dogru < sonuc.toplam ? ' Yanlış yaptığın sorular sonraki günlerde tekrar olarak karşına çıkacak.' : '') +
       (kaydedildi ? '' : ' (Sonuç kaydedilemedi: tarayıcı depolaması kapalı olabilir.)');
     bitir.hidden = true;
     yeniden.hidden = false;

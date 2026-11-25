@@ -1,6 +1,7 @@
 ---
 import { satirIci } from '../lib/satir-ici';
-interface Props { sorular: { id: string; soru: string; cevap: string }[] }
+import Ipucu from './Ipucu.astro';
+interface Props { sorular: { id: string; soru: string; cevap: string; ipucu?: string }[] }
 const { sorular } = Astro.props;
 ---
 <section aria-labelledby="sorular-b">
@@ -10,6 +11,7 @@ const { sorular } = Astro.props;
     {sorular.map((s) => (
       <li class="kart soru" data-soru-id={s.id} id={`soru-${s.id}`}>
         <p class="soru-metni" set:html={satirIci(s.soru)} />
+        <Ipucu metin={s.ipucu} />
         <details>
           <summary>Cevabı göster</summary>
           <p class="cevap" set:html={satirIci(s.cevap)} />

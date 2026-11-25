@@ -1,0 +1,32 @@
+---
+// Dersin sonunda bu derste geçen terimlerin kısa tanımları; tamamı Sözlük sayfasında.
+import { butunTerimler, terimKimligi } from '../lib/sozluk';
+interface Props { adlar?: string[] }
+const { adlar = [] } = Astro.props;
+const hepsi = await butunTerimler();
+const bulunan = adlar
+  .map((ad) => hepsi.find((t) => t.terim.toLocaleLowerCase('tr-TR') === ad.toLocaleLowerCase('tr-TR')))
+  .filter((t): t is NonNullable<typeof t> => Boolean(t));
+const kok = import.meta.env.BASE_URL;
+---
+{bulunan.length > 0 && (
+  <section class="terimler" aria-labelledby="terim-b">
+    <h2 id="terim-b">📖 Bu dersteki terimler</h2>
+    <dl>
+      {bulunan.map((t) => (
+        <div>
+          <dt>{t.terim}{t.ingilizce && <span class="soluk"> ({t.ingilizce})</span>}</dt>
+          <dd>{t.tanim}</dd>
+        </div>
+      ))}
+    </dl>
+    <p><a href={`${kok}sozluk/#${terimKimligi(bulunan[0].terim)}`}>Bütün sözlük →</a></p>
+  </section>
+)}
+<style>
+  .terimler { font-family: var(--yazi); font-size: 0.98rem; }
+  dl { margin: 0.6rem 0; }
+  dl > div { padding: 0.5rem 0; border-bottom: 1px solid var(--cizgi); }
+  dt { font-weight: 700; }
+  dd { margin: 0.15rem 0 0; }
+</style>

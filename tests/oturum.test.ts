@@ -136,3 +136,11 @@ test('sınav alanı kaydı', () => {
   depo.setItem(OTURUM_ANAHTARI, JSON.stringify({ ...o, sinav: 3 }));
   expect(oturumOku(B, depo)).toBeNull();
 });
+
+// Korur: sınav yanlışlarının oturumun tekrar adımına girmesini
+test('sınav yanlışı tekrarda', () => {
+  const i = { ...bosIlerleme(), sorular: { 'sinav-linux-3': { puan: 'bilemedim' as const, seviye: 0, sonraki: B } } };
+  const o = oturumPlanla(dersler, kartlar, i, B, { donemler: [], sinavDonemleri: [], soruIdleri: ['sinav-linux-3'] });
+  expect(o.adimlar).toContain('tekrar');
+  expect(o.tekrarlar).toEqual(['sinav-linux-3']);
+});

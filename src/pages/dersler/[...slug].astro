@@ -12,6 +12,9 @@ import { dersOzetleri, dersUrl } from '../../lib/ders-listesi';
 import { DONEMLER } from '../../data/donemler';
 import { DONEM_GORSEL } from '../../data/donem-gorsel';
 import { satirIci } from '../../lib/satir-ici';
+import HizliKontrol from '../../components/HizliKontrol.astro';
+import DersKutulari from '../../components/DersKutulari.astro';
+import Terimler from '../../components/Terimler.astro';
 
 export async function getStaticPaths() {
   const ozetler = await dersOzetleri(); // tekrar eden kimlik varsa build burada durur
@@ -33,7 +36,11 @@ const gorsel = DONEM_GORSEL[d.donem];
 const icindekiler = [
   { id: 'neden-b', ad: 'Neden önemli' },
   { id: 'kavram-b', ad: 'Kavram' },
+  ...(d.sema ? [{ id: 'sema-b', ad: 'Şema' }] : []),
+  ...(d.hizliKontrol?.length ? [{ id: 'hizli-b', ad: 'Hızlı kontrol' }] : []),
   { id: 'analoji-b', ad: 'Analoji' },
+  ...(d.sikHatalar?.length ? [{ id: 'hata-b', ad: 'Sık hatalar' }] : []),
+  ...(d.olay ? [{ id: 'olay-b', ad: 'Gerçek olay' }] : []),
   { id: 'gorev-b', ad: 'Terminal görevi' },
   { id: 'sorular-b', ad: 'Sorular' },
   ...(d.derinDalis?.length ? [{ id: 'derin-b', ad: 'Derin dalış' }] : []),
@@ -77,9 +84,14 @@ const icindekiler = [
             <div class="kavram"><Content /></div>
           </section>
 
+          <DersKutulari tur="sema" sema={d.sema} />
+          {d.hizliKontrol && d.hizliKontrol.length > 0 && <HizliKontrol sorular={d.hizliKontrol} />}
           <Analoji {...d.analoji} />
+          <DersKutulari tur="sikHatalar" sikHatalar={d.sikHatalar} />
+          <DersKutulari tur="olay" olay={d.olay} />
           <TerminalGorevi {...d.gorev} />
           <Sorular sorular={d.sorular} />
+          <Terimler adlar={d.terimler} />
           {d.derinDalis && d.derinDalis.length > 0 && <DerinDalis ogeler={d.derinDalis} />}
 
           <div class="bitir">

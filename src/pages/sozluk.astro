@@ -1,0 +1,60 @@
+---
+import Temel from '../layouts/Temel.astro';
+import { butunTerimler, terimKimligi } from '../lib/sozluk';
+import { DONEMLER } from '../data/donemler';
+import { DONEM_GORSEL } from '../data/donem-gorsel';
+import { dersUrl } from '../lib/ders-listesi';
+
+const terimler = await butunTerimler();
+---
+<Temel baslik="Sözlük" aciklama="Derslerde geçen terimlerin kısa, sade tanımları." duzen="okuma">
+  <article class="okuma">
+    <h1>📖 Sözlük</h1>
+    <p class="soluk">{terimler.length} terim. Aramak için yazmaya başla.</p>
+    <label class="gizli-ekran" for="ara">Terim ara</label>
+    <input id="ara" type="search" placeholder="ör. hash, port, RBAC" autocomplete="off" />
+    <dl class="liste" id="liste">
+      {terimler.map((t) => (
+        <div id={terimKimligi(t.terim)} data-ara={`${t.terim} ${t.ingilizce ?? ''} ${t.tanim}`.toLocaleLowerCase('tr-TR')}>
+          <dt>
+            <span aria-hidden="true">{DONEM_GORSEL[t.donem]?.simge}</span> {t.terim}
+            {t.ingilizce && <span class="soluk"> ({t.ingilizce})</span>}
+          </dt>
+          <dd>
+            {t.tanim}
+            {t.ders && <> <a href={dersUrl(t.ders)}>Ders →</a></>}
+          </dd>
+        </div>
+      ))}
+    </dl>
+    <p id="bos" class="soluk" hidden>Bu aramayla eşleşen terim yok.</p>
+    <p class="soluk kucuk">Bölgeler: {DONEMLER.map((d) => `${DONEM_GORSEL[d.no].simge} ${d.ad}`).join(' · ')}</p>
+  </article>
+</Temel>
+
+<script>
+  const ara = document.getElementById('ara') as HTMLInputElement;
+  const ogeler = [...document.querySelectorAll<HTMLElement>('#liste > div')];
+  ara.addEventListener('input', () => {
+    const q = ara.value.trim().toLocaleLowerCase('tr-TR');
+    let gorunen = 0;
+    for (const o of ogeler) {
+      const eslesir = !q || (o.dataset.ara ?? '').includes(q);
+      o.hidden = !eslesir;
+      if (eslesir) gorunen++;
+    }
+    document.getElementById('bos')!.hidden = gorunen > 0;
+  });
+</script>
+
+<style>
+  input[type='search'] {
+    width: 100%; font: inherit; padding: 0.7rem 0.9rem; margin: 0.6rem 0 1rem;
+    border: 1px solid var(--cizgi); border-radius: 11px; background: var(--yuzey); color: var(--metin);
+  }
+  .liste > div { padding: 0.7rem 0; border-bottom: 1px solid var(--cizgi); scroll-margin-top: 5rem; }
+  .liste > div:target { background: var(--birincil-zemin); border-radius: 8px; padding-inline: 0.6rem; }
+  dt { font-weight: 700; }
+  dd { margin: 0.2rem 0 0; }
+  .kucuk { font-size: 0.85rem; margin-top: 1.5rem; }
+</style>

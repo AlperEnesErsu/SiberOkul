@@ -17,9 +17,11 @@ export function bugunSec(
   dersler: DersOzet[],
   ilerleme: Ilerleme,
   bugun: Gun,
+  /** Ders dışı tekrar soruları (ör. sınav yanlışları) için bilinen kimlikler. */
+  ekSoruIdleri: Iterable<string> = [],
 ): { ders: DersOzet | null; tekrarlar: string[] } {
   const ders = dersler.find((d) => !(d.kimlik in ilerleme.bitenDersler)) ?? null;
-  const bilinenSorular = new Set(dersler.flatMap((d) => d.soruIdleri));
+  const bilinenSorular = new Set([...dersler.flatMap((d) => d.soruIdleri), ...ekSoruIdleri]);
   const tekrarlar = Object.entries(ilerleme.sorular)
     .filter(([id, durum]) => bilinenSorular.has(id) && durum.sonraki <= bugun)
     .sort(([, a], [, b]) => (a.sonraki < b.sonraki ? -1 : a.sonraki > b.sonraki ? 1 : 0))

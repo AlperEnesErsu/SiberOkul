@@ -35,6 +35,8 @@ export interface Oturum {
 export interface SinavBilgisi {
   donemler: { no: number; planlananDers: number }[];
   sinavDonemleri: number[];
+  /** Sınav sorularının tekrar kimlikleri (yanlışlar tekrara girer). */
+  soruIdleri?: string[];
 }
 
 export const OTURUM_ANAHTARI = 'siberokul.oturum';
@@ -58,7 +60,7 @@ export function oturumPlanla(
   bugun: Gun,
   sinavBilgisi?: SinavBilgisi,
 ): Oturum {
-  const secim = bugunSec(dersler, i, bugun);
+  const secim = bugunSec(dersler, i, bugun, sinavBilgisi?.soruIdleri ?? []);
   const { tekrarlar } = secim;
   // Bitmiş bir bölgenin sınavı geçilmeden sonraki bölgenin dersine geçilmez.
   const sinav = sinavBilgisi ? bekleyenSinav(dersler, sinavBilgisi.donemler, i, sinavBilgisi.sinavDonemleri) : null;

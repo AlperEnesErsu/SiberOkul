@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { bekleyenSinav, GECME_YUZDESI, sinavKaydet, sinavSonucu } from '../src/lib/sinav';
+import { bekleyenSinav, GECME_YUZDESI, sinavKaydet, sinavSonucu, sinavSoruId, sinavYanlislariniKaydet } from '../src/lib/sinav';
 import { bosIlerleme, type Ilerleme } from '../src/lib/ilerleme/model';
 import { ilerlemeyiDogrula } from '../src/lib/ilerleme/yedek';
 import type { DersOzet } from '../src/lib/ilerleme/bugun';
@@ -62,3 +62,25 @@ test('sınavı olmayan bölge', () => {
 test('eksik yayın', () => {
   expect(bekleyenSinav([d(1, 1)], donemler, bitir(bosIlerleme(), 'd1-001'), [1])).toBeNull();
 });
+
+// Korur: sınavda yanlış yapılan sorunun tekrar listesine "bilemedim" olarak girmesini
+test('yanlışlar tekrara girer', () => {
+  const i = sinavYanlislariniKaydet(bosIlerleme(), 'linux', [true, false, true, false], B);
+  expect(Object.keys(i.sorular).sort()).toEqual([sinavSoruId('linux', 2), sinavSoruId('linux', 4)]);
+  expect(i.sorular[sinavSoruId('linux', 2)]).toMatchObject({ puan: 'bilemedim', sonraki: '2026-11-26' });
+});
+
+// Korur: daha önce yanlış yapılıp bu sefer doğru cevaplanan sorunun ilerlemesini
+test('düzeltilen yanlış ilerler', () => {
+  let i = sinavYanlislariniKaydet(bosIlerleme(), 'linux', [false], '2026-11-24');
+  i = sinavYanlislariniKaydet(i, 'linux', [true], B);
+  expect(i.sorular[sinavSoruId('linux', 1)]).toMatchObject({ puan: 'bildim', seviye: 1 });
+});
+
+// Korur: hiç yanlış yapılmamış doğru cevapların tekrar listesini doldurmamasını
+test('doğrular eklenmez', () => {
+  expect(sinavYanlislariniKaydet(bosIlerleme(), 'ag', [true, true], B).sorular).toEqual({});
+});
+
+// Korur: sınav soru kimliğinin biçimini (oturumun tekrar adımı bu kimlikle soruyu bulur)
+test('sınav soru kimliği', () => expect(sinavSoruId('ag', 3)).toBe('sinav-ag-3'));

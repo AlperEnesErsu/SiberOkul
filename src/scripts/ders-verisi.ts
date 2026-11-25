@@ -9,11 +9,13 @@ export interface DersVerisi {
   kartlar: KartOzet[];
   /** Sınavı yazılmış dönemlerin numaraları. */
   sinavDonemleri: number[];
+  /** Sınav sorularının tekrar kimlikleri. */
+  sinavSoruIdleri: string[];
 }
 
 export function dersVerisiniOku(): DersVerisi {
   const el = document.getElementById('ders-listesi');
-  return el?.textContent ? JSON.parse(el.textContent) : { dersler: [], donemler: [], kartlar: [], sinavDonemleri: [] };
+  return el?.textContent ? JSON.parse(el.textContent) : { dersler: [], donemler: [], kartlar: [], sinavDonemleri: [], sinavSoruIdleri: [] };
 }
 
 /** Dönem no → o dönemde yayımlanmış ders kimlikleri. */

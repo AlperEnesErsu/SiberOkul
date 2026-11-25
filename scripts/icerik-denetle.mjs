@@ -2,6 +2,8 @@
 // denetler ve bütün sorunları tek seferde listeler (build ilk hatada durur). Kullanım:
 //   node scripts/icerik-denetle.mjs            → hepsi
 //   node scripts/icerik-denetle.mjs ag         → yalnız bir bölge (ders + sınav + o önekli efsaneler)
+//   node scripts/icerik-denetle.mjs ag --tam   → zenginleştirme alanları da zorunlu (ipucu, hızlı kontrol,
+//                                                 sık hata, terimler; sınavda ipucu)
 // Not: asıl kapı yine `npm run build` (src/content.config.ts); bu araç hızlı ön kontrol içindir.
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -10,7 +12,10 @@ import YAML from 'yaml';
 
 const KOK = fileURLToPath(new URL('..', import.meta.url));
 const ICERIK = join(KOK, 'src', 'content');
-const filtre = process.argv[2];
+const argumanlar = process.argv.slice(2);
+const tam = argumanlar.includes('--tam');
+const filtre = argumanlar.find((a) => !a.startsWith('--'));
+const dersTerimleri = [];
 const sorunlar = [];
 const sorun = (dosya, mesaj) => sorunlar.push(`${dosya}: ${mesaj}`);
 
@@ -51,7 +56,32 @@ function dersDenetle(yol, ad) {
     if (o?.url !== undefined && !httpsMi(o.url)) sorun(ad, `derinDalis[${i}].url https olmalı`);
   }
   if (/<script|<iframe|javascript:/i.test(govde)) sorun(ad, 'gövdede ham HTML/script var');
+  (d.sorular ?? []).forEach((q, i) => { if (q?.ipucu !== undefined && !metinMi(q.ipucu, 5)) sorun(ad, `sorular[${i}].ipucu çok kısa`); });
+  (d.hizliKontrol ?? []).forEach((q, i) => secmeliDenetle(ad, `hizliKontrol[${i}]`, q));
+  if ((d.hizliKontrol ?? []).length > 3) sorun(ad, 'hizliKontrol en çok 3 soru');
+  (d.sikHatalar ?? []).forEach((h, i) => { if (!metinMi(h?.hata, 5) || !metinMi(h?.dogrusu, 5)) sorun(ad, `sikHatalar[${i}] hata/dogrusu eksik`); });
+  if (d.olay !== undefined) {
+    const o = d.olay;
+    if (!metinMi(o.baslik) || !Number.isInteger(o.yil) || !metinMi(o.ozet, 20) || !metinMi(o.ders, 10)) sorun(ad, 'olay { baslik, yil, ozet, ders, kaynak } eksik');
+    if (!httpsMi(o.kaynak?.url) || !metinMi(o.kaynak?.ad)) sorun(ad, 'olay.kaynak { ad, url(https) } eksik');
+  }
+  if (d.sema !== undefined && (!metinMi(d.sema.baslik) || !Array.isArray(d.sema.adimlar) || d.sema.adimlar.length < 2 || d.sema.adimlar.some((a) => !metinMi(a?.etiket) || typeof a?.aciklama !== 'string'))) sorun(ad, 'sema { baslik, adimlar[{etiket, aciklama}] (2-10) } hatalı');
+  for (const t of d.terimler ?? []) dersTerimleri.push([ad, t]);
+  if (tam) {
+    (d.sorular ?? []).forEach((q, i) => { if (!metinMi(q?.ipucu, 5)) sorun(ad, `[tam] sorular[${i}].ipucu eksik`); });
+    if (!(d.hizliKontrol ?? []).length) sorun(ad, '[tam] hizliKontrol eksik (1-2 soru)');
+    if (!(d.sikHatalar ?? []).length) sorun(ad, '[tam] sikHatalar eksik');
+    if (!(d.terimler ?? []).length) sorun(ad, '[tam] terimler eksik');
+  }
   return d;
+}
+
+function secmeliDenetle(ad, yer, q) {
+  if (!metinMi(q?.soru, 5) || !metinMi(q?.aciklama, 5)) sorun(ad, `${yer} soru/aciklama eksik`);
+  if (!Array.isArray(q?.secenekler) || q.secenekler.length < 2 || q.secenekler.length > 5) sorun(ad, `${yer}.secenekler 2-5 olmalı`);
+  else if (q.secenekler.some((x) => typeof x !== 'string')) sorun(ad, `${yer}.secenekler metin olmalı`);
+  if (!Number.isInteger(q?.dogru) || q.dogru < 0 || q.dogru >= (q?.secenekler?.length ?? 0)) sorun(ad, `${yer}.dogru geçersiz`);
+  if (q?.ipucu !== undefined && !metinMi(q.ipucu, 5)) sorun(ad, `${yer}.ipucu çok kısa`);
 }
 
 function sinavDenetle(yol, ad) {
@@ -64,6 +94,7 @@ function sinavDenetle(yol, ad) {
     if (!Array.isArray(q?.secenekler) || q.secenekler.length < 2 || q.secenekler.length > 5) sorun(ad, `sorular[${i}].secenekler 2-5 olmalı`);
     else if (q.secenekler.some((x) => typeof x !== 'string')) sorun(ad, `sorular[${i}].secenekler metin olmalı`);
     if (!Number.isInteger(q?.dogru) || q.dogru < 0 || q.dogru >= (q?.secenekler?.length ?? 0)) sorun(ad, `sorular[${i}].dogru geçersiz`);
+    if (tam && !metinMi(q?.ipucu, 5)) sorun(ad, `[tam] sorular[${i}].ipucu eksik`);
   });
 }
 
@@ -110,6 +141,29 @@ for (const f of dosyalar(join(ICERIK, 'sinavlar'))) {
 for (const f of dosyalar(join(ICERIK, 'efsaneler'))) {
   if (filtre && !f.startsWith(`${filtre}-`)) continue;
   calistir(join(ICERIK, 'efsaneler', f), `efsaneler/${f}`, efsaneDenetle);
+}
+
+// Sözlük: dosya biçimi ve derslerin andığı terimlerin sözlükte bulunması
+const sozlukTerimleri = new Set();
+for (const f of dosyalar(join(ICERIK, 'sozluk'))) {
+  const ad = `sozluk/${f}`;
+  calistir(join(ICERIK, 'sozluk', f), ad, (yol) => {
+    const { veri } = frontmatter(yol);
+    if (!Number.isInteger(veri.donem)) sorun(ad, 'donem eksik');
+    if (!Array.isArray(veri.terimler) || !veri.terimler.length) sorun(ad, 'terimler boş');
+    for (const [i, t] of (veri.terimler ?? []).entries()) {
+      if (!metinMi(t?.terim, 2) || !metinMi(t?.tanim, 10)) sorun(ad, `terimler[${i}] terim/tanim eksik`);
+      const k = String(t?.terim ?? '').toLocaleLowerCase('tr-TR');
+      if (sozlukTerimleri.has(k)) sorun(ad, `terim iki kez tanımlanmış: ${t.terim}`);
+      sozlukTerimleri.add(k);
+      if (t?.ders !== undefined && !/^[a-z]+-\d{3}$/.test(t.ders)) sorun(ad, `terimler[${i}].ders biçimi geçersiz`);
+    }
+  });
+}
+if (sozlukTerimleri.size) {
+  for (const [ad, t] of dersTerimleri) {
+    if (!sozlukTerimleri.has(String(t).toLocaleLowerCase('tr-TR'))) sorun(ad, `terim sözlükte yok: ${t}`);
+  }
 }
 
 if (sorunlar.length) {

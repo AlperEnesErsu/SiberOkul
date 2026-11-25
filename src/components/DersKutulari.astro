@@ -1,0 +1,71 @@
+---
+// Ders içi kutular: akış şeması, sık yapılan hatalar ve gerçek olay. Her biri isteğe bağlı.
+import { satirIci } from '../lib/satir-ici';
+interface Props {
+  tur: 'sema' | 'sikHatalar' | 'olay';
+  sema?: { baslik: string; adimlar: { etiket: string; aciklama: string }[] };
+  sikHatalar?: { hata: string; dogrusu: string }[];
+  olay?: { baslik: string; yil: number; ozet: string; ders: string; kaynak: { ad: string; url: string } };
+}
+const { tur, sema, sikHatalar, olay } = Astro.props;
+---
+{tur === 'sema' && sema && (
+  <section class="sema" aria-labelledby="sema-b">
+    <h2 id="sema-b">Şema: {sema.baslik}</h2>
+    <ol class="akis">
+      {sema.adimlar.map((a, i) => (
+        <li>
+          <span class="no" aria-hidden="true">{i + 1}</span>
+          <div><strong set:html={satirIci(a.etiket)} /><br /><span class="soluk" set:html={satirIci(a.aciklama)} /></div>
+        </li>
+      ))}
+    </ol>
+  </section>
+)}
+
+{tur === 'sikHatalar' && sikHatalar && sikHatalar.length > 0 && (
+  <section class="kutu hatalar" aria-labelledby="hata-b">
+    <h2 id="hata-b">⚠️ Sık yapılan hatalar</h2>
+    <ul>
+      {sikHatalar.map((h) => (
+        <li>
+          <p class="yanlis-satir"><span aria-hidden="true">✗</span> <span set:html={satirIci(h.hata)} /></p>
+          <p class="dogru-satir"><span aria-hidden="true">✓</span> <span set:html={satirIci(h.dogrusu)} /></p>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+{tur === 'olay' && olay && (
+  <section class="kutu olay" aria-labelledby="olay-b">
+    <p class="etiket">Gerçek olay · {olay.yil}</p>
+    <h2 id="olay-b">📰 {olay.baslik}</h2>
+    <p set:html={satirIci(olay.ozet)} />
+    <p><strong>Ders:</strong> <span set:html={satirIci(olay.ders)} /></p>
+    <p class="soluk kaynak">Kaynak: <a href={olay.kaynak.url} rel="noopener noreferrer" target="_blank">{olay.kaynak.ad}</a></p>
+  </section>
+)}
+
+<style>
+  .sema, .kutu { font-family: var(--yazi); font-size: 1rem; }
+  .akis { list-style: none; padding: 0; margin: 0.8rem 0; position: relative; }
+  .akis::before { content: ''; position: absolute; left: 0.95rem; top: 0.8rem; bottom: 0.8rem; border-left: 2px solid var(--cizgi); }
+  .akis li { position: relative; display: grid; grid-template-columns: 2rem 1fr; gap: 0.7rem; margin: 0.6rem 0; }
+  .akis .no {
+    z-index: 1; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%;
+    background: var(--birincil); color: var(--birincil-metin); font-weight: 700; font-size: 0.85rem;
+  }
+  .kutu { border-radius: var(--r-k); padding: 0.4rem 1.1rem 0.6rem; margin: 1.6rem 0; }
+  .kutu h2 { margin-top: 0.6rem; font-size: 1.1rem; }
+  .hatalar { background: color-mix(in srgb, var(--yanlis) 7%, transparent); border-left: 4px solid var(--yanlis); }
+  .hatalar ul { list-style: none; padding: 0; margin: 0; }
+  .hatalar li { margin: 0.6rem 0 0.9rem; }
+  .hatalar p { margin: 0.15rem 0; }
+  .yanlis-satir > span:first-child { color: var(--yanlis); font-weight: 800; }
+  .dogru-satir > span:first-child { color: var(--dogru); font-weight: 800; }
+  .olay { background: var(--yuzey-2); border-left: 4px solid var(--metin); }
+  .olay .etiket { margin-top: 0.6rem; }
+  .olay h2 { margin-top: 0.2rem; }
+  .kaynak { font-size: 0.88rem; }
+</style>

@@ -1,0 +1,58 @@
+---
+// Kavramın hemen ardından 1-3 çoktan seçmeli soru. Seçince anında doğru/yanlış ve açıklama görünür.
+// Sonuç kaydedilmez: amaç, yanlış anladığın yeri dersi bitirmeden fark etmek.
+import { satirIci } from '../lib/satir-ici';
+import Ipucu from './Ipucu.astro';
+interface Soru { soru: string; secenekler: string[]; dogru: number; aciklama: string; ipucu?: string }
+interface Props { sorular: Soru[] }
+const { sorular } = Astro.props;
+---
+<section class="hizli" aria-labelledby="hizli-b">
+  <h2 id="hizli-b">Hızlı kontrol</h2>
+  <p class="soluk">Bir seçeneğe dokun; anında göreceksin.</p>
+  {sorular.map((s, i) => (
+    <div class="kart hk" data-dogru={s.dogru}>
+      <p class="hk-soru" set:html={satirIci(s.soru)} />
+      <Ipucu metin={s.ipucu} />
+      <div class="hk-secenekler" role="group" aria-label={`Hızlı kontrol ${i + 1}`}>
+        {s.secenekler.map((sec, j) => (
+          <button type="button" class="hk-secenek" data-i={j} set:html={satirIci(sec)} />
+        ))}
+      </div>
+      <p class="hk-aciklama" hidden role="status"><strong class="hk-sonuc"></strong> <span set:html={satirIci(s.aciklama)} /></p>
+    </div>
+  ))}
+</section>
+<script>
+  for (const kart of document.querySelectorAll<HTMLElement>('.hk')) {
+    const dogru = Number(kart.dataset.dogru);
+    kart.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLButtonElement>('.hk-secenek');
+      if (!b || kart.dataset.cevaplandi) return;
+      kart.dataset.cevaplandi = '1';
+      const secilen = Number(b.dataset.i);
+      kart.querySelectorAll<HTMLButtonElement>('.hk-secenek').forEach((x, j) => {
+        x.disabled = true;
+        if (j === dogru) x.classList.add('dogru');
+        else if (j === secilen) x.classList.add('yanlis');
+      });
+      const sonuc = kart.querySelector('.hk-sonuc')!;
+      sonuc.textContent = secilen === dogru ? '✓ Doğru.' : '✗ Yanlış.';
+      kart.classList.add(secilen === dogru ? 'iyi' : 'kotu');
+      kart.querySelector<HTMLElement>('.hk-aciklama')!.hidden = false;
+    });
+  }
+</script>
+<style>
+  .hizli { font-family: var(--yazi); font-size: 1rem; }
+  .hk { margin: 0.8rem 0; }
+  .hk-soru { font-weight: 650; margin: 0 0 0.4rem; }
+  .hk-secenekler { display: flex; flex-direction: column; gap: 0.4rem; }
+  .hk-secenek { justify-content: flex-start; text-align: left; font-weight: 500; width: 100%; white-space: normal; overflow-wrap: anywhere; }
+  .hk-secenek:disabled { opacity: 1; cursor: default; }
+  .hk-secenek.dogru { border-color: var(--dogru); box-shadow: inset 4px 0 0 var(--dogru); }
+  .hk-secenek.yanlis { border-color: var(--yanlis); box-shadow: inset 4px 0 0 var(--yanlis); }
+  .hk-aciklama { margin: 0.6rem 0 0; }
+  .iyi .hk-sonuc { color: var(--dogru); }
+  .kotu .hk-sonuc { color: var(--yanlis); }
+</style>

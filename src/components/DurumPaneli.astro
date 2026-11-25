@@ -31,7 +31,7 @@ const gunler = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'];
     if (g === d.bugun) li.classList.add('bugun');
   });
   document.getElementById('tekrar-sayisi')!.textContent = String(
-    bugunSec(d.veri.dersler, d.ilerleme, d.bugun).tekrarlar.length,
+    bugunSec(d.veri.dersler, d.ilerleme, d.bugun, d.veri.sinavSoruIdleri).tekrarlar.length,
   );
 </script>
 

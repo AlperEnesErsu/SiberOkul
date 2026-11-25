@@ -7,6 +7,16 @@ import { z } from 'astro/zod';
 const gun = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Tarih YYYY-MM-DD biçiminde olmalı');
 const dersKimligi = z.string().regex(/^[a-z]+-\d{3}$/, 'Ders kimliği ör. linux-001 biçiminde olmalı');
 
+const ipucu = z.string().min(5).optional();
+const coktanSecmeli = z.object({
+  soru: z.string().min(5),
+  secenekler: z.array(z.string().min(1)).min(2).max(5),
+  dogru: z.number().int().min(0),
+  aciklama: z.string().min(5),
+  ipucu,
+});
+const kaynak = z.object({ ad: z.string(), url: z.url({ protocol: /^https?$/ }) });
+
 const dersler = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/dersler' }),
   schema: z
@@ -26,7 +36,7 @@ const dersler = defineCollection({
         telefon: z.object({ soru: z.string().min(10), cevap: z.string().min(5) }).optional(),
       }),
       sorular: z
-        .array(z.object({ id: z.string(), soru: z.string().min(5), cevap: z.string().min(2) }))
+        .array(z.object({ id: z.string(), soru: z.string().min(5), cevap: z.string().min(2), ipucu }))
         .min(3, 'Her derste en az 3 soru olmalı'),
       derinDalis: z
         .array(
@@ -38,8 +48,36 @@ const dersler = defineCollection({
           }),
         )
         .optional(),
+      /** Kavramın ortasında otomatik puanlanan 1-3 çoktan seçmeli soru (kaydedilmez). */
+      hizliKontrol: z.array(coktanSecmeli).max(3).optional(),
+      /** Yeni başlayanın tipik hatası ve doğrusu. */
+      sikHatalar: z.array(z.object({ hata: z.string().min(5), dogrusu: z.string().min(5) })).max(4).optional(),
+      /** Konuya bağlı gerçek bir olay; kaynağı doğrulanmış olmalı. */
+      olay: z
+        .object({
+          baslik: z.string(),
+          yil: z.number().int().min(1970).max(2100),
+          ozet: z.string().min(20),
+          ders: z.string().min(10),
+          kaynak,
+        })
+        .optional(),
+      /** Adım adım akış şeması (ör. TLS el sıkışması). */
+      sema: z
+        .object({
+          baslik: z.string(),
+          adimlar: z.array(z.object({ etiket: z.string(), aciklama: z.string() })).min(2).max(10),
+        })
+        .optional(),
+      /** Bu derste geçen sözlük terimleri (sözlükteki `terim` adlarıyla birebir). */
+      terimler: z.array(z.string()).max(12).optional(),
     })
     .superRefine((ders, ctx) => {
+      ders.hizliKontrol?.forEach((q, i) => {
+        if (q.dogru >= q.secenekler.length) {
+          ctx.addIssue({ code: 'custom', path: ['hizliKontrol', i, 'dogru'], message: 'dogru, seçeneklerden birinin sırası olmalı' });
+        }
+      });
       ders.sorular.forEach((soru, i) => {
         if (!new RegExp(`^${ders.kimlik}-s\\d+$`).test(soru.id)) {
           ctx.addIssue({
@@ -88,12 +126,7 @@ const sinavlar = defineCollection({
       baslik: z.string(),
       sorular: z
         .array(
-          z.object({
-            soru: z.string().min(5),
-            secenekler: z.array(z.string().min(1)).min(2).max(5),
-            dogru: z.number().int().min(0),
-            aciklama: z.string().min(5),
-          }),
+          coktanSecmeli,
         )
         .min(15, 'Her bölge sınavında en az 15 soru olmalı'),
     })
@@ -106,4 +139,21 @@ const sinavlar = defineCollection({
     }),
 });
 
-export const collections = { dersler, efsaneler, atolye, sinavlar };
+const sozluk = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/sozluk' }),
+  schema: z.object({
+    donem: z.number().int().min(1).max(8),
+    terimler: z
+      .array(
+        z.object({
+          terim: z.string().min(2),
+          ingilizce: z.string().optional(),
+          tanim: z.string().min(10),
+          ders: dersKimligi.optional(),
+        }),
+      )
+      .min(1),
+  }),
+});
+
+export const collections = { dersler, efsaneler, atolye, sinavlar, sozluk };

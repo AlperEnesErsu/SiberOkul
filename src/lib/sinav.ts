@@ -2,6 +2,7 @@
 import { gunuIsaretle, type DersOzet } from './ilerleme/bugun';
 import type { Ilerleme } from './ilerleme/model';
 import type { Gun } from './ilerleme/tarih';
+import { puanla } from './ilerleme/tekrar';
 
 export const GECME_YUZDESI = 70;
 
@@ -20,6 +21,26 @@ export function sinavKaydet(i: Ilerleme, donem: number, yuzde: number, bugun: Gu
   const eski = i.sinavlar?.[String(donem)];
   const kayit = { enIyi: Math.max(eski?.enIyi ?? 0, yuzde), sonGun: bugun };
   return gunuIsaretle({ ...i, sinavlar: { ...i.sinavlar, [String(donem)]: kayit } }, bugun);
+}
+
+/** Sınav sorusunun tekrar sistemindeki kimliği (n: 1'den başlayan soru sırası). */
+export function sinavSoruId(bolgeSlug: string, n: number): string {
+  return `sinav-${bolgeSlug}-${n}`;
+}
+
+/**
+ * Sınav sonucunu tekrar sistemine işler: yanlış cevaplanan sorular "bilemedim" olarak eklenir;
+ * daha önce listede olup bu sefer doğru cevaplananlar "bildim" ile ilerler. Hiç yanlış yapılmamış
+ * doğru cevaplar listeye eklenmez.
+ */
+export function sinavYanlislariniKaydet(i: Ilerleme, bolgeSlug: string, dogruMu: boolean[], bugun: Gun): Ilerleme {
+  const sorular = { ...i.sorular };
+  dogruMu.forEach((dogru, k) => {
+    const id = sinavSoruId(bolgeSlug, k + 1);
+    if (!dogru) sorular[id] = puanla(sorular[id], 'bilemedim', bugun);
+    else if (sorular[id]) sorular[id] = puanla(sorular[id], 'bildim', bugun);
+  });
+  return { ...i, sorular };
 }
 
 export function sinavGecildi(i: Ilerleme, donem: number): boolean {

@@ -53,3 +53,11 @@ test('dersiBitir tekil gün', () => {
   expect(i.calisilanGunler).toEqual([B]);
   expect(i.bitenDersler).toEqual({ 'linux-001': B, 'linux-002': B });
 });
+
+// Korur: ders dışı (sınav) soruların, ek kimlik verildiğinde tekrara girmesini
+test('ek soru kimlikleri', () => {
+  const i = bosIlerleme();
+  i.sorular['sinav-linux-2'] = { puan: 'bilemedim', seviye: 0, sonraki: '2026-11-24' };
+  expect(bugunSec(dersler, i, B).tekrarlar).toEqual([]);
+  expect(bugunSec(dersler, i, B, ['sinav-linux-2']).tekrarlar).toEqual(['sinav-linux-2']);
+});

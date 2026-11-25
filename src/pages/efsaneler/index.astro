@@ -1,20 +1,19 @@
 ---
 import { getCollection } from 'astro:content';
 import Temel from '../../layouts/Temel.astro';
-import HukumRozeti from '../../components/HukumRozeti.astro';
 
 const kok = import.meta.env.BASE_URL;
 const efsaneler = (await getCollection('efsaneler')).sort((a, b) => b.data.tarih.localeCompare(a.data.tarih));
 ---
 <Temel baslik="Efsane mi?" aciklama="Teknoloji ve güvenlik hakkında sık duyulan iddialar: doğru mu, yanlış mı?">
   <h1>Efsane mi?</h1>
-  <p class="soluk">Herkesin konuştuğu teknoloji ve güvenlik iddiaları. Her hükmün bir kaynağı var.</p>
+  <p class="soluk">Herkesin konuştuğu teknoloji ve güvenlik iddiaları. Önce sen tahmin et, sonra kaynaklı hükmü gör.</p>
   {efsaneler.length === 0 && <p>Henüz kart yok.</p>}
   <ul class="liste">
     {efsaneler.map((e) => (
       <li class="kart">
         <a href={`${kok}efsaneler/${e.id}/`} class="iddia">“{e.data.iddia}”</a>
-        <div><HukumRozeti hukum={e.data.hukum} /></div>
+        <span class="soluk tahmin-et">Tahmin et →</span>
       </li>
     ))}
   </ul>

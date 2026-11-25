@@ -6,11 +6,29 @@ import OturumCercevesi from '../components/OturumCercevesi.astro';
 import { satirIci } from '../lib/satir-ici';
 import { sirala } from '../lib/icerik';
 import { dersUrl } from '../lib/ders-listesi';
+import { DONEMLER } from '../data/donemler';
+import { sinavSoruId } from '../lib/sinav';
+import Ipucu from '../components/Ipucu.astro';
 
 const kok = import.meta.env.BASE_URL;
 // Tekrar adımı için bütün soruları gömeriz; betik yalnız bugün tekrarı gelenleri gösterir.
 const dersler = sirala((await getCollection('dersler')).map((d) => d.data));
-const sorular = dersler.flatMap((d) => d.sorular.map((s) => ({ ...s, dersBaslik: d.baslik, dersKimlik: d.kimlik })));
+const dersSorulari = dersler.flatMap((d) =>
+  d.sorular.map((s) => ({ id: s.id, soru: s.soru, cevap: s.cevap, ipucu: s.ipucu, baslik: d.baslik, url: dersUrl(d.kimlik) })),
+);
+// Sınav soruları da (yanlış yapılanlar) tekrar olarak gelebilir: cevap = doğru seçenek + açıklama.
+const sinavSorulari = (await getCollection('sinavlar')).flatMap((s) => {
+  const donem = DONEMLER.find((d) => d.no === s.data.donem)!;
+  return s.data.sorular.map((q, i) => ({
+    id: sinavSoruId(donem.slug, i + 1),
+    soru: q.soru,
+    cevap: `${q.secenekler[q.dogru]} — ${q.aciklama}`,
+    ipucu: q.ipucu,
+    baslik: `${donem.ad} sınavı`,
+    url: `${kok}sinav/${donem.slug}/`,
+  }));
+});
+const sorular = [...dersSorulari, ...sinavSorulari];
 ---
 
 <Temel baslik="Bugünün oturumu" duzen="okuma">
@@ -41,8 +59,9 @@ const sorular = dersler.flatMap((d) => d.sorular.map((s) => ({ ...s, dersBaslik:
         <ol class="tekrar-listesi" id="tekrar-listesi">
           {sorular.map((s) => (
             <li class="kart soru" data-soru-id={s.id} hidden>
-              <p class="etiket"><a href={dersUrl(s.dersKimlik)}>{s.dersBaslik}</a></p>
+              <p class="etiket"><a href={s.url}>{s.baslik}</a></p>
               <p class="soru-metni" set:html={satirIci(s.soru)} />
+              <Ipucu metin={s.ipucu} />
               <details>
                 <summary>Cevabı göster</summary>
                 <p class="cevap" set:html={satirIci(s.cevap)} />

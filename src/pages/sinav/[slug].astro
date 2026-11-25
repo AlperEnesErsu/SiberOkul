@@ -7,6 +7,7 @@ import { DONEMLER } from '../../data/donemler';
 import { DONEM_GORSEL } from '../../data/donem-gorsel';
 import { satirIci } from '../../lib/satir-ici';
 import { GECME_YUZDESI } from '../../lib/sinav';
+import Ipucu from '../../components/Ipucu.astro';
 
 export async function getStaticPaths() {
   return (await getCollection('sinavlar')).map((s) => {
@@ -26,7 +27,7 @@ const anahtar = sinav.sorular.map((s) => s.dogru);
   <div class="okuma-izgara" style={`--renk:${gorsel.renk}`}>
     <aside class="okuma-yan"><OturumCercevesi parca="adimlar" /></aside>
     <div class="okuma-ana">
-      <article class="okuma" data-sinav={donem.no} data-anahtar={JSON.stringify(anahtar)}>
+      <article class="okuma" data-sinav={donem.no} data-slug={donem.slug} data-anahtar={JSON.stringify(anahtar)}>
         <p class="etiket"><span aria-hidden="true">{gorsel.simge}</span> Bölge sınavı · {sinav.sorular.length} soru · geçme %{GECME_YUZDESI}</p>
         <h1>{sinav.baslik}</h1>
         <p class="soluk" id="sinav-gecmis">Her soruda bir seçenek işaretle, sonra "Sınavı bitir"e bas. İstediğin kadar tekrar deneyebilirsin.</p>
@@ -36,6 +37,7 @@ const anahtar = sinav.sorular.map((s) => s.dogru);
             <li class="kart soru" data-no={i}>
               <fieldset>
                 <legend set:html={`${i + 1}. ${satirIci(s.soru)}`} />
+                <Ipucu metin={s.ipucu} />
                 {s.secenekler.map((sec, j) => (
                   <label class="secenek">
                     <input type="radio" name={`s${i}`} value={j} />
