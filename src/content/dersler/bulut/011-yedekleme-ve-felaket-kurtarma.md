@@ -25,20 +25,51 @@ sorular:
   - id: bulut-011-s1
     soru: "3-2-1 yedekleme kuralı nedir?"
     cevap: "Verinin en az 3 kopyası, 2 farklı ortamda, 1 tanesi farklı bir yerde (ya da çevrimdışı) olmalı. Böylece tek bir olay tüm kopyaları aynı anda yok edemez."
+    ipucu: "Üç sayının her birinin neyi temsil ettiğini düşün: kopya, ortam, yer."
   - id: bulut-011-s2
     soru: "Yedeğin 'varlığı' ile 'çalışması' arasındaki fark nedir ve ne yapılır?"
     cevap: "Alınmış ama hiç geri yüklenmemiş yedeğin çalıştığı garanti değildir. Geri yükleme düzenli olarak denenir ve sonuç ölçülür; bu, yedeklemenin bir parçasıdır."
+    ipucu: "Yedeği almak ile geri yüklemek arasındaki farkı düşün."
   - id: bulut-011-s3
     soru: "RPO ve RTO ne anlama gelir?"
     cevap: "RPO (recovery point objective): En çok ne kadar veri kaybı kabul edilir (son yedekten bu yana geçen süre). RTO (recovery time objective): Sistemin en geç ne kadar sürede yeniden ayakta olması gerekir."
+    ipucu: "Biri veri kaybıyla, diğeri süreyle ilgili."
   - id: bulut-011-s4
     soru: "Fidye yazılımına karşı yedekleri nasıl korursun?"
     cevap: "Yedekleri ayrı hesapta, ayrı kimlikle tut; değiştirilemez depolama (S3 Object Lock gibi) kullan; çevrimdışı ya da ayrı bir kopya bulundur; yedek silme işlemlerini izle ve alarm kur; geri yüklemeyi düzenli dene."
+    ipucu: "Saldırgan yönetici yetkisini ele geçirirse hangi yedek yine ayakta kalır?"
+  - id: bulut-011-s5
+    soru: "Fidye yazılımı üretim verisini şifreledi ve saldırgan yedek bucket'ını da silmeye çalışıyor. Yedekler aynı hesapta. Ne yaparsın?"
+    cevap: "Önce erişimi keser, saldırganın kimliğini devre dışı bırakırım. Sonra ayrı hesaptaki ya da Object Lock'lu temiz yedekleri ararım; yoksa sürüm geçmişine bakarım. Geri yüklemeyi test ederek yaparım; sonrasında yedekleri ayrı hesaba ve değiştirilemez depolamaya taşırım."
+    ipucu: "Silinemeyen ve ayrı yerdeki kopyayı hatırla."
 derinDalis:
   - tur: okuma
     baslik: "CISA #StopRansomware Guide"
     ayrinti: "Fidye yazılımı öncesi hazırlık: çevrimdışı, şifreli ve test edilmiş yedekler dahil kontrol listesi."
     url: "https://www.cisa.gov/stopransomware/ransomware-guide"
+hizliKontrol:
+  - soru: "Saatlik yedek alan bir sistemin RPO'su yaklaşık nedir?"
+    secenekler: ["Geri dönüş süresi 1 saat","Veri kaybı sıfır","En çok yaklaşık 1 saatlik veri kaybı","Bir gün"]
+    dogru: 2
+    aciklama: "RPO, kabul edilen azami veri kaybıdır; saatlik yedekte yaklaşık 1 saattir."
+    ipucu: "RPO veri, RTO süredir."
+sikHatalar:
+  - hata: "Yedeği hiç geri yüklemeyi denememek."
+    dogrusu: "Geri yüklemeyi düzenli dene; çalışmayan yedek yedek değildir."
+  - hata: "Yedeği üretimle aynı hesapta tutmak."
+    dogrusu: "Ayrı hesap ve ayrı kimlik kullan; silmeyi zorlaştır."
+sema:
+  baslik: "3-2-1 yedekleme kuralı"
+  adimlar:
+    - { etiket: "3 kopya", aciklama: "Üretimdeki asıl veri artı iki yedek." }
+    - { etiket: "2 ortam", aciklama: "Yedekler iki farklı ortam ya da serviste durur." }
+    - { etiket: "1 uzak", aciklama: "Bir kopya başka bölge ya da başka hesapta durur." }
+    - { etiket: "Sına", aciklama: "Geri yüklemeyi düzenli dene, süreyi ölç." }
+terimler:
+  - "3-2-1 kuralı"
+  - "RPO"
+  - "RTO"
+  - "Nesne kilidi"
 ---
 
 Yedekleme güvenliğin son savunma hattıdır. Önceki derslerdeki her şey ters gitse bile, temiz bir yedekten geri dönebiliyorsan olay kurtarılabilir bir olaydır.

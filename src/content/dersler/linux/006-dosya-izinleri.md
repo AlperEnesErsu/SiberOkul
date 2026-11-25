@@ -32,15 +32,44 @@ sorular:
   - id: linux-006-s1
     soru: "`-rw-r--r--` ne anlama gelir? Parçalarına ayır."
     cevap: "İlk karakter `-` normal dosya demektir (dizin için `d`). Sonraki üç harf sahibin izni: `rw-` okur ve yazar. Sonraki üçü grubunki: `r--` yalnız okur. Son üçü diğer herkesinki: `r--` yalnız okur. Sayısal karşılığı `644`."
+    ipucu: "Üçlü grupları sırayla oku: sahip, grup, diğerleri."
   - id: linux-006-s2
     soru: "`chmod 755 betik.sh` ile `chmod u+x betik.sh` arasındaki fark nedir?"
     cevap: "Sayısal biçim izinleri tamamen ayarlar (sahibe rwx, gruba r-x, diğerlerine r-x). Sembolik `u+x` yalnız sahibe çalıştırma iznini ekler, geri kalanı olduğu gibi bırakır."
+    ipucu: "Sayısal ve sembolik biçimin neyi değiştirdiğine bak."
   - id: linux-006-s3
     soru: "Bir SSH özel anahtar dosyasının izni `644` olsun. Bu neden sorun ve düzeltmek için ne yapılır?"
     cevap: "`644` grup ve diğer kullanıcılara okuma izni verir, yani sunucudaki herkes özel anahtarı okuyabilir. Anahtar bu durumda sızmış sayılır; `ssh` de bu izinleri görünce anahtarı kullanmayı reddeder. Düzeltmek için `chmod 600` uygulanır."
+    ipucu: "Anahtar dosyasını kimlerin okuyabildiğine bak."
   - id: linux-006-s4
     soru: "Bir dizin için `x` (çalıştırma) izni ne anlama gelir?"
     cevap: "Dizinin içine girebilmeyi (`cd`) ve içindeki dosyalara adıyla erişebilmeyi sağlar. `r` yalnızca içeriği listelemeye, `w` ise içinde dosya oluşturmaya ve silmeye izin verir. Dizinde `x` yoksa içindeki dosyaların kendi izinleri açık olsa bile ulaşamazsın."
+    ipucu: "Dizin için `x` neyi mümkün kılar?"
+  - id: linux-006-s5
+    soru: "CI'da betik 'Permission denied' veriyor. `ls -l betik.sh` çıktısı `-rw-r--r--`. Ne yaparsın?"
+    cevap: "Dosyada çalıştırma biti yok. Sahibine ekleyen `chmod u+x betik.sh` yeterlidir; gerekirse depoda da bu izinle commit'lenir. `chmod 777` vermezsin; fazladan yetki güvenlik açığıdır."
+    ipucu: "Çıktıdaki hangi harf eksik?"
+hizliKontrol:
+  - soru: "`chmod 640 dosya` sonrası grup ne yapabilir?"
+    secenekler: ["Yalnız okuyabilir","Okuyup yazabilir","Çalıştırabilir","Hiçbir şey yapamaz"]
+    dogru: 0
+    aciklama: "6 = rw- sahibe, 4 = r-- gruba, 0 = diğerlerine; grup yalnız okur."
+    ipucu: "Ortadaki rakamın bitlerini aç."
+  - soru: "Hangisi özel SSH anahtarı için uygundur?"
+    secenekler: ["`644`","`666`","`600`","`755`"]
+    dogru: 2
+    aciklama: "Özel anahtarı yalnız sahibi okumalıdır."
+    ipucu: "Yalnız sahibine ne vermelisin?"
+sikHatalar:
+  - hata: "Her 'izin yok' hatasında `chmod 777` yazmak."
+    dogrusu: "Önce kimin hangi izne ihtiyacı olduğunu bul, yalnız onu ver."
+  - hata: "Dizinlere `x` vermeden içine girilebileceğini sanmak."
+    dogrusu: "Dizinde `x`, içine girme ve dosyalara erişme izni demektir."
+terimler:
+  - "Dosya izni"
+  - "chmod"
+  - "UID"
+  - "En az yetki"
 derinDalis:
   - tur: okuma
     baslik: "man7.org: chmod kılavuz sayfası"

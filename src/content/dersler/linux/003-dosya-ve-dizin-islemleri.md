@@ -31,15 +31,43 @@ sorular:
   - id: linux-003-s1
     soru: "`mkdir -p a/b/c` komutunda `-p` ne işe yarar?"
     cevap: "Eksik üst dizinleri de oluşturur. `-p` olmadan `a` yoksa komut hata verir. `-p` ile `a`, `a/b` ve `a/b/c` birlikte yaratılır ve dizin zaten varsa da hata vermez."
+    ipucu: "`*.txt`'yi kimin yorumladığını düşün."
   - id: linux-003-s2
     soru: "`rm` ile silinen dosya neden Windows'taki gibi geri dönüşüm kutusundan kurtarılamaz?"
     cevap: "`rm` dosyayı doğrudan dosya sisteminden kaldırır; çöp kutusu diye bir ara basamak yoktur. Bu yüzden silmeden önce yolu kontrol etmek, gerekirse `rm -i` ile onay istemek önemlidir."
+    ipucu: "`rm` ile Windows'taki silme arasındaki ara basamağı hatırla."
   - id: linux-003-s3
     soru: "`*.txt` yazdığında joker karakteri kim açar: `ls` komutu mu, kabuk mu? Bunun pratik sonucu ne?"
     cevap: "Kabuk açar. `ls`, `*.txt` yerine kabuğun bulduğu dosya adlarının listesini alır. Sonuç: eşleşen dosya yoksa komut beklenmedik bir argümanla çalışabilir, `rm *` yazarsan o dizindeki her şeyi silersin. Komutu çalıştırmadan önce aynı joker karakterle `ls` deneyerek ne eşleştiğine bak."
+    ipucu: "Joker karakteri açan taraf komut mu, kabuk mu?"
   - id: linux-003-s4
     soru: "`cp notlar yedek` komutu bir dizin için hata verir. Dizini kopyalamak için ne gerekir?"
     cevap: "`-r` (recursive, özyinelemeli) seçeneği: `cp -r notlar yedek`. Bu seçenek dizinin içindeki her şeyi kopyalar. `-r` olmadan `cp` dizinleri atlar ve uyarı verir."
+    ipucu: "Dizin kopyalarken gereken seçeneğin adını hatırla."
+  - id: linux-003-s5
+    soru: "Yedek betiğin `cp -r veri/ /yedek/` komutu 'Permission denied' dedi ve yedek yarım kaldı. İlk neye bakarsın?"
+    cevap: "Önce hedef ve kaynak dizinlerin sahibine ve izinlerine `ls -ld` ile bakarsın; hedefe yazma iznin var mı? Sonra hangi dosyada hata verdiğini çıktıdan okursun. Çözüm çoğu zaman izni düzeltmek ya da doğru kullanıcıyla çalışmaktır, her şeye `sudo` eklemek değil."
+    ipucu: "Hata hangi dosyada ve hangi dizinde oluştu?"
+hizliKontrol:
+  - soru: "`mkdir -p a/b/c` komutunda `-p` ne sağlar?"
+    secenekler: ["Dizini parola ile korur","Eksik üst dizinleri de oluşturur","Dizini yalnız okunur yapar","Mevcut dizini siler"]
+    dogru: 1
+    aciklama: "`-p` (parents) eksik üst dizinleri birlikte yaratır ve dizin varsa hata vermez."
+    ipucu: "`p` hangi sözcüğün baş harfi olabilir?"
+  - soru: "`rm dosya.txt` sonrası dosya nerededir?"
+    secenekler: ["Çöp kutusunda","Geçici dizinde","Dosya sisteminden kaldırılmıştır, çöp kutusu yoktur","Gizli bir dizinde"]
+    dogru: 2
+    aciklama: "`rm` doğrudan kaldırır; çöp kutusu basamağı yoktur."
+    ipucu: "Linux'ta `rm`'nin arkasında bir ara depo var mı?"
+sikHatalar:
+  - hata: "`rm -rf *` komutunu nerede olduğuna bakmadan çalıştırmak."
+    dogrusu: "Önce `pwd` ve `ls` ile bak; silme geri alınamaz."
+  - hata: "`cp klasör yedek` yazıp dizinin kopyalanmasını beklemek."
+    dogrusu: "Dizin için `-r` gerekir: `cp -r klasör yedek`."
+terimler:
+  - "Joker karakter"
+  - "Kabuk (shell)"
+  - "Mutlak yol"
 derinDalis:
   - tur: kitap
     baslik: "The Linux Command Line (William Shotts)"

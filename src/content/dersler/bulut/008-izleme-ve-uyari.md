@@ -38,19 +38,41 @@ sorular:
   - id: bulut-008-s1
     soru: "Metrik (metric) ile log arasındaki fark nedir?"
     cevap: "Metrik, zaman içinde ölçülen bir sayıdır (CPU yüzdesi, dakikadaki hata sayısı). Log, belirli bir olayın ayrıntılı metinsel kaydıdır. Metrik 'bir şey var' der, log 'ne olduğunu' anlatır."
+    ipucu: "Metrik bir sayı mıdır, tek bir olayın metni midir?"
   - id: bulut-008-s2
     soru: "CloudWatch alarmı hangi üç durumdan birinde olur?"
     cevap: "OK (eşik aşılmadı), ALARM (eşik koşula göre aşıldı) ve INSUFFICIENT_DATA (karar vermeye yetecek veri yok). Veri yoksa alarmın 'iyi' sayılmayacağını bilmek önemlidir."
+    ipucu: "Alarmın OK ve ALARM dışındaki üçüncü durumunu düşün."
   - id: bulut-008-s3
     soru: "Alarm yorgunluğu (alert fatigue) nedir ve nasıl azaltılır?"
     cevap: "Çok fazla ve çoğu önemsiz alarm, ekibin hepsini görmezden gelmesine yol açar. Azaltmak için eşik ve değerlendirme süresi ayarlanır, her alarma bir eylem tanımlanır, harekete geçirmeyen alarmlar silinir ya da düşük öncelikli yapılır."
+    ipucu: "Kimsenin bakmadığı alarm güvenlik açısından nasıl sonuç doğurur?"
   - id: bulut-008-s4
     soru: "Güvenlik için hangi metrikleri izlemek mantıklıdır?"
     cevap: "Başarısız giriş sayısı, kök hesap kullanımı, IAM değişiklikleri, güvenlik grubu değişiklikleri, beklenmedik bölgede kaynak oluşması ve CloudTrail'in kapatılması. Bunların çoğu CloudTrail log'larından metrik filtreleriyle üretilir."
+    ipucu: "Hangi ölçümler bir hesap ele geçirilmesinin belirtisi olabilir?"
+  - id: bulut-008-s5
+    soru: "Gece 3'te 'başarısız giriş' alarmı çalıyor. Eşik, son 5 dakikada 3 ölçüm. Ne yaparsın?"
+    cevap: "Önce CloudTrail'de ConsoleLogin hatalarının kaynak IP ve kimliklerine bakarım. Aynı IP'den başarılı giriş de varsa hesabı kilitler, parolayı sıfırlarım. Yoksa bunu deneme olarak kaydeder, IP'yi engeller ve eşiği gerçek veriyle gözden geçiririm."
+    ipucu: "Alarm 'bir şey oldu' der; ayrıntı log'dadır."
 derinDalis:
   - tur: kitap
     baslik: "Site Reliability Engineering (Google)"
     ayrinti: "'Monitoring Distributed Systems' bölümü: neyin, neden ve ne sıklıkla izlenmesi gerektiği üzerine."
+hizliKontrol:
+  - soru: "Alarm hangi durumdaysa karar için yeterli veri yoktur?"
+    secenekler: ["OK","ALARM","INSUFFICIENT_DATA","PENDING"]
+    dogru: 2
+    aciklama: "Metrik yeterli veri göndermiyorsa alarm bu durumda kalır."
+    ipucu: "Üç durumun adını hatırla."
+sikHatalar:
+  - hata: "Her metriğe alarm kurmak."
+    dogrusu: "Her alarm bir eylem doğurmalı; gerisi panoda dursun."
+  - hata: "Eşiği tahminle koymak."
+    dogrusu: "Bir hafta ölçüm topla, normal aralığı gör, eşiği ona göre ayarla."
+terimler:
+  - "CloudWatch"
+  - "Alarm"
 ---
 
 İzleme üç parçadan oluşur: **ölçmek**, **kaydetmek** ve **haber vermek**.

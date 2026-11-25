@@ -24,15 +24,65 @@ sorular:
   - id: pipeline-006-s1
     soru: "DAST ile SAST'ın en temel farkı nedir ve birbirlerinin yerini tutabilir mi?"
     cevap: "SAST kodu çalıştırmadan okur, DAST çalışan uygulamaya istek gönderir. Tutmaz: SAST kod içi kalıpları, DAST yapılandırma ve çalışma zamanı sorunlarını bulur. Biri diğerinin kaçırdığını yakalayabilir."
+    ipucu: "Biri kodu okur, diğeri çalışan uygulamaya dışarıdan istek atar."
   - id: pipeline-006-s2
     soru: "Pasif tarama ile aktif tarama arasındaki fark nedir?"
     cevap: "Pasif tarama normal trafiğe bakıp yanıtları inceler (eksik başlık gibi), saldırı denemez. Aktif tarama zararlı girdiler gönderip uygulamanın tepkisine bakar; daha çok bulur ama risklidir, bu yüzden yalnız izinli test ortamında yapılır."
+    ipucu: "Biri sadece yanıtlara bakar, diğeri gerçekten saldırı denemesi yapar."
   - id: pipeline-006-s3
     soru: "DAST'ı CI'da çalıştırmak için uygulamanın neye ihtiyacı vardır?"
     cevap: "Çalışan bir örneğe: pipeline uygulamayı bir test ortamında (ör. container olarak) ayağa kaldırır, sonra taramayı o adrese yöneltir, bitince kapatır. Sahte veri ve ayrı ortam kullanılır."
+    ipucu: "Çalışan bir uygulama olmadan istek atabilir misin? Ne ayağa kalkmalı?"
   - id: pipeline-006-s4
     soru: "Bir tarama aracını bir siteye karşı çalıştırmadan önce hangi koşul sağlanmalıdır?"
     cevap: "Hedefin sahibinden açık izin. İzinsiz tarama çoğu ülkede yasal sorun yaratabilir. Kendi makinen ya da senin işlettiğin test ortamı güvenlidir."
+    ipucu: "Bir sistemi yoklamadan önce hukuki ve etik koşulu düşün."
+  - id: pipeline-006-s5
+    soru: "Pazarlama ekibi 'sitemizi bir güvenlik firması taramış, rapor var, onlara ZAP'ı canlı siteye tam taramayla çalıştırtalım mı?' diye soruyor. Sen ne dersin?"
+    cevap: "Önce yazılı izin ve kapsamın netleşmesi gerekir; ardından tam (aktif) taramayı canlı siteye değil, ayrı bir test ortamına yönelt. Aktif tarama zararlı girdiler gönderir, veri bozabilir ve siteyi yavaşlatabilir. Canlı ortam için en fazla pasif ya da baseline tarama, hazırlıklı ve bakım penceresinde düşünülür."
+    ipucu: "Aktif taramanın canlı sistemde ne yan etkisi olabilir ve kimden izin alınmalı?"
+hizliKontrol:
+  - soru: ZAP baseline taraması neyi yapmaz?
+    secenekler:
+      - Siteyi gezmez
+      - Yanıtları pasif kurallarla incelemez
+      - Aktif saldırı denemeleri göndermez
+      - Raporlamaz
+    dogru: 2
+    aciklama: Baseline spider ve pasif tarama yapar; saldırı kuralları full taramada çalışır.
+    ipucu: Hangi mod CI için güvenli ve hızlıdır?
+  - soru: DAST'ın SAST'tan avantajı nedir?
+    secenekler:
+      - Kaynak kodunu daha iyi okur
+      - Çalışma zamanındaki sorunları ve yapılandırmayı görür
+      - Her zaman daha hızlıdır
+      - Yanlış pozitif üretmez
+    dogru: 1
+    aciklama: DAST çalışan uygulamayı dışarıdan test eder; başlıklar, çerezler ve yapılandırma gibi çalışma zamanı sorunlarını görür. Daha yavaştır ve yanlış pozitif verir.
+    ipucu: Çalışan uygulamanın dışarıdan görünen yüzü.
+sikHatalar:
+  - hata: İzin almadan 'sadece deneme' diye bir siteyi ZAP ile taramak.
+    dogrusu: Yalnız kendi sisteminde ya da yazılı izin aldığın hedefte tara; kapsamı ve zamanı belirle.
+  - hata: DAST'ı her commit'te çalıştırmaya çalışıp pipeline'ı çok yavaşlatmak.
+    dogrusu: Hızlı kontroller (sır, SCA) her commit'te; DAST birleştirme öncesi ya da zamanlanmış job'da çalışır.
+sema:
+  baslik: DAST'ı pipeline'a yerleştirmek
+  adimlar:
+    - etiket: Build
+      aciklama: Uygulamanın imajı CI'da derlenir.
+    - etiket: Ayağa kaldır
+      aciklama: İmaj izole bir test ortamında çalıştırılır.
+    - etiket: Tara
+      aciklama: ZAP baseline taraması o adrese yönelir.
+    - etiket: Raporla
+      aciklama: Bulgular HTML ya da SARIF olarak saklanır; kritik olanda job durur.
+    - etiket: Kapat
+      aciklama: Test ortamı silinir, kaynak ve veri bırakılmaz.
+terimler:
+  - DAST
+  - OWASP ZAP
+  - Baseline taraması
+  - Yanlış pozitif
 derinDalis:
   - tur: lab
     baslik: "ZAP baseline taraması"
@@ -76,5 +126,13 @@ Tarama bir sistemi yoklamaktır. **Yalnız kendi ya da yazılı izin aldığın 
 ### Yanlış pozitifler
 
 DAST yanıtlara bakarak tahmin yürüttüğü için yanlış pozitif üretir. Örneğin eksik bir başlık, sayfa zaten hassas bir şey içermiyorsa önemsizdir. Bulguları SAST'ta olduğu gibi gerekçeyle sınıflandır ve kasıtlı istisnaları kayda al.
+
+### Giriş yapılmış alanları taramak
+
+Basit bir tarama yalnız herkese açık sayfaları görür. Uygulamanın asıl riskli kısmı çoğu zaman giriş yaptıktan sonraki sayfalardadır. ZAP'a bir **oturum** (test kullanıcısı ve giriş akışı) tanıtarak o alanları da gezdirebilirsin. Bunun için gerçek kullanıcı değil, özel olarak oluşturulmuş bir test hesabı kullan ve bu hesabın verisini de test ortamında tut.
+
+### Raporu okumak
+
+ZAP bulguları risk seviyesi ve **güven** (confidence) ile etiketler. Düşük güvenli bir bulguyu doğrudan hata sayma; önce tarayıcıda ya da `curl` ile yanıta kendin bak. "Eksik başlık" bulguları çoğu zaman en kolay kazanımdır: uygulamanın önüne bir yansıtıcı vekil (reverse proxy) koyup başlıkları tek yerden eklemek yüzlerce sayfayı birden düzeltir.
 
 **Güvenlik notu:** Tarama aracı da bir saldırı aracıdır. İzinsiz hedefe karşı çalıştırmak suçtur; her taramadan önce hedefin senin olduğundan emin ol.

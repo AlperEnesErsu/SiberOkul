@@ -34,15 +34,55 @@ sorular:
   - id: container-006-s1
     soru: "Kubernetes'te varsayılan ağ davranışı nedir ve bu neden risktir?"
     cevap: "Hiçbir politika yokken bütün pod'lar birbirine ve dışarıya serbestçe bağlanabilir. Bir pod ele geçirilirse saldırgan diğer servislere (veri tabanları, iç API'ler) doğrudan ulaşabilir."
+    ipucu: "Hiç politika seçmiyorsa pod'un durumu ne olur?"
   - id: container-006-s2
     soru: "`podSelector: {}` boş seçici ne anlama gelir?"
     cevap: "Politikanın bulunduğu isim alanındaki bütün pod'ları seçer. Boş seçici ve boş kural listesiyle birleşince 'bu pod'lara hiçbir gelen bağlantıya izin verme' demek olur."
+    ipucu: "Süslü parantez boşken hangi pod'lar seçilir?"
   - id: container-006-s3
     soru: "Bir NetworkPolicy yazdım ama hiçbir şey değişmedi. İlk neyi kontrol edersin?"
     cevap: "Kümenin ağ eklentisinin (CNI) NetworkPolicy'yi destekleyip desteklemediğini. Uygulayan bir eklenti yoksa politika nesnesi oluşur ama hiçbir etkisi olmaz."
+    ipucu: "NetworkPolicy'yi kim uygular?"
   - id: container-006-s4
     soru: "'Varsayılan reddet' kurulduktan sonra uygulama DNS çözemiyorsa ne olmuş olabilir?"
     cevap: "Çıkış (egress) trafiği de kapatıldıysa pod, küme DNS servisine erişemez. Çıkış politikalarında DNS (genellikle 53 numaralı port) için açıkça izin verilmelidir."
+    ipucu: "Giden trafiği kapatınca hangi isim çözümü etkilenir?"
+  - id: container-006-s5
+    soru: "Bir isim alanına 'varsayılan reddet' politikası uyguladın ve uygulama `veritabani` servisini bulamamaya başladı. Ne yaparsın?"
+    cevap: "Giden (egress) trafikte DNS'in engellendiğinden şüphelenirsin. CoreDNS'e (kube-system, UDP/TCP 53) giden trafiğe izin veren bir kural eklersin, ardından uygulamadan veritabanı portuna giden kuralı ayrıca yazarsın. Test pod'uyla bağlantıyı doğrularsın."
+    ipucu: "Servis adı bağlantıdan önce çözülmek zorunda."
+hizliKontrol:
+  - soru: "Bir pod'u seçen hiçbir NetworkPolicy yoksa bağlantılar için ne söylenir?"
+    secenekler: ["Hepsi reddedilir","Yalnız aynı düğümde izinlidir","Bağlantılara izin verilir; pod izole değildir","Yalnız Service üzerinden izinlidir"]
+    dogru: 2
+    aciklama: "Politika yoksa varsayılan davranış her bağlantıya izin vermektir."
+    ipucu: "Varsayılan açık mı kapalı mı?"
+  - soru: "Politika yazdın ama etkisini görmüyorsun. İlk kontrol hangisi?"
+    secenekler: ["Ağ eklentisinin (CNI) NetworkPolicy desteği","Pod adının uzunluğu","Namespace adı","Servis portunun sayısı"]
+    dogru: 0
+    aciklama: "Politikayı uygulayan CNI'dır; destek yoksa nesne etkisiz kalır."
+    ipucu: "Kuralı kim uygular?"
+sikHatalar:
+  - hata: "NetworkPolicy yazdım, o halde uygulanıyordur diye varsaymak."
+    dogrusu: "CNI desteğini ve etkisini bir test pod'uyla doğrula (kind v0.24.0 ve sonrası varsayılan olarak uygular)."
+  - hata: "'Varsayılan reddet' sonrası DNS'i unutmak."
+    dogrusu: "CoreDNS'e giden egress trafiğine açıkça izin ver."
+sema:
+  baslik: "Varsayılan reddet ve açma sırası"
+  adimlar:
+    - etiket: "Mevcut durum"
+      aciklama: "Politika yok: pod'lar arasında her bağlantı açıktır."
+    - etiket: "Hepsini reddet"
+      aciklama: "`podSelector: {}` ile isim alanındaki tüm pod'ları seçip gelen trafiği kapat."
+    - etiket: "DNS aç"
+      aciklama: "Giden trafikte CoreDNS'e 53. porta izin ver."
+    - etiket: "İhtiyaçları aç"
+      aciklama: "Yalnız gereken pod çiftleri için gelen/giden kuralları yaz."
+    - etiket: "Doğrula"
+      aciklama: "Test pod'uyla izinli ve yasak bağlantıları dene."
+terimler:
+  - "NetworkPolicy"
+  - "Pod"
 derinDalis:
   - tur: okuma
     baslik: "Kubernetes: Ağ politikaları"

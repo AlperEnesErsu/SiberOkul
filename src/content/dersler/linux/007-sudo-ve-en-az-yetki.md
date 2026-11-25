@@ -26,15 +26,60 @@ sorular:
   - id: linux-007-s1
     soru: "Ubuntu'da root hesabı neden varsayılan olarak doğrudan oturum açmaya kapalıdır?"
     cevap: "Tek bir paylaşılan, sınırsız yetkili hesap hem kimin ne yaptığını belirsizleştirir hem de parolası ele geçirilirse tam yetki verir. Ubuntu bunun yerine sıradan kullanıcının `sudo` ile tek tek komutu yükseltmesini ve bunun kayıt altına alınmasını tercih eder."
+    ipucu: "Tek bir paylaşılan sınırsız hesabın sakıncasını düşün."
   - id: linux-007-s2
     soru: "`sudo` kimin hangi komutu çalıştırabileceğini nereden öğrenir ve bu dosya neden `nano` ile düzenlenmez?"
     cevap: "`/etc/sudoers` ve `/etc/sudoers.d/` altındaki dosyalardan. Bunlar `visudo` ile düzenlenir, çünkü `visudo` kaydetmeden önce sözdizimini denetler. Hatalı bir sudoers dosyası herkesi `sudo` dışında bırakıp sistemi yönetilemez hale getirebilir."
+    ipucu: "Sudoers'ı kaydetmeden önce kimin denetlediğini düşün."
   - id: linux-007-s3
     soru: "`sudo -i` ya da `sudo su` ile kalıcı bir root kabuğu açmak yerine her komuta ayrı `sudo` yazmak neden daha iyidir?"
     cevap: "Root kabuğunda her komut yetkili çalışır; bir yazım hatası ya da yanlış yapıştırma felakete dönüşebilir ve ne yapıldığı kayıtta ayrıntılı görünmez. Komut başına `sudo` yalnız o komutu yükseltir, her kullanım loga yazılır ve dikkatini yüksek yetkinin gerektiği yere toplar."
+    ipucu: "Yetkili kabukta her komutun sonucunu düşün."
   - id: linux-007-s4
     soru: "'En az yetki' (least privilege) ilkesi nedir? Bir örnekle açıkla."
     cevap: "Bir kullanıcıya ya da sürece işini yapmak için gereken en küçük yetkiyi vermek. Örnek: bir yedekleme betiği yalnız yedek dizinini okuyabilsin, root olmasın. Saldırgan o hesabı ele geçirse bile erişebileceği alan dardır."
+    ipucu: "İşe yetecek en küçük yetkinin ne olacağını düşün."
+  - id: linux-007-s5
+    soru: "Bir ekip arkadaşı 'CI sunucusunda kimin ne yaptığını bulamıyoruz' diyor; herkes `sudo su` kullanıyor. Ne önerirsin?"
+    cevap: "Herkesin kalıcı root kabuğu açması yerine her yetkili komutu tek tek `sudo` ile çalıştırmayı önerirsin; böylece her komut kayıtta kullanıcı adıyla görünür. Ayrıca sudoers'ta yalnız gereken komutlara izin verirsin. Düzenlemeyi `visudo` ile yaparsın."
+    ipucu: "Kayıtta kimin adı görünmeli?"
+hizliKontrol:
+  - soru: "`sudo` yapılandırması neden `visudo` ile düzenlenir?"
+    secenekler: ["Dosya şifrelenir","Kaydetmeden önce sözdizimi denetlenir","Root parolası değişir","Daha hızlı açılır"]
+    dogru: 1
+    aciklama: "Bozuk sudoers sudo'yu kullanılamaz yapar; `visudo` bunu önler."
+    ipucu: "Bozuk bir dosya yönetici yetkisine ne yapar?"
+sikHatalar:
+  - hata: "`sudo su` ile kalıcı root kabuğunda çalışmak."
+    dogrusu: "Her komuta ayrı `sudo` yaz; yanlış yazım riski azalır, kayıt netleşir."
+  - hata: "`NOPASSWD:ALL` vermek."
+    dogrusu: "Yalnız gereken komuta, gerekirse parolasız izin ver."
+terimler:
+  - "sudo"
+  - "root"
+  - "En az yetki"
+  - "Log"
+sema:
+  baslik: "sudo ile bir komut"
+  adimlar:
+    - etiket: "Komut"
+      aciklama: "Kullanıcı `sudo komut` yazar."
+    - etiket: "Parola"
+      aciklama: "Sudo kullanıcının kendi parolasını ister."
+    - etiket: "Kural"
+      aciklama: "`/etc/sudoers` kuralına bakılır: bu kullanıcı bu komutu çalıştırabilir mi?"
+    - etiket: "Çalıştırma"
+      aciklama: "Komut yalnız o seferlik root yetkisiyle çalışır."
+    - etiket: "Kayıt"
+      aciklama: "Olay kullanıcı adıyla log'a yazılır."
+olay:
+  baslik: "sudo'da 'Baron Samedit' açığı"
+  yil: 2021
+  ozet: "sudo'daki bir heap taşması (CVE-2021-3156) 26 Ocak 2021'de açıklandı. Sudo.ws duyurusuna göre sudoers'ta olmayan yerel bir kullanıcı bile root olabilirdi; düzeltme 1.8.32 ve 1.9.5p2 sürümlerindedir."
+  ders: "Yetkiyi yöneten araç da yazılımdır ve açık taşıyabilir. sudo'yu güncel tutmak ve yetkili kullanıcıları sınırlı tutmak bu yüzden önemlidir."
+  kaynak:
+    ad: "sudo.ws güvenlik duyurusu"
+    url: "https://www.sudo.ws/security/advisories/unescape_overflow/"
 derinDalis:
   - tur: okuma
     baslik: "Ubuntu Server: kullanıcı yönetimi"

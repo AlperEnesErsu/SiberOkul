@@ -79,15 +79,66 @@ sorular:
   - id: pipeline-012-s1
     soru: "Pipeline'ındaki üç tarama (sır, bağımlılık, imaj) hangi riskleri birbirinden ayrı kapatır?"
     cevap: "Sır taraması koda giren kimlik bilgilerini, bağımlılık taraması kullanılan kütüphanelerdeki bilinen açıkları, imaj taraması container içindeki işletim sistemi ve paket açıklarını yakalar. Biri diğerinin işini yapmaz."
+    ipucu: "Üç tarama üç farklı soruyu cevaplıyor: koda ne girdi, kütüphanede ne var, imajda ne var?"
   - id: pipeline-012-s2
     soru: "Bu pipeline'da hangi dört yerde 'en az yetki' ilkesini uyguladın?"
     cevap: "Workflow varsayılan izni `contents: read`; yazma izni (SARIF yüklemek için `security-events: write`) yalnız ilgili job'da; `persist-credentials: false` ile token diskte bırakılmıyor; ve aksiyonlar SHA ile sabit. Tetikleyici olarak `pull_request` seçildi, `pull_request_target` değil."
+    ipucu: "İzin, aksiyon, sırlar, kullanıcı: yetkiyi daraltan yerleri say."
   - id: pipeline-012-s3
     soru: "Dependabot'u neden `github-actions` ekosistemi için de açtın?"
     cevap: "Aksiyonlar da bağımlılıktır ve SHA ile sabitlenince kendiliğinden güncellenmezler. Dependabot yeni sürümleri PR olarak getirir; böylece sabitleme güvenliğini yamaların gecikmesi pahasına kaybetmezsin."
+    ipucu: "Aksiyonlar da bağımlılıktır; kim güncel tutuyor?"
   - id: pipeline-012-s4
     soru: "Pipeline'ı bir mülakatta anlatırken hangi üç soruya cevap hazırlamalısın?"
     cevap: "Neden bu araçlar ve eşikler? Yanlış pozitifleri nasıl yönettin? Pipeline'ın kendisini nasıl korudun (izinler, sabitleme, dal koruma)? Bu üçü, araç adlarını saymaktan çok olgunluğunu gösterir."
+    ipucu: "Ne seçtin, neden o eşiği koydun, ne yapmadın?"
+  - id: pipeline-012-s5
+    soru: "Mülakatta 'pipeline'ın kırmızı olunca PR gerçekten birleştirilemiyor mu?' diye soruluyor. Bunu nasıl gösterirsin ve ne eksik olabilir?"
+    cevap: "Dal korumada ilgili job'ları zorunlu durum kontrolü olarak işaretlediğini ve kuralın yöneticilere de uygulandığını gösterirsin; sahte sırlı bir PR'ın kırmızı olup birleştirme düğmesinin kilitlendiğini kanıt olarak sunarsın. Eksik olabilecek şey: job adının kuraldaki adla uyuşmaması ya da kuralın yöneticilere uygulanmaması. Araç var ama kapı yoksa korumanın anlamı kalmaz."
+    ipucu: "Araçla kapıyı birbirinden ayıran ayarı hatırla."
+hizliKontrol:
+  - soru: Hangi tarama dakikalar içinde biter ve PR'da koşmaya uygundur?
+    secenekler:
+      - Tam (aktif) DAST taraması
+      - Sır, SCA ve imaj taraması
+      - Haftalık penetrasyon testi
+      - Yük testi
+    dogru: 1
+    aciklama: Hızlı kontroller PR'da; yavaş olan DAST zamanlanmış ya da birleştirme sonrası çalışır.
+    ipucu: Hızlı olanlar.
+  - soru: Workflow'da hangi seçim doğrudur?
+    secenekler:
+      - "Varsayılan `contents: write`"
+      - Aksiyonları etiketle çağırmak
+      - "`pull_request_target` ile fork kodunu çalıştırmak"
+      - "Varsayılan `contents: read`, yazma yalnız gereken job'da"
+    dogru: 3
+    aciklama: En dar izin ve sabitlenmiş aksiyonlar workflow'un kendisini de korur.
+    ipucu: En az yetki.
+sikHatalar:
+  - hata: Üç aracı kurup dal korumada zorunlu yapmamak.
+    dogrusu: Job'ları zorunlu durum kontrolü yap ve kuralı yöneticilere de uygula.
+  - hata: Mevcut bir projede hemen hepsini engelleyici yapmak.
+    dogrusu: Önce uyar modunda başla, taban çizgisi kur, güvenilir kontrolleri kademeli sıkılaştır.
+sema:
+  baslik: PR'dan birleştirmeye pipeline
+  adimlar:
+    - etiket: PR açılır
+      aciklama: "Workflow `pull_request` ile `contents: read` yetkisiyle başlar."
+    - etiket: Sır taraması
+      aciklama: GitShield eklenen satırlara bakar, bulguyu SARIF olarak yükler.
+    - etiket: Bağımlılık taraması
+      aciklama: OSV-Scanner kilit dosyasını bilinen açıklarla karşılaştırır.
+    - etiket: İmaj taraması
+      aciklama: Trivy imajı build eder ve HIGH/CRITICAL bulguda başarısız olur.
+    - etiket: Dal koruma
+      aciklama: Zorunlu kontroller yeşil ve inceleme tamamsa birleştirme açılır.
+terimler:
+  - Güvenlik kapısı
+  - Branch protection
+  - SARIF
+  - Secret scanning
+  - SCA
 derinDalis:
   - tur: lab
     baslik: "Kendi deponda uygula"
@@ -135,5 +186,11 @@ Görevdeki workflow'da `<SHA>` gördüğün yerleri kendi doğrulayacağın değ
 ### Sonra ne?
 
 Yedinci bölgede aynı düşünceyi container ve Kubernetes düzeyine, altyapı kodunun (IaC) taranmasına taşıyacaksın. Sekizinci bölgede ise bu pipeline'ın çıktısı bulut ve izleme zincirinin başlangıcı olacak.
+
+### Portfolyo ve mülakat için nasıl sunarsın?
+
+Bitmiş pipeline'ı üç şeyle göster: **README'de bir diyagram** (PR'dan birleştirmeye akış), **kanıt** (kırmızı olan bir PR'ın ekran görüntüsü ve birleştirme düğmesinin kilitli olması) ve **kararların gerekçesi** (neden bu eşik, neden bu araç, neyi yapmadın).
+
+Mülakatçılar araç listesinden çok muhakemeyle ilgilenir. "Gerçek sırrı engelliyorum, orta ağırlıklı SAST bulgusu yalnız uyarı; çünkü gürültü kontrolün terk edilmesine yol açar" demek, "Semgrep ve Trivy kullandım" demekten daha ikna edicidir. Bir de sınırlarını açıkça söyle: DAST'ı eklemedin, imzalama yok, ve bunları sıradaki adım olarak planladığını belirt.
 
 **Güvenlik notu:** Bu derste gerçek anahtar kullanma. Test için yalnız sahte ve belgeli örnek değerler kullan, ve denemeleri yalnız kendi test deponda yap.

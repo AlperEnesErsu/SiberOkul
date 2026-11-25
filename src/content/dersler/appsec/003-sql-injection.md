@@ -37,20 +37,69 @@ sorular:
   - id: appsec-003-s1
     soru: "SQL injection neden oluşur?"
     cevap: "Kullanıcı girdisi, SQL komutunun metnine doğrudan eklendiğinde veri tabanı girdinin bir kısmını komut olarak yorumlar. Veri ile komut aynı string içinde karıştığı için olur."
+    ipucu: "Komut ve veri aynı metinde karışırsa veri tabanı hangisini ayırt eder?"
   - id: appsec-003-s2
     soru: "Parametreli sorgu (prepared statement) neden güvenlidir?"
     cevap: "Sorgu şablonu ve değerler veri tabanına ayrı iletilir. Değer her zaman veri olarak ele alınır, içinde SQL sözdizimi olsa bile komut olarak çalışmaz."
+    ipucu: "Şablon ile değerin veri tabanına ayrı gitmesinin sonucunu düşün."
   - id: appsec-003-s3
     soru: "Tablo adı ya da `ORDER BY` sütunu kullanıcıdan geliyorsa parametre kullanılabilir mi? Ne yaparsın?"
     cevap: "Hayır, parametreler yalnız değerler içindir; tablo ve sütun adları parametre olamaz. Kullanıcı seçimini uygulamanın tanımladığı sabit bir izin listesine eşlersin, listede olmayanı reddedersin."
+    ipucu: "Parametre yalnız hangi tür parçalar için olur?"
   - id: appsec-003-s4
     soru: "Veri tabanı hesabına en az yetki vermek, SQL injection karşısında nasıl yardımcı olur?"
     cevap: "Açık oluşsa bile saldırgan yalnız uygulamanın hesabının izin verdiği işlemleri yapabilir. Salt okunur ya da yalnız gerekli tablolara erişimi olan bir hesap, hasarı sınırlar. Bu, ana savunmanın (parametreli sorgu) yerine geçmez, ek katmandır."
+    ipucu: "Hasarı sınırlayan ek katman, savunmanın yerine geçer mi?"
+  - id: appsec-003-s5
+    soru: Gece nöbetinde WAF günlüğünde `id=1 UNION SELECT ad,parola FROM kullanici--` içeren yüzlerce istek görüyorsun. İlk ne yaparsın?
+    cevap: Önce isteklerin başarılı olup olmadığına bakarsın (yanıt kodu, yanıt boyutu, veri tabanı günlüğü). Kaynak IP'yi engelleyip olayı güvenlik ekibine bildirirsin. Sonra ilgili uç noktanın kodunu bulup string birleştirmeyi parametreli sorguya çevirirsin; veri sızmış olabilirse olay müdahale sürecini başlatırsın.
+    ipucu: Saldırı denemesi ile başarılı saldırı arasındaki farkı günlükten nasıl anlarsın?
 derinDalis:
   - tur: okuma
     baslik: "OWASP SQL Injection Prevention Cheat Sheet"
     ayrinti: "Parametreli sorgu, izin listesi ve neden elle kaçırmanın (escaping) önerilmediği."
     url: "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html"
+hizliKontrol:
+  - soru: Parametreli sorguda SQL şablonu ve kullanıcı değeri nasıl iletilir?
+    secenekler:
+      - Tek bir metin olarak birleştirilip
+      - Değerin tırnakları silinerek
+      - Büyük harfe çevrilerek
+      - Ayrı ayrı; değer her zaman veri sayılır
+    dogru: 3
+    aciklama: Şablon ve değer ayrı gittiği için değer içindeki SQL sözdizimi komut olarak çalışmaz.
+    ipucu: Güvenliği sağlayan şey, ayrılık ilkesidir.
+  - soru: Sıralama sütunu kullanıcıdan geliyorsa en uygun önlem hangisi?
+    secenekler:
+      - Sütun adını parametre olarak bağlamak
+      - Uygulamada tanımlı bir izin listesine eşlemek
+      - Sütun adından boşlukları silmek
+      - Sorguyu iki kez çalıştırmak
+    dogru: 1
+    aciklama: Parametreler yalnız değerler içindir; yapısal parçalar sabit bir listeden seçilir.
+    ipucu: Parametre bağlama değerler içindir; yapıyı başka nasıl kısıtlarsın?
+sikHatalar:
+  - hata: Tırnak işaretlerini elle kaçırarak sorguyu 'güvenli' saymak.
+    dogrusu: Elle kaçırma kırılgandır; parametreli sorgu kullan.
+  - hata: ORM kullandığı için ham sorguda da güvende olduğunu sanmak.
+    dogrusu: ORM'in ham sorgu fonksiyonuna string birleştirirsen açık geri gelir.
+sema:
+  baslik: Bir SQL injection girdisi nasıl yol alır?
+  adimlar:
+    - etiket: Girdi
+      aciklama: Saldırgan form alanına `x' OR '1'='1` yazar.
+    - etiket: Birleştirme
+      aciklama: Uygulama girdiyi sorgu metnine doğrudan ekler.
+    - etiket: Sorgu
+      aciklama: Ortaya `WHERE ad = 'x' OR '1'='1'` çıkar.
+    - etiket: Yorumlama
+      aciklama: Veri tabanı girdinin bir kısmını komut olarak çalıştırır.
+    - etiket: Sonuç
+      aciklama: Koşul herkes için doğru olur ve tüm satırlar döner.
+terimler:
+  - SQL injection
+  - Parametreli sorgu
+  - ORM
 ---
 
 SQL injection'ın kökeni, ders 2'deki ilkenin ihlalidir: güvenilmeyen girdi bir **komut diline** karışır. Aşağıdaki kod açıklıdır:

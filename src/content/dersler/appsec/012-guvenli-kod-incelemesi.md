@@ -40,20 +40,46 @@ sorular:
   - id: appsec-012-s1
     soru: "Güvenlik odaklı kod incelemesinde ilk bakılacak üç yer neresidir?"
     cevap: "Dış girdinin girdiği noktalar (istek parametreleri, dosya yükleme), girdinin gittiği tehlikeli yerler (sorgu, komut, dosya yolu, HTML çıktısı) ve kimlik doğrulama/yetkilendirme kontrolleri."
+    ipucu: "Kullanıcıdan gelen veri kodda nereye ulaşıyor? Veriyi izle."
   - id: appsec-012-s2
     soru: "Kodda sabit yazılmış sır (API anahtarı) bulunca ne yaparsın?"
     cevap: "Anahtarı koddan çıkarıp ortam değişkeni ya da sır yöneticisine taşırsın. Depoya girdiyse, geçmişte kaldığı için anahtarı iptal edip yenisini üretirsin (döndürme)."
+    ipucu: "Sırrı koda yazan kişi sırrı sızdırmış sayılır; sonra ne gerekir?"
   - id: appsec-012-s3
     soru: "`grep` ve otomatik araçlar neden insan incelemesinin yerini tutmaz?"
     cevap: "Araçlar kalıpları yakalar ama iş mantığını bilmez: 'bu kaydı bu kullanıcı görebilir mi?' gibi hatalar kalıp olarak görünmez. Ayrıca yanlış pozitifler ve kaçırılan bulgular olur."
+    ipucu: "Araç ne yakalar, ne kaçırır? İş mantığı hatalarını düşün."
   - id: appsec-012-s4
     soru: "İnceleme yorumunu nasıl yazarsın ki geliştirici anlasın ve düzeltsin?"
     cevap: "Yeri (dosya, satır), sorunu (hangi girdi nereye gidiyor), riski ve somut düzeltmeyi (örnek kodla) yaz. Kişiyi değil kodu eleştir; örneğin 'Bu sorgu parametrelenmeli, şu şekilde:' gibi."
+    ipucu: "Yorum geliştiriciye hem ne yanlış hem nasıl düzelir diye söylemeli."
+  - id: appsec-012-s5
+    soru: PR'da `yaml.load(istek.govde)` ve `subprocess.run(komut, shell=True)` görüyorsun. İkisi için kısa inceleme yorumları nasıl olur?
+    cevap: "`yaml.load` için: güvenilmeyen girdiyi güvenli yükleyiciyle (ör. `yaml.safe_load`) işle, aksi halde nesne oluşturma yoluyla kod çalıştırılabilir. `shell=True` için: kullanıcı girdisi kabuğa gidiyor, komut enjeksiyonu riski var; argüman listesiyle çağır, girdiyi izin listesiyle doğrula. Her yorumda risk, neden ve önerilen düzeltme yer alır."
+    ipucu: Her yorumda sorun, sebep ve çözüm olsun.
 derinDalis:
   - tur: okuma
     baslik: "OWASP Secure Code Review Cheat Sheet"
     ayrinti: "İnceleme yöntemi, yaygın zafiyet kalıpları ve kontrol listeleri."
     url: "https://cheatsheetseries.owasp.org/cheatsheets/Secure_Code_Review_Cheat_Sheet.html"
+hizliKontrol:
+  - soru: Güvenli kod incelemesinde en verimli yaklaşım hangisidir?
+    secenekler:
+      - Yalnız değişen satırların biçimine bakmak
+      - Kullanıcı girdisinin kodda nereye aktığını izlemek
+      - Yalnız araç çıktısına güvenmek
+      - Testleri silip yeniden yazmak
+    dogru: 1
+    aciklama: Güvenlik açıklarının çoğu, güvenilmeyen verinin tehlikeli bir noktaya ulaşmasıyla oluşur.
+    ipucu: Kaynaktan hedefe giden veri yolunu düşün.
+sikHatalar:
+  - hata: Koda yanlışlıkla yazılan API anahtarını silip commit etmekle yetinmek.
+    dogrusu: "Anahtar sızmış sayılır: iptal et, yenisini üret ve geçmişteki kullanımları kontrol et."
+  - hata: "'Araç bir şey bulmadı, kod temiz' demek."
+    dogrusu: Araçlar iş mantığı ve yetki hatalarının çoğunu kaçırır; insan incelemesi tamamlayıcıdır.
+terimler:
+  - Komut enjeksiyonu
+  - SAST
 ---
 
 Güvenli kod incelemesi, bir değişikliğe saldırgan gözüyle bakmaktır. Amaç kod stilini düzeltmek değil, **güvenlik hatasını yayına çıkmadan yakalamak**. Otomatik araçlar (SAST, bağımlılık taraması) iyi bir ilk süzgeçtir; ama iş mantığı ve bağlam hataları için insan bakışı gerekir.

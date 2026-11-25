@@ -40,15 +40,67 @@ sorular:
   - id: pipeline-011-s1
     soru: "Bir bulgu build'i durdurmalı mı, yoksa sadece uyarı mı vermeli? Hangi ölçütlere bakarsın?"
     cevap: "Ağırlık, güvenilirlik (yanlış pozitif oranı), istismar kolaylığı ve düzeltme maliyeti. Yüksek ağırlıklı, güvenilir ve sömürülebilir bulgu (ör. gerçek bir sır) durdurur; düşük ağırlıklı ya da gürültülü bulgu uyarı olarak izlenir."
+    ipucu: "Üç ölçüt: ne kadar gürültülü, düzeltmesi ne kadar pahalı, istismar ne kadar kolay?"
   - id: pipeline-011-s2
     soru: "SARIF nedir ve neden araçlar ortak bir biçim kullanır?"
     cevap: "Statik analiz sonuçları için standart bir JSON biçimidir. Her araç aynı biçimle bulgu üretince, GitHub gibi platformlar bulguları ortak biçimde okuyup PR üzerinde dosya ve satıra bağlı uyarıya çevirebilir, farklı araçlar tek ekranda toplanır."
+    ipucu: "Farklı araçlar farklı biçimler üretirse ne yaşarsın?"
   - id: pipeline-011-s3
     soru: "Bir bulguyu 'yanlış pozitif' ya da 'riski kabul ettim' diye kapatırken ne kaydetmelisin?"
     cevap: "Karar gerekçesini, kararı veren kişiyi, tarihi ve gerekiyorsa bitiş tarihini. Kayıtsız kapatılan bulgu, altı ay sonra kimsenin hatırlamadığı bir kör noktaya dönüşür."
+    ipucu: "Altı ay sonra kararın gerekçesini kimse hatırlamayabilir."
   - id: pipeline-011-s4
     soru: "'Taban çizgisi' (baseline) yaklaşımı nedir ve ne zaman işe yarar?"
     cevap: "Var olan bulguların bir listesini kaydedip yalnız yeni eklenen bulgularda kapıyı kapatmaktır. Eski kodda yüzlerce bulgu bulunan bir projede aracı devreye almanın gerçekçi yoludur; eski borç ayrı bir planla eritilir."
+    ipucu: "Eski borcu bugünün işinden ayır."
+  - id: pipeline-011-s5
+    soru: "Ekip yeni bir tarayıcı ekledi, ilk tarama 400 bulgu verdi ve yöneticin 'hepsi sıfırlanmadan birleştirme olmasın' dedi. Ne önerirsin?"
+    cevap: "Mevcut bulguları taban çizgisi olarak kaydedip yalnız yeni ve yüksek güvenli bulguları engellemeyi öner. Eski bulgulara sahip ve tarih atayıp öncelik sırasıyla kapat; kritikleri hemen ele al. Aracı önce uyar modunda çalıştır, bulgu kalitesi görüldükten sonra kapıyı sıkılaştır. Aksi halde kimse birleştiremez ve araç atlanır."
+    ipucu: "Eski bulguları ve yeni bulguları aynı kapıya bağlamak ne sonuç doğurur?"
+hizliKontrol:
+  - soru: Hangisi en iyi bir 'engelle' (build'i durdur) adayıdır?
+    secenekler:
+      - Düşük ağırlıklı stil uyarısı
+      - Gerçek bir sır ya da kritik, düzeltmesi olan zafiyet
+      - Bilgi amaçlı bulgu
+      - Gürültülü, yeni açılmış bir kural
+    dogru: 1
+    aciklama: Engelleyici kuralların güvenilir ve yüksek etkili olması gerekir; gürültülü kurallar önce uyarı olmalı.
+    ipucu: Yanlış pozitifi düşük, etkisi yüksek olan.
+  - soru: SARIF'in faydası nedir?
+    secenekler:
+      - Farklı araçların sonuçlarını ortak bir biçimde sunmak
+      - Kodu otomatik düzeltmek
+      - Sırları şifrelemek
+      - İmajı küçültmek
+    dogru: 0
+    aciklama: SARIF ortak bir sonuç biçimidir; GitHub bulguları PR'da dosya ve satıra bağlı gösterebilir.
+    ipucu: Interchange kelimesi.
+sikHatalar:
+  - hata: Pipeline yeşil olsun diye eşiği gevşetmek.
+    dogrusu: Eşiği veriye bakarak ve kayıt tutarak değiştir; gevşetmek bulguyu gizlemektir.
+  - hata: Bulguyu sahipsiz bırakmak.
+    dogrusu: Her bulgunun bir sahibi ve hedef tarihi olsun.
+  - hata: Bir bulguyu gerekçesiz 'kabul edildi' diye kapatmak.
+    dogrusu: Gerekçe, kimin kabul ettiği ve bitiş tarihi kayda geçer.
+sema:
+  baslik: Bulgunun yaşam döngüsü
+  adimlar:
+    - etiket: Tespit
+      aciklama: Araç bulguyu üretir.
+    - etiket: Sınıflandır
+      aciklama: Gerçek mi, yanlış pozitif mi; önceliği belirlenir.
+    - etiket: Ata
+      aciklama: Bulgunun bir sahibi ve hedef tarihi olur.
+    - etiket: Düzelt ya da kabul et
+      aciklama: Kod düzelir ya da risk gerekçe ve bitiş tarihiyle kabul edilir.
+    - etiket: Doğrula
+      aciklama: Sonraki taramada bulgunun kaybolduğu görülür.
+terimler:
+  - Güvenlik kapısı
+  - SARIF
+  - Taban çizgisi
+  - Yanlış pozitif
 derinDalis:
   - tur: okuma
     baslik: "GitHub: Code scanning için SARIF desteği"
@@ -101,5 +153,13 @@ GitShield de bulgularını SARIF olarak üretir; yani aynı sonuçlar yalnız te
 ### Metrikler
 
 İyi bir pano şunları gösterir: açık bulgu sayısı ağırlığa göre, **düzeltme süresi** (bulunmadan kapanmaya), eski bulguların yaşı. "Bu ay 500 tarama yaptık" değil, "kritik bulguların ortalama düzeltme süresi 3 gün" anlamlıdır.
+
+### Taban çizgisini pratikte kurmak
+
+Taban çizgisi (baseline) yaklaşımı iki adımdır. Önce ilk taramanın sonucunu "bilinen eski borç" olarak kaydedersin; birçok araç bunu bir dosya ya da bir "ana dalla karşılaştır" modu olarak destekler. Sonra kapıyı yalnız **yeni** bulgulara uygularsın. Böylece geliştirici kendi yazdığı kodun sonucundan sorumlu olur, yıllık birikmiş borç ise ayrı bir plana bağlanır.
+
+Eski borcu **unutma**: kritik bulgulara tarih ver, gerisini her sprint'e küçük bir pay olarak koy. Taban çizgisi yalıtılmış bir çöp kutusuna dönüşürse, güvenlik açığı sayısı düşmez, sadece görünmez olur.
+
+Raporlamada işe yarayan bir kural: sonucu ekibe değil, kararı verecek kişiye uygun ver. Mühendise dosya ve satır, yöneticiye trend ve süre.
 
 **Güvenlik notu:** Kapıyı yalnız "yeşil olsun" diye gevşetmek, bulguları gizlemektir. Eşiği veriye bakarak ve kayıt tutarak değiştir.

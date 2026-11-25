@@ -28,15 +28,38 @@ sorular:
   - id: linux-002-s1
     soru: "`/var/log` ile `var/log` arasındaki fark nedir?"
     cevap: "`/var/log` mutlak yoldur; kök dizinden (`/`) başlar ve nerede olursan ol aynı yeri gösterir. `var/log` göreli yoldur; bulunduğun dizinin içindeki `var` dizinini arar. Ev dizinindeysen öyle bir dizin büyük ihtimalle yoktur ve hata alırsın."
+    ipucu: "Yolun `/` ile başlayıp başlamadığına bak."
   - id: linux-002-s2
     soru: "`cd ..` ve tek başına `cd` ne yapar?"
     cevap: "`cd ..` bir üst dizine çıkar (`..` üst dizin demektir). Argümansız `cd` seni doğrudan ev dizinine (`~`) götürür; `cd ~` ile aynıdır."
+    ipucu: "`cd` ve `cd ..` ayrı ayrı nereye götürür, düşün."
   - id: linux-002-s3
     soru: "`ls -a` ile görünen `.bashrc` gibi dosyalar neden normal `ls` ile görünmez?"
     cevap: "Adı nokta (`.`) ile başlayan dosyalar gizli sayılır. Genellikle ayar dosyalarıdır ve kalabalık yapmasınlar diye `ls` onları göstermez. `-a` (all) seçeneği hepsini gösterir."
+    ipucu: "Dosya adının ilk karakterine bak."
   - id: linux-002-s4
     soru: "`ls -a` çıktısının en başındaki `.` ve `..` ne anlama gelir?"
     cevap: "`.` bulunduğun dizinin kendisi, `..` bir üst dizindir. Her dizinde bu iki özel girdi vardır; göreli yollar bunlar sayesinde çalışır."
+    ipucu: "Her dizinde bulunan iki özel girdiyi düşün."
+  - id: linux-002-s5
+    soru: "`/var/log` altında olduğunu sanıyordun ama `cd uygulama` 'No such file or directory' dedi. Önce ne yaparsın?"
+    cevap: "Önce `pwd` ile gerçekte nerede olduğunu görürsün. `cd uygulama` göreli yoldur ve yalnız bulunduğun dizinin içinde `uygulama` arar; yanlış yerdeysen bulamaz. Mutlak yolla (`cd /var/log/uygulama`) nerede olursan ol hedefe gidersin."
+    ipucu: "Göreli yol hangi dizine göre çözülür?"
+hizliKontrol:
+  - soru: "Hangisi mutlak yoldur?"
+    secenekler: ["`../etc`","`etc/hosts`","`~notlar`","`/etc/hosts`"]
+    dogru: 3
+    aciklama: "Mutlak yol kök dizin olan `/` ile başlar ve nerede olursan ol aynı yeri gösterir."
+    ipucu: "Baştaki karaktere bak."
+sikHatalar:
+  - hata: "Nerede olduğuna bakmadan komut çalıştırmak."
+    dogrusu: "Önce `pwd` ile yerini doğrula; silme gibi komutlardan önce bu şarttır."
+  - hata: "Nokta ile başlayan dosyaların 'yok' olduğunu sanmak."
+    dogrusu: "Gizli dosyalar silinmez, yalnız `ls`'te görünmez; `ls -a` ile gösterilir."
+terimler:
+  - "Mutlak yol"
+  - "Göreli yol"
+  - "Ev dizini"
 derinDalis:
   - tur: kitap
     baslik: "The Linux Command Line (William Shotts)"

@@ -31,20 +31,50 @@ sorular:
   - id: bulut-004-s1
     soru: "VPC, alt ağ (subnet) ve güvenlik grubunu bir cümleyle ilişkilendir."
     cevap: "VPC senin izole sanal ağındır, alt ağlar onun IP aralığından dilimlerdir, güvenlik grubu ise içindeki kaynaklara gelen ve giden trafiği filtreleyen sanal güvenlik duvarıdır."
+    ipucu: "VPC büyük bir ağ mı, küçük bir dilim mi; güvenlik grubu hangisine bağlanır?"
   - id: bulut-004-s2
     soru: "Genel (public) ve özel (private) alt ağ arasındaki fark nedir?"
     cevap: "Genel alt ağın yönlendirme tablosunda internet geçidine (internet gateway) giden bir yol vardır. Özel alt ağda bu yol yoktur; dışarı çıkmak gerekiyorsa NAT gibi kontrollü bir yol kullanılır. Veritabanları özel alt ağa konur."
+    ipucu: "Alt ağı genel yapan şeyin adı değil yönlendirme tablosu olduğunu hatırla."
   - id: bulut-004-s3
     soru: "Güvenlik grupları 'durumlu' (stateful) ne demektir?"
     cevap: "İzin verilen bir isteğin yanıtı, ayrıca kural yazılmadan geri geçer. Güvenlik grubunda yalnız izin kuralları vardır; kuralı olmayan trafik varsayılan olarak engellenir."
+    ipucu: "Yanıt trafiğinin geri dönmesi için ayrıca kural gerekip gerekmediğini düşün."
   - id: bulut-004-s4
     soru: "Yönetim portları (SSH 22, RDP 3389) için en güvenli yaklaşım nedir?"
     cevap: "Dünyaya açmamak. Yalnız bilinen IP aralıklarına izin ver ya da portu hiç açmadan oturum yöneticisi gibi bir servis kullan."
+    ipucu: "Yönetim portu açıkken kaç farklı adres deneme yapabilir?"
+  - id: bulut-004-s5
+    soru: "Bir güvenlik grubunda PostgreSQL (5432) `0.0.0.0/0`'a açık ve veritabanı genel alt ağda. Ne yaparsın?"
+    cevap: "Önce kuralı kapatır, veritabanını özel alt ağa taşır ve 5432'ye yalnız uygulamanın güvenlik grubundan izin veririm. Sonra kayıtlara bakıp dışarıdan bağlantı olup olmadığını kontrol ederim. Terraform'da `0.0.0.0/0` satırını yakalayan bir kontrol eklerim."
+    ipucu: "Kaynak olarak başka bir güvenlik grubu verebileceğini hatırla."
 derinDalis:
   - tur: okuma
     baslik: "AWS: Güvenlik grupları"
     ayrinti: "Durumlu çalışma, en iyi uygulamalar ve 22/3389 portları için uyarılar."
     url: "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html"
+hizliKontrol:
+  - soru: "Bir alt ağın internetten doğrudan erişilebilir olup olmadığını ne belirler?"
+    secenekler: ["Alt ağın adı","Yönlendirme tablosunda internet geçidine giden yol","Alt ağdaki sunucu sayısı","IP aralığının büyüklüğü"]
+    dogru: 1
+    aciklama: "Genel alt ağın yönlendirme tablosunda internet geçidine bir yol vardır; ad bir şey belirlemez."
+    ipucu: "Ad bir etikettir; davranışı yol belirler."
+sikHatalar:
+  - hata: "SSH'yi pratik olsun diye `0.0.0.0/0`'a açmak."
+    dogrusu: "Yalnız bilinen IP aralıklarına izin ver ya da portsuz oturum yöneticisi kullan."
+  - hata: "Tüm kaynaklara tek bir güvenlik grubu atamak."
+    dogrusu: "İşleve göre ayrı gruplar kur; her kural herkese uygulanmasın."
+sema:
+  baslik: "Üç katmanlı ağ akışı"
+  adimlar:
+    - { etiket: "İnternet", aciklama: "Kullanıcı isteği internetten gelir." }
+    - { etiket: "Yük dengeleyici", aciklama: "Genel alt ağdaki yük dengeleyici isteği alır." }
+    - { etiket: "Uygulama", aciklama: "Özel alt ağdaki uygulama yalnız yük dengeleyiciden gelene izin verir." }
+    - { etiket: "Veritabanı", aciklama: "Veritabanı grubu yalnız uygulama grubundan 5432'ye izin verir." }
+terimler:
+  - "VPC"
+  - "Alt ağ"
+  - "Güvenlik grubu"
 ---
 
 Bulutta ağ da koddur: birkaç satırla bir ağ doğar. Üç parçayı tanımak yeterli bir başlangıçtır.

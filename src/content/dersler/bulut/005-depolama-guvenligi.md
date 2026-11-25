@@ -30,15 +30,23 @@ sorular:
   - id: bulut-005-s1
     soru: "S3 Block Public Access ne işe yarar?"
     cevap: "Bucket ya da hesap düzeyinde, ACL ve politikalarla herkese açıklık verilmesini engelleyen bir güvenlik ağıdır. Politika yanlış yazılsa bile açıklık oluşmaz; ayar kapatılırsa eski politika yeniden etkinleşir."
+    ipucu: "Bucket ve hesap düzeyinde politikalardan bağımsız çalışan bir güvenlik ağını düşün."
   - id: bulut-005-s2
     soru: "S3 varsayılan olarak nesneleri şifreler mi? Bu seni neyden korur, neyden korumaz?"
     cevap: "Evet, yeni nesneler varsayılan olarak SSE-S3 ile şifrelenir. Bu, depolama diskinin ele geçirilmesine karşı korur; ama izni olan bir kimlik nesneyi şifresiz okur. Yani yanlış erişim politikasına karşı koruma değildir."
+    ipucu: "Şifreleme diskteki veriyi mi korur, yetkili okuyanı mı engeller?"
   - id: bulut-005-s3
     soru: "SSE-S3 ile SSE-KMS arasındaki pratik fark nedir?"
     cevap: "SSE-S3'te anahtarı S3 yönetir. SSE-KMS'de anahtar sendeki KMS anahtarıdır; kimin kullanabileceğini ayrıca politikayla sınırlarsın ve anahtar kullanımı kayda geçer."
+    ipucu: "Anahtarı kimin yönettiği ve kullanımın kaydedilip kaydedilmediği farkı belirler."
   - id: bulut-005-s4
     soru: "Silinen ya da üzerine yazılan nesneye karşı hangi özellik yardım eder?"
     cevap: "Sürümleme (versioning): her değişiklik yeni bir sürüm olarak saklanır; silinen nesne eski sürümden geri getirilebilir. Daha güçlüsü için nesne kilidi (Object Lock) sürümlerin silinmesini de engeller."
+    ipucu: "Silineni geri getirmek için her değişikliğin saklanması gerekir."
+  - id: bulut-005-s5
+    soru: "Access Analyzer, müşteri yedeği tutan bir bucket'ın internete açık olduğunu bildiriyor. İlk ne yaparsın?"
+    cevap: "Block Public Access'i açıp açık politikayı kaldırırım. Sonra CloudTrail ve erişim kayıtlarından kimin ne okuduğuna bakarım. Veri okunmuşsa olay müdahale sürecini başlatır, ayarın kodla zorlanmasını sağlarım."
+    ipucu: "Önce açıklığı kapat, sonra kayıtlara bak."
 derinDalis:
   - tur: okuma
     baslik: "AWS: S3 erişimini herkese kapatmak (Block Public Access)"
@@ -48,6 +56,21 @@ derinDalis:
     baslik: "AWS: S3 varsayılan şifreleme SSS"
     ayrinti: "Yeni nesnelerin SSE-S3 ile otomatik şifrelenmesi ve mevcut nesneler için yapılması gerekenler."
     url: "https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-encryption-faq.html"
+hizliKontrol:
+  - soru: "S3 Object Lock hangi önkoşulu ister?"
+    secenekler: ["Bucket'ta sürümleme açık olmalı","Bucket şifreli olmamalı","Bucket genel alt ağda olmalı","Yalnız kök kullanıcı yazabilmeli"]
+    dogru: 0
+    aciklama: "Object Lock yalnız sürümlemenin açık olduğu bucket'larda çalışır."
+    ipucu: "Kilit, nesnenin belirli bir sürümüne uygulanır."
+sikHatalar:
+  - hata: "Şifreleme açık, öyleyse bucket'ı herkese açmak sorun değil sanmak."
+    dogrusu: "Yetkili kimlik nesneyi şifresiz okur; erişim politikası ve Block Public Access şarttır."
+  - hata: "'Bucket adını kimse bilmez' diye güvenmek."
+    dogrusu: "Adlar tahmin edilir ve sızar; güvenlik ad gizlemekle sağlanmaz."
+terimler:
+  - "Block Public Access"
+  - "Sürümleme"
+  - "Nesne kilidi"
 ---
 
 Depolama güvenliği üç soruya iner: **Kim okuyabilir? Veri diskte nasıl durur? Bir şey silinir ya da bozulursa geri dönebilir miyim?**

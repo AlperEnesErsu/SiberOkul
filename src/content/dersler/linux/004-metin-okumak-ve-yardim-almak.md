@@ -26,15 +26,38 @@ sorular:
   - id: linux-004-s1
     soru: "`head -n 5 dosya` ve `tail -n 5 dosya` komutları ne yapar?"
     cevap: "`head` dosyanın ilk 5 satırını, `tail` son 5 satırını yazar. `-n` satır sayısını belirler; sayı verilmezse varsayılan 10 satırdır."
+    ipucu: "Dosyanın başı ve sonu için ayrı komutlar var; hangisi hangisi?"
   - id: linux-004-s2
     soru: "`tail -f` neden log izlerken özellikle işe yarar?"
     cevap: "`-f` (follow) komutu açık tutar ve dosyaya eklenen yeni satırları gelir gelmez gösterir. Böylece bir hatayı tetikleyip aynı anda log'a düşen mesajı görebilirsin. Çıkmak için `Ctrl+C`."
+    ipucu: "`-f` harfi hangi sözcüğün kısaltması?"
   - id: linux-004-s3
     soru: "Bir komutun seçeneklerini hatırlamıyorsun. Hangi iki yolu denersin?"
     cevap: "`komut --help` kısa bir özet verir. `man komut` ise tam kılavuz sayfasını açar. Kılavuz içinde `/aranan` ile arama yapılır, `q` ile çıkılır."
+    ipucu: "Kısa özet ile tam kılavuz farkını düşün."
   - id: linux-004-s4
     soru: "Bir dizindeki 50 MB'lık log dosyasına `cat` çekersen ne olur ve daha iyi bir yöntem nedir?"
     cevap: "Dosyanın tamamı ekrana akar, terminal dolar ve işine yarayan kısım kaybolur. `less dosya` ile sayfa sayfa gezmek ya da `tail -n 100 dosya` ile yalnız son satırlara bakmak daha iyidir."
+    ipucu: "Çok uzun çıktıda ekranın ne hale geldiğini düşün."
+  - id: linux-004-s5
+    soru: "Sabaha karşı uygulama çöküyor ve `/var/log/uygulama.log` 2 GB. Hatanın son anını hızlı nasıl bulursun?"
+    cevap: "`tail -n 200 /var/log/uygulama.log` ile en son kayıtları görürsün; `cat` terminali doldurur. Hatayı yeniden tetikleyeceksen `tail -f` ile canlı izlersin. Sonra ilgili kelimeyi aramak için `grep` kullanabilirsin."
+    ipucu: "Dosyanın hangi ucu en güncel bilgiyi taşır?"
+hizliKontrol:
+  - soru: "Bir komutun tam kılavuzunu hangisi açar?"
+    secenekler: ["`komut --help`","`man komut`","`head komut`","`cat komut`"]
+    dogru: 1
+    aciklama: "`man` tam kılavuz sayfasını açar; `--help` kısa özet verir."
+    ipucu: "Kısa özet mi, tam kılavuz mu soruluyor?"
+sikHatalar:
+  - hata: "Büyük log dosyasına `cat` çekmek."
+    dogrusu: "`less` ile sayfa sayfa gez ya da `tail -n 100` ile yalnız sonunu oku."
+  - hata: "Hata mesajını okumadan komutu tekrar tekrar çalıştırmak."
+    dogrusu: "Hata metni çoğu zaman nedeni söyler; önce onu oku, sonra `man` ya da `--help`'e bak."
+terimler:
+  - "Log"
+  - "Terminal"
+  - "Kabuk (shell)"
 derinDalis:
   - tur: kitap
     baslik: "The Linux Command Line (William Shotts)"

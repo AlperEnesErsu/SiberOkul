@@ -25,15 +25,23 @@ sorular:
   - id: appsec-009-s1
     soru: "Doğrudan ve dolaylı (transitive) bağımlılık arasındaki fark nedir ve neden önemlidir?"
     cevap: "Doğrudan bağımlılığı sen eklersin; dolaylı olan, onun kullandığı kütüphanelerdir. Açık çoğunlukla dolaylı bağımlılıkta çıkar; ona doğrudan dokunamazsın, doğrudan bağımlılığı güncellemek ya da üst sürüm zorlamak gerekir."
+    ipucu: "Bulgu raporunda 'düzeltme sürümü' var; bu bilgiyle ilk hareketin ne olmalı?"
   - id: appsec-009-s2
     soru: "Kilit dosyası (lockfile) ve sürüm sabitleme ne işe yarar?"
     cevap: "Hangi sürümlerin kullanıldığını sabitler; derlemeler tekrarlanabilir olur ve bir kütüphanenin beklenmedik yeni (ya da ele geçirilmiş) sürümü sessizce içeri girmez. Güncellemeler bilinçli ve incelenerek yapılır."
+    ipucu: "Projene doğrudan eklemediğin ama yine de yüklenen paketleri düşün."
   - id: appsec-009-s3
     soru: "Her şeyi sabitleyip hiç güncellememek neden bir çözüm değildir?"
     cevap: "Sabit sürümler zamanla bilinen açıklar biriktirir. Sabitleme tekrarlanabilirlik içindir; düzenli tarama ve güncelleme olmadan eski ve açıklı sürümlerde kalırsın."
+    ipucu: "Kilit dosyası olmazsa iki farklı gün kurulum aynı paketleri getirir mi?"
   - id: appsec-009-s4
     soru: "Bir tarama aracı bulgu verdi ama kod o zafiyetli fonksiyonu hiç çağırmıyor. Bulgu yine de ele alınmalı mı?"
     cevap: "Önce etkilenebilirliği değerlendir: kullanılmıyorsa risk düşüktür ve gerekçesiyle belgeli bir istisna olabilir. Ama kod sonradan değişebilir ve araç her durumu bilemez; kalıcı çözüm yine de güncellemektir."
+    ipucu: "Erişilemeyen kod yolundaki bulgu da bugün için risk mi, yarın için mi?"
+  - id: appsec-009-s5
+    soru: Yeni bir açık duyuruldu ve ekibin kullandığı bir kütüphane etkileniyor. Yöneticin 'hemen güncelleyin' diyor ama güncelleme büyük bir sürüm atlaması. Nasıl ilerlersin?
+    cevap: Önce açığın projende gerçekten erişilebilir olup olmadığını ve ciddiyetini değerlendirirsin. Düzeltilmiş en küçük sürüm varsa onu alırsın; yoksa büyük sürüm geçişini bir dalda test paketiyle dener, geçici önlem (yapılandırma ya da WAF kuralı) uygularsın. Sonra taramayı yeniden çalıştırıp çözüldüğünü doğrular ve kilit dosyasını güncellersin.
+    ipucu: Önce erişilebilirlik ve etki, sonra en küçük güvenli adım.
 derinDalis:
   - tur: okuma
     baslik: "OWASP Vulnerable Dependency Management Cheat Sheet"
@@ -43,6 +51,25 @@ derinDalis:
     baslik: "pip-audit"
     ayrinti: "Python bağımlılıkları için açık tarama aracının sayfası ve kullanımı (PyPI)."
     url: "https://pypi.org/project/pip-audit/"
+hizliKontrol:
+  - soru: Dolaylı (transitive) bağımlılık nedir?
+    secenekler:
+      - Senin yazdığın modül
+      - Bağımlılığının bağımlılığı olarak gelen paket
+      - Yalnız geliştirme aracı olan paket
+      - Sürümü sabitlenmemiş paket
+    dogru: 1
+    aciklama: Doğrudan eklemediğin paketler de uygulamana girer ve açık taşıyabilir.
+    ipucu: Zincirin ikinci halkasını düşün.
+sikHatalar:
+  - hata: Bütün sürümleri sabitleyip hiç güncellememek.
+    dogrusu: Sabitleme tekrarlanabilirlik içindir; yeni açıklar için düzenli güncelleme ve tarama gerekir.
+  - hata: Taramanın 'yüksek' dediği her bulguyu eşit acillikte saymak.
+    dogrusu: Kodun o işlevi gerçekten çağırıp çağırmadığına ve açığın istismar edilebilirliğine göre önceliklendir.
+terimler:
+  - SCA
+  - Kilit dosyası
+  - Dolaylı bağımlılık
 ---
 
 Bir web uygulaması genellikle düzinelerce doğrudan, yüzlerce dolaylı bağımlılık kullanır. Her biri senin uygulamanın saldırı yüzeyine eklenir. 2025 Top 10'daki "yazılım tedarik zinciri hataları" başlığı bu sorunu da kapsar.

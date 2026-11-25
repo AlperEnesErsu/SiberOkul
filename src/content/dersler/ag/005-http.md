@@ -23,15 +23,53 @@ sorular:
   - id: ag-005-s1
     soru: "Bir HTTP isteği hangi parçalardan oluşur?"
     cevap: "Bir istek satırı (metot, yol, sürüm), başlıklar ve gerekiyorsa bir gövde. Örneğin `GET /index.html HTTP/1.1` satırı, ardından `Host: example.com` gibi başlıklar."
+    ipucu: "İlk satırda üç şey var: ne yapılacak, nerede, hangi sürüm."
   - id: ag-005-s2
     soru: "GET ile POST arasındaki fark nedir? Parola gibi bir bilgiyi neden URL'ye koymamalısın?"
     cevap: "GET veri okumak, POST veri göndermek içindir. URL; tarayıcı geçmişinde, sunucu loglarında ve yönlendirmelerde saklanabildiği için parola oraya konmamalı."
+    ipucu: "Adres çubuğuna yazılan her şey nerelerde kayıt olur?"
   - id: ag-005-s3
     soru: "200, 301, 403, 404 ve 500 durum kodları ne söyler?"
     cevap: "200 başarılı, 301 kalıcı yönlendirme, 403 yetkin yok, 404 kaynak bulunamadı, 500 sunucu tarafında hata. Sınıf mantığı: 2xx başarı, 3xx yönlendirme, 4xx istemci hatası, 5xx sunucu hatası."
+    ipucu: "Kodun ilk rakamı sınıfı söyler."
   - id: ag-005-s4
     soru: "Bir yanıtta `Server: Apache/2.4.1` gibi ayrıntılı bir başlık görmek neden bir güvenlik ipucu sayılır?"
     cevap: "Saldırgana kullanılan yazılımın adını ve sürümünü verir; bilinen zafiyetleri aramasını kolaylaştırır. Gereksiz bilgi sızıntısı olduğu için üretimde sürüm bilgisini kısmak iyi pratiktir."
+    ipucu: "Yanıt başlığı bilmen gerekenden fazlasını ele veriyor olabilir."
+  - id: ag-005-s5
+    soru: "Bir API'nin loglarında bir istemcinin kısa sürede binlerce `401` ve ardından tek bir `200` aldığını görüyorsun. Bu ne anlama gelebilir ve ne yaparsın?"
+    cevap: "Kaba kuvvetle parola ya da token deneniyor olabilir ve sonunda biri tutmuş olabilir. İlgili hesabı ya da anahtarı hemen iptal ederim, kaynak adresi engellerim, giriş denemelerine sınır (rate limit) koyarım ve o `200` sonrasındaki istekleri inceleyip veri okunup okunmadığına bakarım."
+    ipucu: "401 ve sonra 200: kimlik doğrulama tek seferde mi tutmuş görünüyor?"
+hizliKontrol:
+  - soru: "Bir yanıtta `404` görürsen bu neyi gösterir?"
+    secenekler:
+      - "Sunucu hatası"
+      - "İstenen kaynak bulunamadı"
+      - "Kalıcı yönlendirme"
+      - "Yetkin yok"
+    dogru: 1
+    aciklama: "4xx sınıfı istemci tarafı sorunudur; 404 kaynağın bulunamadığını söyler."
+    ipucu: "İlk rakamın sınıfını hatırla."
+sikHatalar:
+  - hata: "Parolayı ya da token'ı URL'de `GET` parametresi olarak göndermek."
+    dogrusu: "URL geçmişte, loglarda ve yönlendirmelerde saklanır; gizli veriyi gövdede ya da `Authorization` başlığında gönder."
+  - hata: "401 ile 403'ü aynı sanmak."
+    dogrusu: "401 kimliğin yok ya da geçersiz, 403 kimliğin var ama yetkin yok demektir."
+terimler:
+  - "HTTP"
+  - "TCP"
+  - "TLS"
+sema:
+  baslik: "Bir HTTP isteğinin akışı"
+  adimlar:
+    - etiket: "İstek"
+      aciklama: "İstemci metot, yol ve başlıkları yollar."
+    - etiket: "İşleme"
+      aciklama: "Sunucu isteği okur ve işler."
+    - etiket: "Yanıt"
+      aciklama: "Sunucu durum kodu, başlıklar ve gövdeyi döner."
+    - etiket: "Kapanış"
+      aciklama: "Bağlantı kapanır ya da yeniden kullanılır."
 derinDalis:
   - tur: okuma
     baslik: "MDN: HTTP'ye genel bakış"

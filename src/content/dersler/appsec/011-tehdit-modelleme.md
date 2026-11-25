@@ -37,20 +37,60 @@ sorular:
   - id: appsec-011-s1
     soru: "Tehdit modellemenin dört temel sorusu nedir?"
     cevap: "Ne üzerinde çalışıyoruz? Ne ters gidebilir? Bunun için ne yapacağız? Yeterince iyi yaptık mı? (Tehdit Modelleme Manifestosu'ndaki yaklaşım.)"
+    ipucu: "Dört sorunun ilkini hatırla: ne üzerinde çalışıyoruz?"
   - id: appsec-011-s2
     soru: "STRIDE'ın altı harfi neyi temsil eder?"
     cevap: "Spoofing (kimlik taklidi), Tampering (veriyi değiştirme), Repudiation (inkâr), Information disclosure (bilgi sızması), Denial of service (hizmet engelleme), Elevation of privilege (yetki yükseltme)."
+    ipucu: "Her harf bir güvenlik özelliğinin ihlalidir; bunu eşleştir."
   - id: appsec-011-s3
     soru: "Veri akış diyagramında 'güven sınırı' (trust boundary) neden önemlidir?"
     cevap: "Verinin güven düzeyi değiştiği yeri gösterir (ör. internet → sunucu). Tehditlerin çoğu, veri bu sınırı geçerken doğrulanmadığında ortaya çıkar; savunmalar bu noktalara konur."
+    ipucu: "Güven düzeyinin değiştiği yerde saldırgan ne yapabilir?"
   - id: appsec-011-s4
     soru: "Tehdit modelleme neden tasarım aşamasında yapılırsa daha değerlidir?"
     cevap: "Tasarım hataları (ör. yetkilendirmenin hiç düşünülmemesi) sonradan kodu yamamakla çözülemez, pahalı yeniden tasarım gerektirir. Erken fark etmek, maliyeti ve riski düşürür."
+    ipucu: "Tasarım aşamasında düzeltmek ile canlıda düzeltmek maliyetçe kıyaslanır mı?"
+  - id: appsec-011-s5
+    soru: Yeni bir ödeme özelliği iki hafta sonra yayına çıkıyor ve henüz güvenlik gözden geçirmesi yapılmadı. Tek bir saatlik toplantı yapabilsen ne yaparsın?
+    cevap: "Ekranda hızlı bir veri akış diyagramı çizersin: kullanıcı, uygulama, ödeme sağlayıcısı, veri tabanı ve güven sınırları. Her sınırda STRIDE'ın altı harfini dolaşıp tehditleri listeler, en riskli üçünü seçip sahip ve önlem atarsın. Çıkan işleri iş listesine yazar, yayından önce kapatılacak olanları işaretlersin."
+    ipucu: Küçük bir çizim, STRIDE ve sahipli aksiyonlar.
 derinDalis:
   - tur: okuma
     baslik: "OWASP Threat Modeling Cheat Sheet"
     ayrinti: "Dört soru, veri akış diyagramları, STRIDE ile tehdit belirleme."
     url: "https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html"
+hizliKontrol:
+  - soru: Veri akış diyagramında güven sınırı neyi gösterir?
+    secenekler:
+      - Verinin sıkıştırıldığı yeri
+      - Güven düzeyinin değiştiği, verinin bir tarafından ötekine geçtiği yeri
+      - Veri tabanı yedeklerini
+      - Yalnız ağ güvenlik duvarını
+    dogru: 1
+    aciklama: Saldırıların çoğu, güvenilmeyen verinin güvenilen bölgeye girdiği sınırlarda aranır.
+    ipucu: Veri 'güvenilmeyen' taraftan 'güvenilen' tarafa geçerken ne olur?
+sikHatalar:
+  - hata: Tehdit modellemeyi canlıya çıkıştan hemen önce yapmak.
+    dogrusu: Tasarım aşamasında yap; düzeltme maliyeti en düşük o zamandır.
+  - hata: Tehditleri bulup listeleyip bırakmak.
+    dogrusu: Her tehdit için önlem, sahip ve tarih belirle; yoksa liste işe yaramaz.
+sema:
+  baslik: Tehdit modelleme adımları
+  adimlar:
+    - etiket: Kapsam
+      aciklama: Neyi modellediğini ve neyi korumak istediğini belirle.
+    - etiket: DFD
+      aciklama: Veri akış diyagramını çiz ve güven sınırlarını işaretle.
+    - etiket: STRIDE
+      aciklama: Her öğe ve akış için altı tehdit türünü sorgula.
+    - etiket: Önlem
+      aciklama: Her tehdide azaltma, kabul ya da devretme kararı ver.
+    - etiket: Kayıt
+      aciklama: Kararları sahip ve tarihle kaydet, değişiklikte yeniden gözden geçir.
+terimler:
+  - Tehdit modelleme
+  - STRIDE
+  - Güven sınırı
 ---
 
 **Tehdit modelleme**, bir sistemi saldırgan gözüyle incelemenin yapılandırılmış yoludur. Amaç, açıkları tek tek değil, **tasarım düzeyinde** önceden görmek. "Güvensiz tasarım" Top 10'da ayrı bir başlıktır; çünkü mükemmel kodlanmış kötü tasarım yine de savunmasızdır.

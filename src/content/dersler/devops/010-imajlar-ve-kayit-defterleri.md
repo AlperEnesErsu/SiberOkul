@@ -26,20 +26,57 @@ sorular:
   - id: devops-010-s1
     soru: "Etiket (tag) ile digest arasındaki fark nedir?"
     cevap: "Etiket insanın okuyacağı, sonradan başka imaja taşınabilen bir isimdir. Digest imaj içeriğinin özetidir ve içerik değişirse değişir; bu yüzden değişmez bir kimlik gibi kullanılır."
+    ipucu: "Biri insanın okuyacağı bir isim, diğeri içerikten hesaplanıyor."
   - id: devops-010-s2
     soru: "Registry nedir? Örnekler ver."
     cevap: "İmajların saklandığı ve dağıtıldığı sunucudur. Docker Hub, GitHub Container Registry ve bulut sağlayıcılarının kendi kayıt defterleri örnektir."
+    ipucu: "İmajların nerede saklanıp dağıtıldığını düşün."
   - id: devops-010-s3
     soru: "İmaj boyutu neden güvenliği de ilgilendirir?"
     cevap: "İmajdaki her paket olası bir açıktır. Küçük imaj daha az bileşen, daha az açık ve daha hızlı indirme demektir."
+    ipucu: "İmajdaki her paketin neye dönüşebileceğini düşün."
   - id: devops-010-s4
     soru: "Bilinmeyen bir kullanıcının Docker Hub imajını doğrudan çalıştırmak neden risklidir?"
     cevap: "İmajın içinde ne olduğunu bilmezsin; zararlı yazılım ya da arka kapı bulunabilir. Resmi ya da doğrulanmış yayıncıları tercih et ve imajı tara."
+    ipucu: "İçinde ne olduğunu bilmediğin bir yazılımı çalıştırmak."
+  - id: devops-010-s5
+    soru: "Üretim Dockerfile'ında `FROM node:latest` yazıyor ve geçen haftadan beri build'ler farklı davranıyor. Ne yaparsın?"
+    cevap: "`latest` taşınabilir bir etikettir; imaj sessizce değişmiş olabilir. Sabit sürüm etiketi, daha sıkısı digest kullanırım. Digest'i Dependabot gibi araçlarla güncel tutarım ki güvenlik yamalarını kaçırmayayım."
+    ipucu: "Etiketin neyi garanti etmediğini düşün."
 derinDalis:
   - tur: okuma
     baslik: "Docker: Temel imajı sabitleme"
     ayrinti: "Build en iyi uygulamalarındaki 'Pin base image versions' bölümü etiket ve digest tartışmasını anlatır."
     url: "https://docs.docker.com/build/building/best-practices/"
+hizliKontrol:
+  - soru: "Bir imajın digest'i neye bağlıdır?"
+    secenekler: 
+      - "İmajın içeriğine"
+      - "Yayıncının adına"
+      - "İndirme tarihine"
+      - "Etiketin adına"
+    dogru: 0
+    aciklama: "İçerik bir bit değişse digest değişir; bu yüzden değişmez kimlik gibi kullanılır."
+    ipucu: "Etiket değişince digest değişir mi, içerik değişince mi?"
+  - soru: "`ghcr.io/kullanici/uygulama:1.4` içinde `1.4` nedir?"
+    secenekler: 
+      - "Registry adı"
+      - "Depo adı"
+      - "Etiket (tag)"
+      - "Digest"
+    dogru: 2
+    aciklama: "İki nokta üst üstenin sağındaki kısım etikettir."
+    ipucu: "Adın hangi parçası iki nokta üst üsteden sonra gelir?"
+sikHatalar:
+  - hata: "`latest` etiketini \"en güncel ve güvenli\" sanmak."
+    dogrusu: "`latest` yalnız etiket belirtilmediğinde varsayılandır; sabit sürüm ya da digest kullan."
+  - hata: "Benzer isimli bir imajı adını tam kontrol etmeden çekmek."
+    dogrusu: "Sahte isimli imajlar (typosquatting) olur; resmi ya da doğrulanmış yayıncıyı tercih et, adı harf harf kontrol et."
+terimler:
+  - "Registry"
+  - "Digest"
+  - "Tag"
+  - "Image"
 ---
 
 Bir **imaj** (image) birçok katmandan oluşan, değişmez bir pakettir. İmajlar **kayıt defteri**nde (registry) saklanır; `docker pull` ile indirilir, `docker push` ile yüklenir.

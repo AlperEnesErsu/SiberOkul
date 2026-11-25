@@ -25,15 +25,38 @@ sorular:
   - id: container-007-s1
     soru: "ConfigMap ile Secret arasındaki fark nedir?"
     cevap: "ConfigMap gizli olmayan ayarlar içindir; Secret parola, token, anahtar gibi hassas veri içindir. Secret'ın ek avantajı: erişim ayrıca yetkilendirilebilir ve şifreleme ile korunabilir; ama varsayılan olarak içeriği şifreli değildir."
+    ipucu: "Biri hassas olmayan ayar, diğeri hassas veri içindir."
   - id: container-007-s2
     soru: "Secret'taki base64 neden güvenlik sağlamaz?"
     cevap: "Base64 bir kodlama biçimidir, anahtarı yoktur; herkes tek komutla geri çevirir. Yalnız ikili veriyi metne uygun hale getirmek için vardır."
+    ipucu: "Base64'ü geri çevirmek için anahtar gerekir mi?"
   - id: container-007-s3
     soru: "Secret'ları daha güvenli tutmak için hangi üç önlem alınabilir?"
     cevap: "(1) etcd'de şifreleme (encryption at rest) etkinleştirmek, (2) RBAC ile Secret okuma yetkisini daraltmak, (3) harici bir sır yöneticisi (Vault, bulut sağlayıcı yöneticileri) ya da şifreli Git yaklaşımı kullanmak."
+    ipucu: "Sırrı hem depoda hem etcd'de korumayı düşün."
   - id: container-007-s4
     soru: "Sırrı ortam değişkeni yerine dosya olarak (volume) bağlamanın avantajı nedir?"
     cevap: "Ortam değişkenleri hata günlüklerine, çökme raporlarına ve alt süreçlere kolayca sızar. Dosya olarak bağlanan sır daha dar bir yüzeyde tutulur ve güncellendiğinde yeniden başlatma olmadan yenilenebilir."
+    ipucu: "Süreç ortamı ile dosya arasında sızma yolları neler?"
+  - id: container-007-s5
+    soru: "Bir pull request'te Secret YAML'ı içinde base64 yazılı gerçek bir veritabanı parolası var. Ne yaparsın?"
+    cevap: "PR'ı birleştirmeden durdurursun; parolayı sızmış sayıp hemen değiştirirsin ve Git geçmişinden temizlenmesini sağlarsın. Sonra sırrı harici bir sır yöneticisine ya da şifreli sır yöntemine taşırsın ve depoya gizli tarama (secret scanning) eklersin."
+    ipucu: "Depoya giren sır için tek güvenli varsayım nedir?"
+hizliKontrol:
+  - soru: "Secret içindeki base64 değer için hangisi doğrudur?"
+    secenekler: ["Güçlü bir şifreleme yöntemidir","Yalnız kubelet açabilir","Anahtarsız geri çevrilen bir kodlamadır","RBAC ile otomatik şifrelenir"]
+    dogru: 2
+    aciklama: "Base64 kodlamadır, şifreleme değil; `base64 -d` ile açılır."
+    ipucu: "Kodlama ile şifreleme arasındaki farkı düşün."
+sikHatalar:
+  - hata: "Secret'ı base64 olduğu için güvenli saymak."
+    dogrusu: "Base64 şifreleme değildir. etcd şifrelemesi, sıkı RBAC ve harici sır yöneticisi kullan."
+  - hata: "Parolayı ConfigMap'e koymak."
+    dogrusu: "Hassas veriyi Secret'ta (ve mümkünse harici yöneticide) tut; ConfigMap yalnız hassas olmayan ayarlar içindir."
+terimler:
+  - "Secret"
+  - "ConfigMap"
+  - "etcd"
 derinDalis:
   - tur: okuma
     baslik: "Kubernetes: Secrets"

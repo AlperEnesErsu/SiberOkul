@@ -23,15 +23,43 @@ sorular:
   - id: ag-002-s1
     soru: "Özel (private) IPv4 aralıkları hangileridir ve neden vardır?"
     cevap: "10.0.0.0/8, 172.16.0.0/12 ve 192.168.0.0/16 (RFC 1918). İnternette yönlendirilmezler; böylece her ev ya da şirket aynı adresleri kendi içinde yeniden kullanabilir ve genel adres tasarrufu sağlanır."
+    ipucu: "RFC 1918'i hatırla: üç blok var, biri 172.16 ile başlıyor."
   - id: ag-002-s2
     soru: "`192.168.1.0/24` yazımında `/24` ne anlama gelir?"
     cevap: "Adresin ilk 24 bitinin ağı belirttiğini gösterir. Kalan 8 bit cihaz içindir: 256 adres, kullanılabilir 254 cihaz."
+    ipucu: "Slash'tan sonraki sayı, adresin kaç bitinin sabit olduğunu söylüyor."
   - id: ag-002-s3
     soru: "`10.0.0.0/16` ağı `10.0.0.0/24` ağından kaç kat büyüktür ve neden?"
     cevap: "256 kat. /16'da cihaz için 16 bit (65.536 adres), /24'te 8 bit (256 adres) kalır. Sayı küçüldükçe ağ büyür."
+    ipucu: "Cihaz için kalan bit sayısını bul, sonra 2 üzeri o sayı."
   - id: ag-002-s4
     soru: "Bir güvenlik duvarı kuralını `0.0.0.0/0` kaynağına açmak ne demektir ve neden dikkat gerektirir?"
     cevap: "Bütün IPv4 adreslerini kapsar, yani tüm internete açmaktır. Bir yönetim portunu (ör. SSH) böyle açmak herkesin deneme yapabilmesi demektir."
+    ipucu: "Slash'tan önceki sıfırlar tek bir sayıyı mı yoksa tüm interneti mi gösteriyor?"
+  - id: ag-002-s5
+    soru: "Bulutta bir güvenlik grubunda veritabanı portunun kaynağı `0.0.0.0/0` olarak ayarlanmış görüyorsun. Uygulama sunucuları `10.0.1.0/24` alt ağında. Ne yaparsın?"
+    cevap: "Kuralı hemen `10.0.1.0/24` ile sınırlarım; veritabanının tüm internete açık olması kabul edilemez. Sonra bu kurala bağlı sunucunun erişim loglarına bakıp dışarıdan bağlantı denenip denenmediğini kontrol ederim ve bulguyu ekibe bildiririm."
+    ipucu: "Kaynak aralığını, bağlanması gereken gerçek istemcilere kadar daralt."
+hizliKontrol:
+  - soru: "`10.0.5.0/24` ağında kaç adres vardır?"
+    secenekler:
+      - "254"
+      - "65.536"
+      - "256"
+      - "24"
+    dogru: 2
+    aciklama: "/24'te 8 bit cihaza kalır: 2^8 = 256 adres. Bunların ikisi ağ ve yayın adresi olduğundan 254 cihaz bağlanır."
+    ipucu: "Önce cihaza kalan bit sayısını bul."
+sikHatalar:
+  - hata: "`/24` ile `/16` karşılaştırırken sayısı büyük olan ağın daha büyük olduğunu sanmak."
+    dogrusu: "Slash sonrası sayı büyüdükçe ağ küçülür: /16 ağı /24 ağından 256 kat büyüktür."
+  - hata: "Güvenlik duvarı kuralında `/` kısmını unutmak ya da `/0` yazmak."
+    dogrusu: "Kuralı yazınca adres aralığını iki kez oku; `/0` bütün interneti, `/32` tek makineyi gösterir."
+terimler:
+  - "IP adresi"
+  - "Özel IP adresi"
+  - "CIDR"
+  - "Alt ağ"
 derinDalis:
   - tur: okuma
     baslik: "RFC 1918: Özel internetler için adres tahsisi"

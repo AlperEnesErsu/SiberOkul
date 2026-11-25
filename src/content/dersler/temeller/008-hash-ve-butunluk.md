@@ -26,15 +26,54 @@ sorular:
   - id: temeller-008-s1
     soru: "Bir hash fonksiyonunun üç temel özelliğini söyle."
     cevap: "Aynı girdi hep aynı çıktıyı verir. Girdideki küçük bir değişiklik çıktıyı büyük ölçüde değiştirir. Çıktıdan girdiye geri dönmek (ve aynı çıktıyı veren başka bir girdi bulmak) pratikte imkânsızdır."
+    ipucu: "Girdinin bir bitini değiştirince çıktıya ne olduğunu düşün."
   - id: temeller-008-s2
     soru: "Hash şifreleme midir? Bir hash'ten özgün dosyayı geri alabilir misin?"
     cevap: "Hayır. Şifreleme anahtarla geri çevrilebilir; hash tek yönlüdür ve girdiyi geri vermez. Hash gizlilik için değil, değişikliği fark etmek (bütünlük) için kullanılır."
+    ipucu: "Şifrelemenin anahtarı ve geri dönüşü var; hash için ne söylenebilir?"
   - id: temeller-008-s3
     soru: "MD5 ve SHA-1 neden artık güvenlik amacıyla kullanılmamalı, SHA-256 kullanılmalı?"
     cevap: "MD5 ve SHA-1'de iki farklı girdinin aynı hash'i vermesini (çakışma) sağlayan pratik saldırılar gösterildi. Bu, sahte dosyayı gerçeğiyle aynı hash'e sokmayı mümkün kılar. SHA-256 için böyle bir saldırı bilinmiyor."
+    ipucu: "Hangi algoritmalar için aynı hash'e çıkan iki farklı girdi bulundu?"
   - id: temeller-008-s4
     soru: "Bir container imajına etiket (ör. `:latest`) yerine digest ile başvurmak güvenliği nasıl artırır?"
     cevap: "Etiket zamanla başka bir imajı gösterecek şekilde değiştirilebilir. Digest, imajın içeriğinin hash'idir; içerik değişirse digest de değişir. Digest ile başvurmak her seferinde birebir aynı içeriği almanı garanti eder."
+    ipucu: "Sabit bir etiket zamanla başka içeriği gösterebilir; içeriğe bağlı bir kimlik ne sağlar?"
+  - id: temeller-008-s5
+    soru: "Bir araç sitesinden indirdiğin kurulum dosyasının SHA-256 değeri sayfadaki değerle aynı çıktı. Ancak sayfayı da dosyayı da aynı sunucu veriyor. Bu eşleşmeye ne kadar güvenirsin ve neyi daha da güvenilir kılarsın?"
+    cevap: "Eşleşme dosyanın indirme sırasında bozulmadığını gösterir, ama sunucu ele geçirilmişse saldırgan ikisini de değiştirmiş olabilir. Hash'i ayrı ve güvenilir bir kanaldan (yayıncının ayrı alan adı, imzalı sürüm notu) almayı ya da yayıncının imzasını doğrulamayı tercih ederim."
+    ipucu: "Hash'i ve dosyayı aynı kişi kontrol ediyorsa neyi kanıtlıyor?"
+hizliKontrol:
+  - soru: "Hash fonksiyonu için hangisi doğrudur?"
+    secenekler: ["Çıktıdan girdi geri elde edilebilir","Aynı girdi her zaman aynı çıktıyı verir ve çıktı sabit uzunluktadır","Girdi büyüdükçe çıktı da büyür","Küçük bir değişiklik çıktıyı neredeyse hiç etkilemez"]
+    dogru: 1
+    aciklama: "Hash deterministiktir, sabit uzunlukta çıktı verir ve girdideki küçük değişiklik çıktıyı tamamen değiştirir."
+    ipucu: "Aynı girdiyle iki kez hesaplasan ne olur?"
+  - soru: "Bir container imajına `:latest` yerine digest ile başvurmak neden daha güvenlidir?"
+    secenekler: ["Digest içeriğe bağlıdır; etiket başka bir içeriği gösterecek şekilde değişebilir","Digest imajı şifreler","Digest imajı daha küçük yapar","Etiketler her zaman reddedilir"]
+    dogru: 0
+    aciklama: "Digest imajın içeriğinin hash'idir; etiket ise sonradan başka imaja taşınabilir."
+    ipucu: "Etiket mi içeriği, içerik mi etiketi belirler?"
+sikHatalar:
+  - hata: "MD5 ya da SHA-1 ile güvenlik doğrulaması yapmak."
+    dogrusu: "Çakışma saldırıları bulunduğu için güvenlik amaçlı SHA-256 gibi güncel algoritmalar kullan."
+  - hata: "Hash ile şifrelemeyi karıştırıp 'hash'i çözmeyi' beklemek."
+    dogrusu: "Hash tek yönlüdür; amaç içeriği gizlemek değil, değişip değişmediğini kontrol etmektir."
+terimler:
+  - "Hash"
+  - "Bütünlük"
+  - "Dijital imza"
+sema:
+  baslik: "İndirilen dosyayı doğrulama"
+  adimlar:
+    - etiket: "İndir"
+      aciklama: "Dosyayı ve yayıncının yayımladığı hash değerini al."
+    - etiket: "Hesapla"
+      aciklama: "Kendi makinende `sha256sum` ile dosyanın hash'ini hesapla."
+    - etiket: "Karşılaştır"
+      aciklama: "İki değeri birebir kıyasla."
+    - etiket: "Karar"
+      aciklama: "Eşleşirse devam et; eşleşmezse dosyayı kullanma ve yeniden indir."
 derinDalis:
   - tur: kitap
     baslik: "Serious Cryptography (Jean-Philippe Aumasson)"

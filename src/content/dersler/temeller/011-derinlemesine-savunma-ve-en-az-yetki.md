@@ -29,15 +29,43 @@ sorular:
   - id: temeller-011-s1
     soru: "Derinlemesine savunma (defense in depth) nedir ve neden tek bir güçlü önleme güvenmekten iyidir?"
     cevap: "Birden fazla bağımsız güvenlik katmanı kullanmaktır (ağ, kimlik, uygulama, veri, izleme). Tek önlem kusursuz olamaz ve atlatılabilir; katmanlar sayesinde biri düşse diğeri saldırıyı yavaşlatır ya da yakalar."
+    ipucu: "Tek bir kapının kırılması durumunda geriye ne kalmalı?"
   - id: temeller-011-s2
     soru: "En az yetki ilkesi nedir? Bir örnek ver."
     cevap: "Bir kullanıcıya, servise ya da sürece yalnızca işini yapmak için gerekli yetkiyi, gerekli süre kadar vermektir. Örneğin yedek alan servis yalnız okuma izni alır; silme ve yazma izni almaz."
+    ipucu: "Bir hesabın yetkisi genişse sızması ne kadar zarar verir?"
   - id: temeller-011-s3
     soru: "Katmanlı savunmada bir katmanın başarısız olduğunu fark etmek için ne gerekir?"
     cevap: "İzleme ve günlükleme. Hangi katmanın atlatıldığını görmek için alarm ve kayıt gerekir; aksi halde saldırgan fark edilmeden ilerler ve diğer katmanların hâlâ çalıştığına güvenilir."
+    ipucu: "Bir katman çökerse bunu fark edecek şey ne olmalı?"
   - id: temeller-011-s4
     soru: "Sıfır güven (zero trust) 'ağın içindekilere güven' anlayışından nasıl ayrılır?"
     cevap: "Eski anlayış çevreyi korur ve içeridekine güvenir. Sıfır güven konumdan bağımsız hiçbir kullanıcıya ya da cihaza varsayılan güven vermez; her istek doğrulanır ve yetkilendirilir. Böylece içeri girmiş saldırgan serbestçe dolaşamaz."
+    ipucu: "Ağın içinde olmak neden artık güven sebebi sayılmıyor?"
+  - id: temeller-011-s5
+    soru: "Pipeline'daki dağıtım hesabının yalnız bir ortama yazması gerekirken bütün üretim hesaplarında yönetici yetkisi var. Kod incelemesinde bunu fark ettin. Ne önerirsin?"
+    cevap: "Hesabın yetkisini yalnız gereken ortama ve gereken işlemlere indirgemeyi (en az yetki) öneririm. Ek olarak kimlik bilgilerini kısa ömürlü yaparım, hesap kullanımını kayda alırım ve başka bir katman olarak üretime dağıtım için onay adımı eklerim. Böylece hesap sızsa bile etki sınırlı kalır."
+    ipucu: "Hesap sızarsa saldırganın neleri yapabilmesini istemezsin?"
+hizliKontrol:
+  - soru: "Derinlemesine savunmanın temel fikri nedir?"
+    secenekler: ["Tek ve çok güçlü bir önleme güvenmek","Bir katman başarısız olursa diğerlerinin korumaya devam etmesi için birden çok katman kurmak","Yalnız ağ çevresini sertleştirmek","Güvenlik duvarını yedeklemek"]
+    dogru: 1
+    aciklama: "Hiçbir önlem kusursuz değildir; katmanlar biri aşıldığında diğerlerinin devreye girmesini sağlar."
+    ipucu: "Hiçbir kapı tek başına kusursuz değil."
+  - soru: "Sıfır güven yaklaşımı hangi varsayımı reddeder?"
+    secenekler: ["Her isteğin doğrulanması gerektiğini","Ağın içindekilerin otomatik olarak güvenilir olduğunu","Yetkilerin sınırlanması gerektiğini","Kayıt tutmanın gerekliliğini"]
+    dogru: 1
+    aciklama: "Sıfır güven, 'içerideysen güvenilirsin' fikrini bırakır; her istek kimlik ve bağlama göre doğrulanır."
+    ipucu: "Eski modelde ağın içine girmek neyi sağlıyordu?"
+sikHatalar:
+  - hata: "Kolaylık olsun diye servis hesabına yönetici yetkisi vermek."
+    dogrusu: "Önce gereken en küçük izinle başla; ihtiyaç doğdukça tek tek ekle."
+  - hata: "Katmanlar var diye izleme kurmamak."
+    dogrusu: "Bir katmanın çöktüğünü fark etmek için günlük kayıtları ve uyarılar gerekir."
+terimler:
+  - "Derinlemesine savunma"
+  - "En az yetki"
+  - "Sıfır güven"
 derinDalis:
   - tur: okuma
     baslik: "CISA Zero Trust Maturity Model"

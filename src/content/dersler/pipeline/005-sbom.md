@@ -23,15 +23,60 @@ sorular:
   - id: pipeline-005-s1
     soru: "SBOM'un açılımı nedir ve içinde ne bulunur?"
     cevap: "Software Bill of Materials, yani yazılım malzeme listesi. İçinde bileşenlerin adı, sürümü, kaynağı, lisansı ve çoğu zaman aralarındaki bağımlılık ilişkileri bulunur."
+    ipucu: "Kelimeleri aç: 'bill of materials' bir malzeme listesidir."
   - id: pipeline-005-s2
     soru: "CycloneDX ve SPDX nedir? Birini seçmek zorunda mısın?"
     cevap: "İkisi de SBOM için standart biçimlerdir. CycloneDX güvenlik odaklı doğdu (OWASP/Ecma), SPDX lisans uyumu odaklı doğdu (ISO/IEC 5962). Araçlar çoğunlukla ikisini de üretir; müşterinin ya da düzenlemenin istediği biçimi seçersin."
+    ipucu: "Biri güvenlik ve tedarik zinciri, diğeri lisans uyumu ile doğmuştu."
   - id: pipeline-005-s3
     soru: "SBOM tek başına neden güvenlik sağlamaz? Onu neyle birleştirirsin?"
     cevap: "SBOM yalnız envanterdir; bileşenin açıklı olup olmadığını söylemez. Açık veritabanlarıyla (SCA) eşleştirirsen işe yarar: 'bu envanterde bilinen açık var mı?' sorusunu her yeni duyuruda yeniden sorabilirsin."
+    ipucu: "Liste ne söyler, bir şeyin güvenli olduğunu söyler mi? Listeyi neyle karşılaştırırsın?"
   - id: pipeline-005-s4
     soru: "SBOM'u ne zaman ve nerede üretmek gerekir?"
     cevap: "Build sırasında, yayına çıkan artefaktla birlikte (imaj ya da paket). Çünkü gerçekte gönderilen şeyi tarif etmesi gerekir; bir hafta önceki halin SBOM'u bugünkü ürünü doğru anlatmaz."
+    ipucu: "Veritabanı her gün değişir; liste ne zaman üretilmeli?"
+  - id: pipeline-005-s5
+    soru: "Sabah yeni bir kütüphane açığı duyuruldu. Yöneticin 'bizde var mı, kaç uygulama etkileniyor?' diye soruyor. 30 servisin SBOM'ları depoda duruyor. Ne yaparsın?"
+    cevap: "SBOM dosyalarında kütüphane adını ve etkilenen sürüm aralığını ararsın; bu bir toplu arama işidir. Etkilenen servislerin listesini çıkarır, önceliği internete açık olanlara verirsin. SBOM'ları ayrıca güncel zafiyet veritabanıyla yeniden taratırsın; SBOM eskiyse (bir süredir üretilmemişse) önce güncel build'lerden yenisini üretirsin."
+    ipucu: "SBOM'un asıl değeri, soruyu elle arama yerine neye çevirmesiydi?"
+hizliKontrol:
+  - soru: SBOM'un temel işlevi hangisidir?
+    secenekler:
+      - Zafiyetleri otomatik yamalamak
+      - Yazılımın hangi bileşenlerden oluştuğunu makine okunur biçimde listelemek
+      - Koda saldırı denemek
+      - Parolaları saklamak
+    dogru: 1
+    aciklama: SBOM bir envanterdir; ne taşıdığını söyler, güvenli olup olmadığını söylemez.
+    ipucu: Malzeme listesi.
+  - soru: Dün temiz çıkan bir SBOM bugün neden açıklı görünebilir?
+    secenekler:
+      - SBOM kendiliğinden değişir
+      - Zafiyet veritabanı her gün yeni açıklarla güncellenir
+      - Bileşenler gece sürüm atlar
+      - Taranan dosya silinmiştir
+    dogru: 1
+    aciklama: SBOM sabittir ama veritabanı değişir; bu yüzden periyodik yeniden tarama gerekir.
+    ipucu: Hangisi sabit, hangisi değişiyor?
+sikHatalar:
+  - hata: SBOM'u bir kez üretip dosyalamak.
+    dogrusu: Her build'de yeniden üret ve eskileri düzenli olarak güncel veritabanlarıyla tara.
+  - hata: SBOM'daki bileşenlerin güvenli olduğunu varsaymak.
+    dogrusu: SBOM yalnız neyin içerildiğini söyler; açık var mı sorusu için bir tarayıcı ve veritabanı gerekir.
+olay:
+  baslik: Log4Shell (CVE-2021-44228)
+  yil: 2021
+  ozet: Aralık 2021'de Apache Log4j kütüphanesinde, kimlik doğrulaması gerektirmeden uzaktan kod çalıştırmaya izin veren kritik bir açık (CVE-2021-44228, 2.0-beta9 ile 2.14.1 arası sürümler) duyuruldu ve hızla istismar edildi. CISA kuruluşlara kendi geliştirdikleri yazılımlar, SaaS ve bulut kaynakları dahil bütün örnekleri bulmalarını önerdi.
+  ders: Kütüphane başka yazılımların içinde gömülü olabildiği için 'nerede kullanıyoruz?' sorusu zordur. Güncel SBOM'lar bu soruyu bir aramaya çevirir.
+  kaynak:
+    ad: "CISA: Apache Log4j Vulnerability Guidance"
+    url: https://www.cisa.gov/news-events/news/apache-log4j-vulnerability-guidance
+terimler:
+  - SBOM
+  - CycloneDX
+  - SPDX
+  - SCA
 derinDalis:
   - tur: lab
     baslik: "Syft"
@@ -82,5 +127,11 @@ Hangisini seçeceğin çoğunlukla karşı tarafın isteğine bağlı. Syft gibi
 - **Hassasiyet:** SBOM sürüm bilgilerini içerir; saldırgana yol gösterebilir. Dışarı verirken kime ne verdiğini düşün.
 
 SBOM'u tek başına bir güvenlik kontrolü sanma: sorulara cevap vermeye yarayan bir **veri**dir, sonucu onu kullanan süreç belirler.
+
+### SBOM ile zafiyet bilgisini birleştirmek: VEX
+
+SBOM "içinde ne var" der. Ama bir bileşende açık olması, ürünün o açıktan **etkilendiği** anlamına gelmez: zayıf fonksiyon hiç çağrılmıyor olabilir. Bu ayrım için **VEX** (Vulnerability Exploitability eXchange) adlı ayrı bir belge türü kullanılır; üretici, belirli bir zafiyet için ürününün etkilenip etkilenmediğini bildirir. CISA da SBOM sayfasında VEX'i SBOM'dan ayrı bir kavram olarak anar. Yani SBOM envanter, VEX ise o envanterdeki bir bulgunun yorumudur.
+
+Pratikte başlamak için: Syft gibi bir araçla imajdan SBOM üret, çıktıyı CI artefaktı olarak sakla, ve bir tarayıcıyla (ör. Grype ya da Trivy) bu SBOM'u zafiyet veritabanıyla eşleştir. Önce kendi küçük projende dene, sonra sürece bağla.
 
 **Güvenlik notu:** SBOM üretmek bileşenlerin güvenli olduğunu kanıtlamaz; yalnız ne taşıdığını bildirir.

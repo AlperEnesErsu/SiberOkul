@@ -31,20 +31,52 @@ sorular:
   - id: bulut-003-s1
     soru: "En az yetki ilkesi (least privilege) nedir?"
     cevap: "Bir kimliğe yalnız işini yapmak için gereken eylemleri, gereken kaynaklar üzerinde vermek. Gerisi varsayılan olarak yasak kalır."
+    ipucu: "Bir işi yapmak için gerekenin tam karşılığını düşün."
   - id: bulut-003-s2
     soru: "`\"Action\": \"*\", \"Resource\": \"*\"` neden tehlikelidir?"
     cevap: "Hesaptaki her servise ve kaynağa tam yetki verir. Bu kimlik çalınırsa saldırgan veriyi silebilir, kendine yeni kullanıcı açabilir ve izleri temizleyebilir."
+    ipucu: "Hem eylemde hem kaynakta joker olursa kimlik çalındığında neler yapılabilir?"
   - id: bulut-003-s3
     soru: "Bir politikada Allow ve Deny çakışırsa sonuç ne olur?"
     cevap: "Açık Deny her zaman kazanır. Bu yüzden Deny, kritik kısıtları (ör. belirli bölgeler dışı yasağı) güvenceye almak için kullanılır."
+    ipucu: "İki ifade çakışınca hangisinin ağır bastığını hatırla."
   - id: bulut-003-s4
     soru: "Doğru izinleri bilmiyorsam nasıl yaklaşırım?"
     cevap: "Geniş bir başlangıç yerine denemelerle başlar, sonra gerçek erişim kayıtlarından (CloudTrail) yararlanarak daraltırım. IAM Access Analyzer, kullanılan eylemlere göre politika üretebilir. Kullanılmayan izinleri düzenli temizlerim."
+    ipucu: "Önce kayıtlardaki gerçek kullanıma, sonra daraltmaya bak."
+  - id: bulut-003-s5
+    soru: "Bir pull request'te bir Lambda rolüne `s3:*` ve `Resource: \"*\"` verilmiş. Fonksiyon yalnız tek bir bucket'tan okuyor. Ne istersin?"
+    cevap: "Eylemin `s3:GetObject`'e, kaynağın o bucket'ın nesne ARN'sine daraltılmasını isterim. Gerekirse CloudTrail'e ve Access Analyzer'ın politika üretimine bakılır. Daraltma gerekçesi PR'da yazılır; böylece kimlik çalınsa bile etki sınırlı kalır."
+    ipucu: "Eylem ve kaynak joker kademelerini hatırla."
 derinDalis:
   - tur: okuma
     baslik: "AWS: IAM en iyi uygulamaları, en az yetki bölümü"
     ayrinti: "Access Analyzer ile politika doğrulama ve son erişim bilgisine göre daraltma."
     url: "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
+hizliKontrol:
+  - soru: "IAM ifadesinin parçalarından hangisi izni belirli bir ağ ya da MFA'lı oturumla sınırlar?"
+    secenekler: ["Effect","Condition","Resource","Action"]
+    dogru: 1
+    aciklama: "Condition isteğe bağlıdır; izni IP, MFA ya da TLS gibi koşullara bağlar."
+    ipucu: "Parçalardan yalnız biri 'hangi koşulda' sorusunu yanıtlar."
+sikHatalar:
+  - hata: "'Önce çalışsın, sonra daraltırız' deyip geniş izin vermek."
+    dogrusu: "Dar başla, gerekirse ekle; daraltma çoğu zaman hiç yapılmaz."
+  - hata: "Deny'ın Allow'dan zayıf olduğunu sanmak."
+    dogrusu: "Açık Deny her zaman kazanır."
+sema:
+  baslik: "IAM istek değerlendirme akışı"
+  adimlar:
+    - { etiket: "İstek", aciklama: "Bir kimlik bir eylemi bir kaynak üzerinde ister." }
+    - { etiket: "Açık Deny?", aciklama: "Eşleşen bir Deny varsa istek reddedilir." }
+    - { etiket: "Kuruluş sınırı", aciklama: "SCP varsa eylem onun sınırları içinde olmalıdır." }
+    - { etiket: "Allow?", aciklama: "Eşleşen bir Allow varsa istek kabul edilir." }
+    - { etiket: "Zımni red", aciklama: "Hiç Allow yoksa varsayılan olarak reddedilir." }
+terimler:
+  - "IAM politikası"
+  - "En az yetki"
+  - "Açık Deny"
+  - "SCP"
 ---
 
 Bir IAM politikası JSON'dur ve her **ifade** (statement) dört şeye bakar:

@@ -24,15 +24,56 @@ sorular:
   - id: temeller-004-s1
     soru: "Parolalar neden düz metin olarak saklanmaz, hash olarak saklanır?"
     cevap: "Veritabanı sızarsa düz metin parolalar anında kullanılır. Hash tek yönlüdür; saldırgan parolayı ancak tahmin ederek bulabilir. Giriş sırasında girilen parolanın hash'i alınır ve saklanan hash ile karşılaştırılır."
+    ipucu: "Veritabanı sızarsa saldırganın elinde ne kalmasını istersin?"
   - id: temeller-004-s2
     soru: "Tuz (salt) ne işe yarar ve gizli tutulması gerekir mi?"
     cevap: "Tuz, hash alınmadan önce parolaya eklenen kullanıcıya özgü rastgele değerdir. Aynı parolaların farklı hash vermesini sağlar ve hazır hash tablolarını (rainbow table) işe yaramaz hale getirir. Gizli tutulması gerekmez; hash ile birlikte saklanabilir."
+    ipucu: "Aynı parola her kullanıcıda aynı hash'i verirse ne olur? Tuz bunu nasıl değiştirir?"
   - id: temeller-004-s3
     soru: "Parola saklamak için neden SHA-256 yerine bcrypt ya da Argon2 kullanılır?"
     cevap: "SHA-256 hızlı olmak için tasarlandı; saldırgan saniyede milyarlarca deneme yapabilir. bcrypt ve Argon2 bilerek yavaş ve (Argon2'de) bellek yoğun çalışır, her tahmini pahalı kılar."
+    ipucu: "Saldırgan saniyede kaç tahmin yapabilir; algoritmanın hızı sana yarar mı?"
   - id: temeller-004-s4
     soru: "Parolanı bir sızıntı bildirim servisinde sızmış olarak gördün. Ne yaparsın ve neden başka hesapları da kontrol edersin?"
     cevap: "O parolayı hemen değiştirirsin ve sızıntı listesindeki aynı parolayı kullandığın her yerde de değiştirirsin. Saldırganlar sızan parolaları başka sitelerde dener (credential stuffing); aynı parolayı yeniden kullanmak tek sızıntıyı birçok hesaba yayar."
+    ipucu: "Aynı parolayı başka yerde de kullandıysan sızıntının etkisi ne kadar yayılır?"
+  - id: temeller-004-s5
+    soru: "Yeni bir hizmetin kayıt formunu geliştiriyorsun. Meslektaşın parolaları SHA-256 ile hash'leyip saklamayı öneriyor. Ne dersin ve ne önerirsin?"
+    cevap: "SHA-256 hızlıdır; sızıntıda saldırgan saniyede milyarlarca tahmin yapabilir. Parola için bilerek yavaş ve tuzlu bir algoritma (Argon2id, bcrypt ya da scrypt) öneririm; tuz her kullanıcı için ayrı ve rastgele olur. Ayrıca uzun parolalara izin verir, sızıntı listelerinde bulunan parolaları reddederim."
+    ipucu: "Parola saklamada hızın avantaj mı, dezavantaj mı olduğunu düşün."
+hizliKontrol:
+  - soru: "Tuzun (salt) asıl faydası nedir?"
+    secenekler: ["Hash'i geri çevrilebilir yapar","Aynı parolaların farklı hash üretmesini sağlar ve önceden hesaplanmış tabloları işe yaramaz kılar","Parolayı otomatik uzatır","Sunucunun hızını artırır"]
+    dogru: 1
+    aciklama: "Tuz, kullanıcıya özel rastgele değerdir; aynı parola bile farklı hash verir ve hazır tablolar işe yaramaz. Gizli tutulması gerekmez."
+    ipucu: "Aynı parolayı kullanan iki kişinin hash'lerine ne olur?"
+  - soru: "Parola saklamada neden yavaş hash tercih edilir?"
+    secenekler: ["Kullanıcı girişi daha güvenli görünsün diye","Sunucu yükünü artırmak için","Saldırganın her tahmininin maliyeti artsın diye","Hash'in geri çevrilebilmesi için"]
+    dogru: 2
+    aciklama: "Meşru girişte yavaşlık fark edilmez; kaba kuvvet denemesinde ise milyarlarca tahmini pahalı hale getirir."
+    ipucu: "Yavaşlığı kimin için dezavantaj yapmak istiyoruz?"
+sikHatalar:
+  - hata: "Parolayı 'şifreleyip' saklamak."
+    dogrusu: "Parola şifrelenmez, tuzlu ve yavaş bir algoritmayla hash'lenir; geri çevrilebilir saklama sızıntıyı büyütür."
+  - hata: "Sızan bir parolayı yalnız o hesapta değiştirmek."
+    dogrusu: "Aynı parolayı kullandığın bütün hesaplarda değiştir ve bir parola yöneticisiyle her hesaba ayrı parola ver."
+terimler:
+  - "Hash"
+  - "Tuz"
+  - "Gizlilik"
+sema:
+  baslik: "Parolanın doğrulanması"
+  adimlar:
+    - etiket: "Kayıt"
+      aciklama: "Sistem her kullanıcı için rastgele bir tuz üretir."
+    - etiket: "Hash"
+      aciklama: "Parola ve tuz yavaş bir algoritmayla hash'lenir."
+    - etiket: "Saklama"
+      aciklama: "Veritabanında yalnız tuz ve hash durur, parola durmaz."
+    - etiket: "Giriş"
+      aciklama: "Kullanıcının yazdığı parola aynı tuzla hash'lenir."
+    - etiket: "Karşılaştırma"
+      aciklama: "Çıkan hash kayıtlıyla aynıysa giriş kabul edilir."
 derinDalis:
   - tur: okuma
     baslik: "OWASP Password Storage Cheat Sheet"

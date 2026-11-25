@@ -45,15 +45,51 @@ sorular:
   - id: container-008-s1
     soru: "Üç Pod Security profilini (privileged, baseline, restricted) bir cümleyle ayır."
     cevap: "Privileged hiçbir kısıtlama koymaz; baseline bilinen yetki yükseltme yollarını engeller ama gündelik uygulamalara uyumludur; restricted güncel sıkılaştırma kurallarını (root olmayan, yetkisiz, seccomp) zorunlu kılar."
+    ipucu: "Üç profil: serbest, orta, sıkı. Privileged ayarı kim yasaklar?"
   - id: container-008-s2
     soru: "Pod Security Admission'da `enforce`, `audit` ve `warn` modları ne yapar?"
     cevap: "`enforce` kurala uymayan pod'u reddeder; `audit` ihlali denetim günlüğüne yazar; `warn` kullanıcıya uyarı gösterir ama pod'u kabul eder. Geçiş sırasında önce `warn`/`audit`, sonra `enforce` kullanmak güvenli yoldur."
+    ipucu: "Üç modun farkı: reddet, uyar, kaydet."
   - id: container-008-s3
     soru: "Restricted profilde `allowPrivilegeEscalation: false` ve `capabilities.drop: [ALL]` neden istenir?"
     cevap: "İlki süreçlerin sonradan yetki yükseltmesini (setuid vb.) engeller, ikincisi gereksiz Linux yetkilerini sıfırlar. İkisi saldırganın container içinde elde edebileceği gücü azaltır."
+    ipucu: "Neden root yetkisinin yükselmesini ve Linux yetkilerini kapatıyoruz?"
   - id: container-008-s4
     soru: "Pod Security Standards tek başına neyi çözmez?"
     cevap: "Pod'un çalışma anında ne yaptığını izlemez, imajdaki zafiyetleri taramaz, ağ erişimini sınırlamaz. Yalnız pod tanımının güvenli ayarları taşıyıp taşımadığını kontrol eder; diğer katmanlarla (RBAC, NetworkPolicy, tarama) birlikte düşünülmelidir."
+    ipucu: "Bu standartlar ağ trafiğini ya da imaj içeriğini düzenler mi?"
+  - id: container-008-s5
+    soru: "Üretim isim alanında `restricted` profili açmak istiyorsun ama 20 uygulama çalışıyor. Nasıl ilerlersin?"
+    cevap: "Önce `warn` ve `audit` modlarını açıp hangi pod'ların kuralı ihlal ettiğini görürsün; `kubectl label --dry-run=server` ile etkiyi önceden test edersin. Uygulamaları (runAsNonRoot, capability drop vb.) düzelttikten sonra `enforce` açarsın."
+    ipucu: "Kesinti yaratmadan önce bilgi topla."
+hizliKontrol:
+  - soru: "Hangi mod kurala uymayan pod'u reddeder?"
+    secenekler: ["audit","warn","log","enforce"]
+    dogru: 3
+    aciklama: "enforce reddeder; warn uyarır, audit yalnız günlüğe yazar."
+    ipucu: "Reddetme en sert moddur."
+sikHatalar:
+  - hata: "Doğrudan `enforce=restricted` açıp çalışan uygulamaları kırmak."
+    dogrusu: "Önce warn/audit, sonra düzeltme, en son enforce."
+  - hata: "Pod Security'nin ağ ve imaj güvenliğini de kapsadığını sanmak."
+    dogrusu: "Yalnız pod ayarlarını denetler; NetworkPolicy, imaj taraması ve RBAC ayrıca gerekir."
+sema:
+  baslik: "Pod Security profilini güvenle devreye alma"
+  adimlar:
+    - etiket: "Etiketle"
+      aciklama: "İsim alanına warn ve audit etiketlerini ekle."
+    - etiket: "İzle"
+      aciklama: "İhlalleri uyarı ve denetim kayıtlarından oku."
+    - etiket: "Düzelt"
+      aciklama: "Uygulamaların securityContext ayarlarını profile uydur."
+    - etiket: "Dry-run"
+      aciklama: "`--dry-run=server` ile enforce etkisini önceden gör."
+    - etiket: "Enforce"
+      aciklama: "Hazır olunca enforce etiketini aç."
+terimler:
+  - "Pod Security Admission"
+  - "securityContext"
+  - "Capability"
 derinDalis:
   - tur: okuma
     baslik: "Kubernetes: Pod Security Standards"

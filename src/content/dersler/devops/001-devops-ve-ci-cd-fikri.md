@@ -22,15 +22,23 @@ sorular:
   - id: devops-001-s1
     soru: "DevOps'un çözmeye çalıştığı temel sorun nedir?"
     cevap: "Yazılımı geliştiren ekiple onu çalıştıran ekibin ayrı ve birbirini bekleyen iki dünya olması. DevOps ortak sorumluluk, otomasyon ve hızlı geri bildirim ister."
+    ipucu: "Geliştirme ve operasyon ekiplerinin birbirini beklemesinin sonucunu düşün."
   - id: devops-001-s2
     soru: "Sürekli entegrasyon (CI) ile sürekli teslim (CD) arasındaki fark nedir?"
     cevap: "CI, herkesin kodunu sık sık ortak yere birleştirip her birleşmede otomatik derleme ve test çalıştırmaktır. CD, bu doğrulanmış kodu yayına alınabilir halde tutmak ya da otomatik yayına çıkarmaktır."
+    ipucu: "Biri her birleşmede otomatik doğrulama, diğeri yayına hazır olma durumuyla ilgilidir."
   - id: devops-001-s3
     soru: "Geri bildirim döngüsü neden kısa olmalı?"
     cevap: "Hatayı yazdığın anda öğrenirsen bağlam taze olduğu için düzeltmesi dakikalar sürer. Haftalar sonra öğrenirsen neyin neden yazıldığını hatırlamak bile zorlaşır."
+    ipucu: "Hatayı yazdığın an ile fark ettiğin an arasındaki süreyi düşün."
   - id: devops-001-s4
     soru: "Saldırgan için CI/CD hattı neden cazip bir hedeftir?"
     cevap: "Hat kodu derleyip yayına çıkarma yetkisine ve genellikle sırlara (anahtar, parola) sahiptir. Hatta girebilen biri, kodun içine zararlı bir şey sokup herkese ulaştırabilir."
+    ipucu: "Hattın sahip olduğu yetkilere ve sırlara bak."
+  - id: devops-001-s5
+    soru: "Ekibiniz güvenlik taramasını hattın en sonuna, yayından hemen önceye koymuş. Taramalar 40 dakika sürüyor ve geliştiriciler acil yayınlarda bu adımı atlamaya başladı. Ne önerirsin?"
+    cevap: "Güvenlik adımlarını hattın içinde daha erken çekerim (shift left): hızlı olanlar, yani sır ve bağımlılık taraması, her PR'da çalışsın; yavaş olanlar paralel ya da gece çalışsın. Adımı atlamak yerine kırmızı sonuç yayını durdursun. Böylece güvenlik darboğaz olmaktan çıkar."
+    ipucu: "Kontrol yavaş ve en sonda olunca insanların ne yaptığını düşün; kontrolü nereye çekebilirsin?"
 derinDalis:
   - tur: kitap
     baslik: "The Phoenix Project (Gene Kim ve ark.)"
@@ -39,6 +47,40 @@ derinDalis:
     baslik: "GitHub Actions kavramları"
     ayrinti: "Workflow, job, step ve event tanımlarını resmi dokümandan oku."
     url: "https://docs.github.com/en/actions/get-started/understanding-github-actions"
+hizliKontrol:
+  - soru: "Testlerden geçen kod insan onayı olmadan otomatik olarak yayına çıkıyorsa bu hangisidir?"
+    secenekler: 
+      - "Yalnız sürekli entegrasyon"
+      - "Elle yayın"
+      - "Sürekli teslim (continuous delivery)"
+      - "Sürekli dağıtım (continuous deployment)"
+    dogru: 3
+    aciklama: "Sürekli teslimde yayına çıkma kararı insanındır; sürekli dağıtımda doğrulanmış kod otomatik yayına çıkar."
+    ipucu: "Yayın kararını kimin verdiğine bak."
+sikHatalar:
+  - hata: "DevOps'u satın alınan bir araç sanmak."
+    dogrusu: "DevOps bir çalışma biçimidir: ortak sorumluluk, otomasyon, küçük ve sık değişiklik. Araçlar bunu destekler."
+  - hata: "Güvenlik taramasını hep yayından hemen önceye koymak."
+    dogrusu: "Kontrolleri hattın başına doğru çek; geliştirici sorunu kodu yazdığı gün görsün."
+terimler:
+  - "CI/CD"
+  - "Pipeline"
+  - "Shift left"
+sema:
+  baslik: "Tipik bir CI/CD hattı"
+  adimlar:
+    - etiket: "Kod"
+      aciklama: "Geliştirici değişikliği ortak depoya gönderir."
+    - etiket: "Derle"
+      aciklama: "Makine kodu otomatik derler."
+    - etiket: "Test"
+      aciklama: "Otomatik testler çalışır."
+    - etiket: "Güvenlik taraması"
+      aciklama: "Sır ve bağımlılık taramaları çalışır."
+    - etiket: "Paketle"
+      aciklama: "Uygulama dağıtılabilir pakete dönüşür."
+    - etiket: "Yayınla"
+      aciklama: "Paket ortama çıkar; adımlardan biri kırmızıysa hat durur."
 ---
 
 Eskiden yazılım dünyası ikiye bölünmüştü: **geliştiriciler** kodu yazar, **operasyon** ekibi onu sunucuya koyup çalışır tutardı. Geliştirici "bende çalışıyor" der, operasyon "bende çalışmıyor" derdi. Yayın birkaç ayda bir, büyük bir olay olarak yapılırdı ve her yayın sancılıydı.

@@ -27,15 +27,56 @@ sorular:
   - id: temeller-012-s1
     soru: "Olay müdahalesinin beş aşamasını sırayla say."
     cevap: "Hazırlık, tespit (ve analiz), sınırlama, temizleme (kök neden giderme ve geri yükleme), olay sonrası ders çıkarma."
+    ipucu: "Aşamaların sırasını hazırlıktan öğrenmeye doğru düşün."
   - id: temeller-012-s2
     soru: "Sınırlama aşaması neden temizlemeden önce gelir?"
     cevap: "Önce yayılmayı ve zararı durdurmak gerekir; saldırgan hâlâ içerideyse temizlik çabası boşa gider ve o fark ederse izlerini siler ya da daha da zarar verir. Sınırlama zaman kazandırır, temizlik sonra düzgünce yapılır."
+    ipucu: "Yangın yayılırken önce neyi yaparsın: söndürmeyi mi, kapıları kapatmayı mı?"
   - id: temeller-012-s3
     soru: "Müdahale sırasında kanıtı korumak neden önemlidir? Bunun için ne yaparsın?"
     cevap: "Kanıt, saldırganın nasıl girdiğini ve nereye ulaştığını gösterir; bu olmadan aynı açık kapanmaz. Günlükleri ve gerekirse disk/bellek kopyasını alırsın, değiştirmeden saklarsın, yaptığın her adımı zaman damgasıyla kaydedersin."
+    ipucu: "Silmeden ya da yeniden başlatmadan önce hangi bilgiyi kaybedersin?"
   - id: temeller-012-s4
     soru: "Suçlayıcı olmayan olay sonrası değerlendirmenin (post-incident review) amacı nedir?"
     cevap: "Kimin hata yaptığını bulmak değil, süreçte ve sistemde neyin açık bıraktığını anlamak ve tekrarlanmasını önleyecek somut iyileştirmeler çıkarmaktır. Suçlanmaktan korkan ekip olayı saklar, öğrenme biter."
+    ipucu: "Amaç suçlu bulmak mı, sürecin neden başarısız olduğunu anlamak mı?"
+  - id: temeller-012-s5
+    soru: "Gece 3'te izleme, bir geliştirici hesabından alışılmadık bir ülkeden başarılı giriş ve ardından depodan toplu klonlama yapıldığını bildirdi. Müdahale aşamalarına göre ilk 30 dakikada ne yaparsın?"
+    cevap: "Tespit aşamasında uyarıyı doğrularım ve zamanlama, IP ve etkilenen kaynakları kaydederim. Sınırlama için hesabın oturumlarını ve token'larını iptal eder, parolayı sıfırlar, gerekirse hesabı askıya alırım. Kanıtı (günlükleri) korur, ilgili ekibi ve yöneticiyi bilgilendirir, sonraki aşamada kapsamı ve kökeni araştırmak üzere not alırım."
+    ipucu: "Önce kanıtı kaydet ve yayılmayı durdur; temizlik sonra gelir."
+hizliKontrol:
+  - soru: "Olay müdahalesinde sınırlama neden temizlemeden önce gelir?"
+    secenekler: ["Temizlik çok pahalı olduğu için","Önce yayılmayı durdurmak, hasarın büyümesini engeller","Sınırlama kanıtı otomatik siler","Sıra rastgeledir"]
+    dogru: 1
+    aciklama: "Sınırlama saldırının yayılmasını durdurur; ardından kök neden temizlenebilir."
+    ipucu: "Yayılan bir olayı temizlerken ne olur?"
+  - soru: "Suçlayıcı olmayan olay sonrası değerlendirmenin amacı nedir?"
+    secenekler: ["Hatalı kişiyi cezalandırmak","Neyin neden olduğunu ve süreçte neyin iyileşeceğini öğrenmek","Olayı kayıtlardan silmek","Yalnız yönetime rapor vermek"]
+    dogru: 1
+    aciklama: "Amaç sorumlu aramak değil, sistemin ve sürecin zayıf noktalarını bulup iyileştirmektir."
+    ipucu: "Kimse suçlanacaksa olayı bildirir miydi?"
+sikHatalar:
+  - hata: "Şüpheli sistemi hemen silmek ya da yeniden başlatmak."
+    dogrusu: "Önce kanıtı kaydet, sonra sınırla ve temizle."
+  - hata: "Olayı kimseye haber vermeden tek başına çözmeye çalışmak."
+    dogrusu: "Sürece bağlı olarak ilgili ekibi ve sorumluları erkenden bilgilendir."
+terimler:
+  - "Olay müdahalesi"
+  - "Gizlilik"
+  - "En az yetki"
+sema:
+  baslik: "Olay müdahalesinin beş aşaması"
+  adimlar:
+    - etiket: "Hazırlık"
+      aciklama: "Plan, roller, araçlar ve günlükler olay olmadan önce hazırlanır."
+    - etiket: "Tespit"
+      aciklama: "Uyarılar doğrulanır ve olayın kapsamı ilk kez belirlenir."
+    - etiket: "Sınırlama"
+      aciklama: "Hasarın yayılması durdurulur, kanıt korunur."
+    - etiket: "Temizleme"
+      aciklama: "Kök neden giderilir ve sistemler güvenli şekilde geri getirilir."
+    - etiket: "Ders çıkarma"
+      aciklama: "Suçlayıcı olmayan bir değerlendirmeyle süreç iyileştirilir."
 derinDalis:
   - tur: okuma
     baslik: "NIST SP 800-61 Rev. 3 (Nisan 2025)"

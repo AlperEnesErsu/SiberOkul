@@ -50,20 +50,68 @@ sorular:
   - id: appsec-010-s1
     soru: "SSRF nedir?"
     cevap: "Sunucu tarafı istek sahteciliği: saldırgan, uygulamayı kendi seçtiği bir adrese (genellikle iç ağ ya da meta veri servisi) istek göndermeye yönlendirir. İstek sunucudan çıktığı için dışarıdan erişilemeyen kaynaklara ulaşılabilir."
+    ipucu: "Sunucu, kullanıcının verdiği adrese istek atıyorsa kimin adına atıyor?"
   - id: appsec-010-s2
     soru: "Bulut meta veri servisi (ör. 169.254.169.254) neden SSRF'de hedef olur?"
     cevap: "Sanal makine içinden erişilen bu servis, makineye bağlı rolün geçici kimlik bilgilerini verebilir. SSRF ile sunucuya bu adrese istek attırılırsa bilgiler dışarı sızabilir ve bulut hesabına erişim doğabilir."
+    ipucu: "İç ağdaki ya da bulut meta veri adresi dışarıdan erişilemez ama sunucudan erişilir mi?"
   - id: appsec-010-s3
     soru: "Yasak listesi (127.0.0.1, 10.x.x.x'i engelle) yerine izin listesi neden daha güvenlidir?"
     cevap: "Adresler çeşitli biçimlerde yazılabilir ve DNS ile yeniden yönlendirilebilir; yasak listesi atlatılır. İzin listesi yalnız bildiğin hedefleri kabul eder, bilinmeyen her şey reddedilir."
+    ipucu: "Yasak listesi her sıradışı adres biçimini sayabilir mi?"
   - id: appsec-010-s4
     soru: "Yönlendirmeleri (redirect) takip etmek SSRF savunmasında neden sorun olabilir?"
     cevap: "İzinli bir adres, saldırganın kontrolündeki bir sunucuya, o da iç bir adrese yönlendirebilir. Kontrol yalnız ilk URL'ye uygulanırsa son hedef denetlenmemiş olur. Yönlendirmeleri kapatmak ya da her adımı yeniden doğrulamak gerekir."
+    ipucu: "Doğrulanan adres başka bir adrese yönlendirirse ne olur?"
+  - id: appsec-010-s5
+    soru: Bir PR, kullanıcının verdiği webhook URL'sine sunucudan POST atan yeni bir özellik ekliyor. İnceleyen olarak hangi sorularla durdurursun?
+    cevap: Hedef adresin izin listesine ya da en azından yalnız herkese açık adreslere kısıtlandığını, `localhost`, özel IP aralıkları ve bulut meta veri adresinin reddedildiğini sorarsın. Yönlendirmelerin takip edilip edilmediğine ve DNS çözümlemesinin doğrulama sonrası tekrar yapılıp yapılmadığına bakarsın. Ayrıca sunucunun ağ düzeyinde dışarı erişiminin sınırlı olduğunu ve yanıt gövdesinin kullanıcıya olduğu gibi dönmediğini kontrol edersin.
+    ipucu: Hem adresin kendisini hem yönlendirmeyi ve ağ kısıtlarını düşün.
 derinDalis:
   - tur: okuma
     baslik: "OWASP Server-Side Request Forgery Prevention Cheat Sheet"
     ayrinti: "İzin listesi yaklaşımı, DNS yeniden bağlama (rebinding), bulut meta veri koruması."
     url: "https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html"
+hizliKontrol:
+  - soru: SSRF'de saldırgan sunucuyu neye zorlar?
+    secenekler:
+      - Parolayı sıfırlamaya
+      - Kendi seçtiği (çoğunlukla iç) bir adrese istek atmaya
+      - Çerezi silmeye
+      - Betik çalıştırıp kullanıcıyı yönlendirmeye
+    dogru: 1
+    aciklama: Sunucu saldırgan adına, dışarıdan erişilemeyen kaynaklara bile istek yapar.
+    ipucu: İsteği atan taraf kimdir?
+  - soru: Hangi savunma iç adreslere karşı en sağlamdır?
+    secenekler:
+      - Yalnız 127.0.0.1'i engellemek
+      - URL'yi küçük harfe çevirmek
+      - Sayfayı HTTPS yapmak
+      - İzin listesi ve ağ düzeyinde çıkış kısıtı
+    dogru: 3
+    aciklama: Yasak listeleri atlatılabilir; izin verilen hedefler ve ağ kısıtları birlikte kullanılır.
+    ipucu: Neyin yasak olduğunu saymak yerine neyin serbest olduğunu tanımla.
+sikHatalar:
+  - hata: URL'de yalnız `127.0.0.1` ve `localhost`'u engelleyip işi bitmiş saymak.
+    dogrusu: Başka gösterimler, özel ağ aralıkları ve DNS yöntemleri vardır; izin listesi kullan.
+  - hata: Yönlendirmeleri doğrulamadan takip etmek.
+    dogrusu: Yönlendirme takibini kapat ya da her yönlendirilen adresi yeniden doğrula.
+sema:
+  baslik: SSRF isteği nasıl akar?
+  adimlar:
+    - etiket: Girdi
+      aciklama: Saldırgan 'resim URL'si' alanına iç bir adres yazar.
+    - etiket: İstek
+      aciklama: Uygulama sunucusu, o adrese kendi ağından istek atar.
+    - etiket: İç kaynak
+      aciklama: Dışarıdan erişilemeyen servis ya da meta veri hizmeti sunucuya cevap verir.
+    - etiket: Yanıt
+      aciklama: Uygulama gelen cevabı (ya da hata davranışını) saldırgana yansıtır.
+    - etiket: Sonuç
+      aciklama: Saldırgan iç bilgilere ya da kimlik bilgilerine ulaşır.
+terimler:
+  - SSRF
+  - Bulut meta veri servisi
 ---
 
 **SSRF** (server-side request forgery), uygulamanın kullanıcıdan aldığı bir URL'ye **sunucu tarafından** istek göndermesini kötüye kullanır. Dışarıdan erişemediğin iç servisler, sunucunun gözünden erişilebilirdir.

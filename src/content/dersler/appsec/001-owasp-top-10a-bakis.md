@@ -35,15 +35,23 @@ sorular:
   - id: appsec-001-s1
     soru: "OWASP Top 10 nedir ve ne değildir?"
     cevap: "Web uygulamalarındaki en kritik risk sınıflarının, topluluk verisine dayanan, belli aralıklarla güncellenen bir farkındalık listesidir. Eksiksiz bir güvenlik standardı ya da 'bunları kapattım, güvendeyim' kontrol listesi değildir."
+    ipucu: "Başlığın adındaki 'erişim' sözcüğüne ve hangi katmanda kırıldığına odaklan."
   - id: appsec-001-s2
     soru: "Liste neden zamanla değişir? Bir örnek ver."
     cevap: "Yazılım dünyası ve saldırı yöntemleri değişir. 2025 sürümünde yazılım tedarik zinciri sorunları ve istisnai durumların kötü yönetimi gibi başlıklar listede yer aldı; bu, risklerin kaydığını gösterir."
+    ipucu: "Liste bir yasa mı, bir farkındalık belgesi mi diye düşün."
   - id: appsec-001-s3
     soru: "Bir tarama aracı 'A05 Injection' bulgusu veriyor. Bu bilgiyle ne yaparsın?"
     cevap: "Başlık yalnız sınıfı söyler. Bulgunun hangi dosya ve satırda olduğuna bakar, girdinin sorguya nasıl karıştığını anlar, sonra uygun düzeltmeyi (ör. parametreli sorgu) uygularsın."
+    ipucu: "Yeni tehditler ve veriler çıkınca listenin ne yapması gerektiğini düşün."
   - id: appsec-001-s4
     soru: "Top 10'u bir uygulamanın tek güvenlik hedefi yapmak neden yetersizdir?"
     cevap: "Liste en yaygın riskleri kapsar, tüm riskleri değil. İş mantığı hataları ya da uygulamaya özgü tehditler listede olmayabilir; bunlar tehdit modelleme ve kod incelemesiyle bulunur."
+    ipucu: "Etiket bir teşhistir; teşhisten sonra ne yapılır?"
+  - id: appsec-001-s5
+    soru: Müşteri, yazılım ekibine 'bizim uygulama Top 10'daki bütün maddelere karşı temiz mi?' diye soruyor. Elinde yalnız bir otomatik tarama raporu var. Ne cevap verirsin?
+    cevap: Top 10 bir farkındalık listesidir, uyumluluk kontrol listesi değildir. Tarama raporu yalnız araçların yakalayabildiği sınıfları gösterir; erişim kontrolü ve iş mantığı hataları için kod incelemesi ve tehdit modelleme de gerekir. 'Temiz' demek yerine neyin, hangi yöntemle kontrol edildiğini ve neyin kalan risk olduğunu anlatırsın.
+    ipucu: Tarama aracının göremediği hata türlerini düşün.
 derinDalis:
   - tur: okuma
     baslik: "OWASP Top 10:2025"
@@ -53,6 +61,23 @@ derinDalis:
     baslik: "OWASP Cheat Sheet Series"
     ayrinti: "Aşağıdaki derslerde adım adım kullanacağımız, konu başına kısa uygulama rehberleri."
     url: "https://cheatsheetseries.owasp.org/"
+hizliKontrol:
+  - soru: OWASP Top 10 en doğru nasıl tanımlanır?
+    secenekler:
+      - Yasal olarak uyulması zorunlu güvenlik standardı
+      - Web uygulamalarındaki en kritik risk sınıflarını gösteren farkındalık belgesi
+      - Bütün açıkları kapsayan eksiksiz bir zafiyet veri tabanı
+      - Yalnız SQL injection saldırılarını sıralayan bir araç
+    dogru: 1
+    aciklama: Liste yaygın ve kritik risk sınıflarını anlatır; zorunlu bir standart ya da eksiksiz bir katalog değildir.
+    ipucu: Listenin amacı 'farkındalık' sözcüğüyle özetlenir.
+sikHatalar:
+  - hata: "Top 10'u bir kontrol listesi gibi bitirmek: 'on maddeyi geçtik, uygulama güvenli.'"
+    dogrusu: Liste bir başlangıçtır; uygulamanın kendi tehditleri için tehdit modelleme ve kod incelemesi de gerekir.
+  - hata: "Bulguyu yalnız etiketiyle kaydetmek: 'A05 Injection var.'"
+    dogrusu: Etiketin yanına hangi dosya, hangi girdi ve nasıl düzeltileceği yazılır; etiket sınıflandırmadır, çözüm değil.
+terimler:
+  - OWASP Top 10
 ---
 
 **OWASP** (Open Worldwide Application Security Project) kâr amacı gütmeyen bir topluluktur. En bilinen çıktısı **Top 10** listesi: web uygulamalarında en kritik güvenlik risklerinin on başlıkta özeti. Veriler, güvenlik firmalarından ve topluluktan gelen gerçek bulgulara dayanır ve liste birkaç yılda bir güncellenir.

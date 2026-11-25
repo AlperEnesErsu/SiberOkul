@@ -24,15 +24,51 @@ sorular:
   - id: temeller-010-s1
     soru: "Virüs ile solucan arasındaki temel fark nedir?"
     cevap: "Virüs, bir dosyaya ya da programa yapışır ve o program çalıştırılınca yayılır; kullanıcı eylemi gerekir. Solucan kendi başına, genelde ağdaki açıklardan yararlanarak başka makinelere kendiliğinden yayılır."
+    ipucu: "Yayılma biçimini düşün: kendi kendine mi, kullanıcı eliyle mi?"
   - id: temeller-010-s2
     soru: "Truva atı (trojan) kendini nasıl yayar?"
     cevap: "Kendiliğinden yayılmaz. Kullanıcı onu yararlı ya da zararsız sanıp kendisi yükler (sahte program, korsan yazılım, zararlı eklenti). İçinde gizli bir zararlı işlev vardır."
+    ipucu: "Faydalı görünen bir şeyi kendi elinle kurmak hangi türe uyar?"
   - id: temeller-010-s3
     soru: "Fidye yazılımı bir kuruma genelde hangi yoldan girer ve en etkili hazırlık nedir?"
     cevap: "Yaygın yollar: oltalama e-postası, açık bırakılmış uzak erişim servisleri, çalınmış kimlik bilgileri ve yamalanmamış sistemler. En etkili hazırlık, saldırganın değiştiremeyeceği yerde tutulan, düzenli test edilen yedeklerdir; ayrıca yama ve MFA."
+    ipucu: "Fidye yazılımına karşı yedeğin hangi özelliği belirleyicidir?"
   - id: temeller-010-s4
     soru: "Yazılım tedarik zinciri saldırısında zararlı kod bir kuruma nasıl girer?"
     cevap: "Kurum, güvendiği bir bağımlılığı ya da güncellemeyi alır ve o bileşenin içine saldırgan önceden zararlı kod yerleştirmiştir. Kod yetkili bir kanaldan geldiği için kontrolleri aşar; bu yüzden bağımlılıkları doğrulamak ve sürüm sabitlemek gerekir."
+    ipucu: "Güvenilir bir kaynaktan gelen şeyin zararlı çıkması nasıl mümkün olur?"
+  - id: temeller-010-s5
+    soru: "Bir sunucuda tanımadığın bir işlem sürekli yüksek CPU kullanıyor ve dışarıdaki bir adrese bağlanıyor. Silmeden önce ne yaparsın?"
+    cevap: "Önce işlemin yolunu, başlatıldığı zamanı, ağ bağlantılarını ve kullanıcısını kaydederim; mümkünse bellek ve disk görüntüsü alıp kanıtı korurum. Sonra sunucuyu ağdan ayırarak yayılmayı sınırlar, olayı güvenlik ekibine bildirir ve temizlikten önce giriş yolunu (hangi hesap, hangi açık) belirlerim. Hemen silmek ya da yeniden başlatmak kanıtı yok eder."
+    ipucu: "Silmeden önce kanıtı kaydetmen ve yayılmayı durdurman gerekir."
+hizliKontrol:
+  - soru: "Solucanı virüsten ayıran temel özellik hangisidir?"
+    secenekler: ["Her zaman daha zararsız olması","Kullanıcı eylemi olmadan ağ üzerinden kendi kendine yayılabilmesi","Yalnız e-postayla yayılması","Sadece mobil cihazlara bulaşması"]
+    dogru: 1
+    aciklama: "Virüs genelde bir dosyayla ya da kullanıcı eylemiyle yayılır; solucan ağda kendi başına çoğalır."
+    ipucu: "Yayılırken insan eli gerekiyor mu?"
+  - soru: "Fidye yazılımına karşı en etkili hazırlık hangisidir?"
+    secenekler: ["Fidyeyi ödemeye hazır bütçe ayırmak","Sık alınan, test edilmiş ve ağdan ayrı tutulan yedekler","Her çalışana yönetici yetkisi vermek","Antivirüsü kapatmak"]
+    dogru: 1
+    aciklama: "Ağdan izole ve geri yükleme testi yapılmış yedekler, ödeme olmadan toparlanmayı sağlar."
+    ipucu: "Veri kilitlenirse neyi geri yüklersin?"
+sikHatalar:
+  - hata: "Şüpheli işlemi hemen silip kapatmak."
+    dogrusu: "Önce kanıtı kaydet, sistemi ağdan ayır; sonra temizle."
+  - hata: "Yedekleri üretim ağına bağlı tutmak."
+    dogrusu: "Fidye yazılımı bağlı yedekleri de şifreler; yedek kopyasını ağdan ayrı ve değiştirilemez tut."
+terimler:
+  - "Fidye yazılımı"
+  - "Truva atı"
+  - "Tedarik zinciri saldırısı"
+olay:
+  baslik: "Colonial Pipeline'a DarkSide fidye yazılımı saldırısı"
+  yil: 2021
+  ozet: "Mayıs 2021'de DarkSide fidye yazılımı bir ABD boru hattı şirketinin (Colonial Pipeline) bilişim ağına yerleştirildi. Şirket, bazı operasyonel (OT) sistemlerini önlem olarak kendisi devre dışı bıraktı; CISA ve FBI, OT ağlarının doğrudan etkilendiğine dair işaret görmediklerini belirtti."
+  ders: "Fidye yazılımı bilişim ağını vurunca bile iş sürekliliği için kritik sistemler kapatılabilir. CISA'nın önlemleri: uzaktan erişimde çok faktörlü doğrulama, ağ bölümleme, en az yetki ve çevrimdışı, test edilmiş yedekler."
+  kaynak:
+    ad: "CISA/FBI: DarkSide Ransomware, Advisory AA21-131A"
+    url: "https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-131a"
 derinDalis:
   - tur: kitap
     baslik: "Practical Malware Analysis (Sikorski, Honig)"

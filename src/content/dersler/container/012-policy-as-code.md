@@ -55,15 +55,51 @@ sorular:
   - id: container-012-s1
     soru: "Policy-as-code ne demektir ve klasik güvenlik belgesinden farkı nedir?"
     cevap: "Güvenlik kuralları makinece çalıştırılabilir kod olarak yazılır, Git'te sürümlenir ve her dağıtımda otomatik uygulanır. Belge ise insanın hatırlamasına bağlıdır; uygulanıp uygulanmadığı sürekli denetlenemez."
+    ipucu: "Belge okunur; kod ise otomatik uygulanır."
   - id: container-012-s2
     soru: "Admission controller (kabul denetleyicisi) nedir ve policy motoru onu nasıl kullanır?"
     cevap: "API sunucusunda, nesne kaydedilmeden hemen önce çalışan denetim noktasıdır. Kyverno ve OPA Gatekeeper bu noktaya bağlanır; kurala uymayan isteği reddeder ya da değiştirir."
+    ipucu: "İstek API sunucusuna girerken hangi katman araya girer?"
   - id: container-012-s3
     soru: "Kyverno ile OPA'nın yaklaşım farkı nedir?"
     cevap: "Kyverno Kubernetes'e özgüdür ve politikalar YAML ile yazılır; öğrenmesi kolaydır. OPA genel amaçlı bir motordur ve politikalar Rego dilindedir; Kubernetes dışında da (Terraform planı, API yetkilendirme) kullanılır, ama öğrenme eğrisi daha diktir."
+    ipucu: "Biri YAML ile, diğeri ayrı bir dil ile politika yazar."
   - id: container-012-s4
     soru: "Yeni bir politikayı doğrudan `Enforce` modunda açmak neden riskli, nasıl daha güvenli açılır?"
     cevap: "Mevcut ya da kritik iş yükleri kurala uymuyorsa dağıtımlar kesilebilir. Önce `Audit` (yalnız raporla) modunda açıp ihlalleri görür, düzeltir, sonra `Enforce`'a geçersin."
+    ipucu: "Önce raporla, sonra zorla: hangi mod ilk adım?"
+  - id: container-012-s5
+    soru: "Kyverno politikası 'etiket `owner` zorunlu' diyor ve `Enforce` açılınca dün çalışan bir CI dağıtımı reddedilmeye başladı. Ne yaparsın?"
+    cevap: "Reddedilen nesnenin eksiğini (etiket) hızla düzeltirsin; acil ise politikayı geçici olarak `Audit`'e alırsın. Sonra ekibe duyurup CI şablonlarını günceller ve politikayı yeniden `Enforce` yaparsın."
+    ipucu: "Politikayı bozmak yerine nesneyi düzelt; acil durumda moda dön."
+hizliKontrol:
+  - soru: "Admission controller ne zaman çalışır?"
+    secenekler: ["Pod çalışırken sürekli","API sunucusu isteği etcd'ye yazmadan önce","Düğüm açılırken","İmaj build edilirken"]
+    dogru: 1
+    aciklama: "Kabul denetimi, kimlik doğrulama ve yetkilendirmeden sonra, nesne kalıcı olmadan önce çalışır."
+    ipucu: "İstek yolunda etcd'den önceki adım."
+sikHatalar:
+  - hata: "Yeni politikayı doğrudan Enforce modunda açmak."
+    dogrusu: "Önce Audit ile ihlalleri gör, düzelt, sonra Enforce'a geç."
+  - hata: "Yöneticileri bütün politikalardan muaf tutmak."
+    dogrusu: "Muafiyetleri dar ve gerekçeli tut; geniş istisna kuralı etkisiz bırakır."
+sema:
+  baslik: "Admission denetiminin yeri"
+  adimlar:
+    - etiket: "İstek"
+      aciklama: "kubectl nesneyi API sunucusuna gönderir."
+    - etiket: "Kimlik ve yetki"
+      aciklama: "Kim olduğun ve izninin olup olmadığı denetlenir."
+    - etiket: "Admission"
+      aciklama: "Politika motoru (Kyverno/OPA) nesneyi kurallara göre inceler."
+    - etiket: "Karar"
+      aciklama: "Uygunsa devam, değilse Enforce modunda reddedilir (Audit'te yalnız kaydedilir)."
+    - etiket: "etcd"
+      aciklama: "Kabul edilen nesne kalıcı olarak yazılır."
+terimler:
+  - "Policy-as-code"
+  - "Admission controller"
+  - "Kyverno"
 derinDalis:
   - tur: okuma
     baslik: "Kyverno: giriş"

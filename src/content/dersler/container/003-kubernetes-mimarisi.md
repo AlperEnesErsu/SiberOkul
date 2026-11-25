@@ -25,15 +25,62 @@ sorular:
   - id: container-003-s1
     soru: "Kontrol düzlemi (control plane) ile düğüm (node) arasındaki fark nedir?"
     cevap: "Kontrol düzlemi kümeyi yönetir ve kararları verir (API sunucusu, etcd, zamanlayıcı, controller manager). Düğümler ise iş yüklerinin gerçekten çalıştığı makinelerdir; üzerlerinde kubelet, ağ vekili ve container çalıştırma ortamı bulunur."
+    ipucu: "Kümeyi iki gruba ayır: karar verenler ve işi yapanlar."
   - id: container-003-s2
     soru: "`kube-apiserver` neden kümenin 'ön kapısı' sayılır?"
     cevap: "Bütün istekler (kubectl, kubelet, controller'lar) ona gelir; kimlik doğrulama, yetkilendirme ve doğrulama orada yapılır. API sunucusuna yetkisiz erişim kümenin tamamına erişim demektir; bu yüzden en sıkı korunan bileşendir."
+    ipucu: "Herkesin konuştuğu tek kapı hangi bileşen?"
   - id: container-003-s3
     soru: "`kubelet` ne yapar?"
     cevap: "Her düğümde çalışan ajandır. API sunucusundan kendi düğümüne atanan pod tanımlarını alır, container'ların çalıştığından emin olur ve durumunu API sunucusuna bildirir."
+    ipucu: "Düğümdeki ajanın görevini düşün: tanımı alıp ne yapar?"
   - id: container-003-s4
     soru: "'İstenen durum' (desired state) fikrini bir cümleyle açıkla."
     cevap: "Sen 'şu imajdan 3 kopya olsun' diye bildirirsin; Kubernetes gerçek durumu bununla sürekli karşılaştırır ve fark varsa (bir pod çökmüşse) eksik olanı yeniden oluşturur. Komut vermezsin, hedefi söylersin."
+    ipucu: "Kullanıcı ne olması gerektiğini söyler; sistem bunu nasıl sağlar?"
+  - id: container-003-s5
+    soru: "Bir bulut kümesinin API sunucusunun internete açık olduğunu ve anonim isteklere cevap verdiğini fark ettin. Ne yaparsın?"
+    cevap: "Anonim erişimi kapatır ve API uç noktasını yalnız bilinen IP aralıklarına ya da özel ağa kısıtlarsın. Sonra denetim kayıtlarında beklenmedik isteklere bakarsın; şüphe varsa sırları ve hizmet hesabı anahtarlarını yenilersin."
+    ipucu: "Kümenin ön kapısı herkese açıksa önce kapıyı kapat, sonra içeride iz ara."
+hizliKontrol:
+  - soru: "Kümenin bütün durumunu ve Secret'ları saklayan bileşen hangisi?"
+    secenekler: ["kube-scheduler","kubelet","kube-proxy","etcd"]
+    dogru: 3
+    aciklama: "etcd anahtar-değer veritabanı olarak küme durumunu saklar."
+    ipucu: "Kümenin 'hafızası' olan bileşeni düşün."
+  - soru: "Yeni bir pod'un hangi düğümde çalışacağına kim karar verir?"
+    secenekler: ["kube-scheduler","kubelet","etcd","kube-controller-manager"]
+    dogru: 0
+    aciklama: "Zamanlayıcı (scheduler) pod'a bir düğüm seçer; kubelet o düğümde uygular."
+    ipucu: "Karar veren ile uygulayan farklı bileşenlerdir."
+sikHatalar:
+  - hata: "Sadece uygulamayı sıkılaştırıp API sunucusu ve etcd erişimini düşünmemek."
+    dogrusu: "API sunucusu ve etcd kümenin tacıdır; erişimi kısıtla, kimlik doğrulamayı zorunlu tut, etcd'yi şifrele."
+  - hata: "`kind` kümesini üretim için yeterli sanmak."
+    dogrusu: "kind yerel öğrenme içindir; üretimde yönetilen ya da sağlamlaştırılmış bir küme kullan."
+sema:
+  baslik: "kubectl apply isteğinin yolu"
+  adimlar:
+    - etiket: "kubectl"
+      aciklama: "İsteği API sunucusuna gönderir."
+    - etiket: "Kimlik doğrulama"
+      aciklama: "kube-apiserver isteği yapanın kim olduğunu doğrular."
+    - etiket: "Yetkilendirme"
+      aciklama: "RBAC gibi kurallar kullanıcının bu işi yapıp yapamayacağına bakar."
+    - etiket: "Kabul denetimi"
+      aciklama: "Admission denetleyicileri nesneyi inceler, gerekirse reddeder ya da değiştirir."
+    - etiket: "etcd"
+      aciklama: "Geçerli nesne etcd'ye yazılır."
+    - etiket: "Zamanlayıcı"
+      aciklama: "Pod için uygun bir düğüm seçilir."
+    - etiket: "kubelet"
+      aciklama: "Düğümdeki kubelet container'ı başlatır ve durumu bildirir."
+terimler:
+  - "Kubernetes"
+  - "Kontrol düzlemi"
+  - "kube-apiserver"
+  - "etcd"
+  - "kubelet"
 derinDalis:
   - tur: okuma
     baslik: "Kubernetes: bileşenler"

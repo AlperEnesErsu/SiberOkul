@@ -27,15 +27,23 @@ sorular:
   - id: devops-012-s1
     soru: "Ortam değişkenleri (environment variables) neden yapılandırma için kullanılır?"
     cevap: "Aynı kod, farklı ortamlarda (geliştirme, test, üretim) farklı ayarlarla çalışsın diye ayarlar koddan ayrılır. Değer ortamdan okunur, kodun içinde yazmaz."
+    ipucu: "Aynı kodun farklı ortamlarda çalışması gerektiğini düşün."
   - id: devops-012-s2
     soru: "CI'da sırlar nerede tutulur ve nasıl kullanılır?"
     cevap: "Platformun sır deposunda (ör. GitHub Actions secrets) şifreli saklanır, workflow'da yalnız çalışma zamanında okunur. Depoya ya da workflow dosyasına düz metin yazılmaz."
+    ipucu: "Platformun şifreli kasasını düşün."
   - id: devops-012-s3
     soru: "Sırrı Dockerfile'da `ARG` ya da `ENV` ile vermek neden kötü fikirdir?"
     cevap: "Değer imajın katmanlarında ve metadata'sında kalır; imaja erişen herkes okuyabilir. Docker belgeleri build sırları için `secret` ya da SSH mount kullanmayı önerir."
+    ipucu: "Değerler imajın kaydında ne olur?"
   - id: devops-012-s4
     soru: "Sır sızarsa ilk yapılacak şey nedir?"
     cevap: "Sırrı iptal edip yenisini üretmek (rotation). Sonra nerede kullanıldığını ve kötüye kullanılıp kullanılmadığını incelemek."
+    ipucu: "Önce kilidi değiştir."
+  - id: devops-012-s5
+    soru: "CI günlüklerinde bir iş arkadaşın hata ayıklamak için `echo $DB_PAROLA` eklemiş ve günlükler herkese açık bir depoda duruyor. Ne yaparsın?"
+    cevap: "Parolayı sızmış sayıp hemen döndürürüm; platformun maskelemesi garanti değildir. Sonra `echo` satırını kaldırır, veritabanı kayıtlarında yetkisiz kullanım var mı bakar ve günlüğü kısıtlamayı değerlendiririm."
+    ipucu: "Maskeleme bir güvence mi, yoksa ek bir önlem mi?"
 derinDalis:
   - tur: okuma
     baslik: "Docker: Build sırları"
@@ -45,6 +53,43 @@ derinDalis:
     baslik: "GitHub Actions'ta sırları kullanmak"
     ayrinti: "Fork PR'larında sırların iletilmemesi ve günlüklerde maskeleme."
     url: "https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions"
+hizliKontrol:
+  - soru: "Build sırasında gereken sırrı imaja sızdırmadan iletmek için Docker ne önerir?"
+    secenekler: 
+      - "`ARG` ile geçirmek"
+      - "`ENV` ile yazmak"
+      - "`COPY` edip sonra silmek"
+      - "Secret mount kullanmak"
+    dogru: 3
+    aciklama: "ARG ve ENV değerleri imajda kalabilir; Docker build sırları için secret mount önerir."
+    ipucu: "Sırrın hiçbir katmana yazılmaması gerekir."
+  - soru: "Fork edilmiş depodan gelen PR'da workflow sırlarına ne olur?"
+    secenekler: 
+      - "Her zaman iletilir"
+      - "Günlüğe düz yazılır"
+      - "Yalnız yönetici PR'ında iletilir"
+      - "Varsayılan olarak runner'a iletilmez (`GITHUB_TOKEN` hariç)"
+    dogru: 3
+    aciklama: "GitHub belgesine göre fork tetiklemeli workflow'lara `GITHUB_TOKEN` dışında sır verilmez."
+    ipucu: "Yabancının kodu sırlarına dokunmamalı."
+sikHatalar:
+  - hata: "Sırrı Dockerfile'da `ENV` ile verip imajı paylaşmak."
+    dogrusu: "Değer imajda kalır ve `docker inspect` ile okunur; çalışma zamanında dışarıdan ver."
+  - hata: "Sızan sırrı yalnız koddan silip döndürmemek."
+    dogrusu: "Sırrı kaynağında iptal edip yenile, sonra kullanımı incele."
+terimler:
+  - "Environment variable"
+  - "Secret mount"
+  - "Secret"
+  - "Rotation"
+olay:
+  baslik: "CircleCI güvenlik olayı"
+  yil: 2023
+  ozet: "Ocak 2023'te CI/CD platformu CircleCI bir güvenlik olayını duyurdu ve müşterilerinden platformda sakladıkları bütün sırları (API token'ları, ortam değişkenleri, SSH anahtarları, OAuth token'ları) hemen döndürmelerini istedi. Şirket, sırların yalnız CircleCI'dan silinmesinin yetmediğini, kaynak sistemde değiştirilmesi gerektiğini vurguladı."
+  ders: "CI sırları bir gün sızabilir. Hangi sırrın nerede kullanıldığını bilmek ve kaynağında hızla döndürebilmek, olay gününde saatler kazandırır."
+  kaynak: 
+    ad: "CircleCI: Ocak 2023 güvenlik uyarısı"
+    url: "https://circleci.com/blog/january-4-2023-security-alert/"
 ---
 
 Sır (secret), bilinirse sistemin güvenliğini bozan değerdir: parola, API anahtarı, özel anahtar, token. Bu bölgede sırların üç ayrı yerde sızabildiğini gördün: **Git tarihçesinde** (devops-005), **CI günlüklerinde** ve **imajın katmanlarında**.

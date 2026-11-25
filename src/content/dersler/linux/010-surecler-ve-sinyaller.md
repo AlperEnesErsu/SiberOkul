@@ -28,15 +28,58 @@ sorular:
   - id: linux-010-s1
     soru: "Süreç (process) ve program arasındaki fark nedir? PID ne işe yarar?"
     cevap: "Program diskteki bir dosyadır; süreç, o programın çalışmakta olan örneğidir. Her sürece çekirdek benzersiz bir numara verir: PID (process ID). Sinyal göndermek ve izlemek için süreç bu numarayla adreslenir."
+    ipucu: "Program ile çalışan örnek arasındaki farkı düşün."
   - id: linux-010-s2
     soru: "`kill PID` ile `kill -9 PID` arasındaki fark nedir? Hangisini önce denemelisin?"
     cevap: "`kill PID` varsayılan olarak SIGTERM (15) gönderir: süreç temizlik yapıp kapanabilir. `kill -9` SIGKILL'dir: süreç yakalayamaz, anında öldürülür, açık dosyalar ve geçici veriler temizlenmez. Önce SIGTERM, olmazsa SIGKILL denenir."
+    ipucu: "Hangi sinyal süreç tarafından yakalanabilir?"
   - id: linux-010-s3
     soru: "`Ctrl+C`, `Ctrl+Z` ve komutun sonuna `&` eklemek ne yapar?"
     cevap: "`Ctrl+C` ön plandaki sürece SIGINT gönderip genellikle sonlandırır. `Ctrl+Z` süreci durdurur (askıya alır); `bg` ile arka planda devam ettirilir, `fg` ile öne alınır. `&` komutu baştan arka planda başlatır."
+    ipucu: "`Ctrl` kısayollarının hangi sinyali gönderdiğini hatırla."
   - id: linux-010-s4
     soru: "Terminali kapatınca `sleep 300 &` ile başlattığın süreç neden çoğu zaman ölür ve bunu önlemek için ne kullanılır?"
     cevap: "Terminal kapanınca kabuk, çocuk süreçlerine SIGHUP (kapanma) gönderir ve onlar sonlanır. Arka planda kalmasını istediğin işler için `nohup komut &` ya da `tmux` gibi araçlar kullanılır. Servisler için doğru çözüm `systemd` ile yönetmektir (011. ders)."
+    ipucu: "Terminal kapanınca kabuğun çocuk süreçlere ne söylediğini düşün."
+  - id: linux-010-s5
+    soru: "`ps aux`'te bir süreç donmuş görünüyor ve `kill PID` etkisiz. Sırayla ne yaparsın?"
+    cevap: "Önce `kill PID` (SIGTERM) ile bir süre beklersin; süreç kapanmazsa son çare `kill -9 PID`. Veri kaybı riskini düşünür, süreç bir servisse `systemctl stop` ile durdurmayı denersin. Ardından neden donduğunu loglardan araştırırsın."
+    ipucu: "Önce nazik sinyal, sonra ne?"
+hizliKontrol:
+  - soru: "Hangi sinyal süreç tarafından yakalanamaz?"
+    secenekler: ["SIGTERM","SIGKILL","SIGINT","SIGHUP"]
+    dogru: 1
+    aciklama: "SIGKILL ve SIGSTOP yakalanamaz."
+    ipucu: "Hangisi 'zorla öldür'?"
+  - soru: "`sleep 300 &` sonundaki `&` ne yapar?"
+    secenekler: ["Komutu iki kez çalıştırır","Komutu arka planda başlatır","Çıktıyı siler","Root yapar"]
+    dogru: 1
+    aciklama: "`&` komutu arka planda başlatır ve terminal geri gelir."
+    ipucu: "Terminal hemen sana dönüyor mu?"
+sikHatalar:
+  - hata: "Her sorunda doğrudan `kill -9` kullanmak."
+    dogrusu: "Önce SIGTERM dene; SIGKILL temizlik yaptırmaz."
+  - hata: "Şüpheli süreci kayıt almadan öldürmek."
+    dogrusu: "Önce komutu ve yolu kaydet, sonra durdur."
+terimler:
+  - "Süreç"
+  - "PID"
+  - "Sinyal"
+  - "Servis hesabı"
+  - "Kabuk (shell)"
+sema:
+  baslik: "Sinyalle süreci durdurma"
+  adimlar:
+    - etiket: "Bul"
+      aciklama: "`ps aux` ya da `pgrep` ile PID bulunur."
+    - etiket: "SIGTERM"
+      aciklama: "`kill PID` ile nazik kapanma isteği gönderilir."
+    - etiket: "Bekle"
+      aciklama: "Süreç temizlik yapıp kapandı mı diye bakılır."
+    - etiket: "SIGKILL"
+      aciklama: "Kapanmadıysa `kill -9 PID` ile zorla öldürülür."
+    - etiket: "Doğrula"
+      aciklama: "Sürecin gittiği `ps` ile doğrulanır."
 derinDalis:
   - tur: kitap
     baslik: "The Linux Command Line (William Shotts)"

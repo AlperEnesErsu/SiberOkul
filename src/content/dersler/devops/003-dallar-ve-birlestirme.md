@@ -28,15 +28,23 @@ sorular:
   - id: devops-003-s1
     soru: "Dal (branch) açmanın faydası nedir?"
     cevap: "Ana dalı bozmadan bir özelliği ya da düzeltmeyi izole geliştirirsin. İş bitip test edilince ana dala birleştirirsin; olmazsa dalı atarsın."
+    ipucu: "Ana dalın bozulma riskini düşün."
   - id: devops-003-s2
     soru: "`git switch -c yeni` ne yapar?"
     cevap: "`yeni` adında bir dal oluşturur (`-c` create) ve hemen o dala geçer."
+    ipucu: "`-c` harfinin neyin kısaltması olduğunu hatırla."
   - id: devops-003-s3
     soru: "Birleştirme çakışması ne zaman çıkar?"
     cevap: "İki dalda aynı satırlar farklı biçimde değiştirildiyse Git hangisinin doğru olduğuna karar veremez ve seni çağırır. Farklı dosyalardaki ya da farklı satırlardaki değişiklikler kendiliğinden birleşir."
+    ipucu: "Aynı satırı iki kişinin farklı değiştirmesi ile farklı satırlar arasındaki farkı düşün."
   - id: devops-003-s4
     soru: "Çakışmayı çözerken işaretleri dosyada bırakırsan ne olur?"
     cevap: "`<<<<<<<` gibi satırlar kodun parçası olur; yapılandırma bozulur ya da program derlenmez. Çözümden sonra işaretlerin hepsini silip son hali kendin yazmalısın."
+    ipucu: "İşaret satırları dosyada kalırsa programın onları nasıl okuyacağını düşün."
+  - id: devops-003-s5
+    soru: "Birleştirme çakışmasında bir yetki kontrolü satırı iki dalda farklı değiştirilmiş. Zaman baskısı var ve \"ikisini de al\" demek çok kolay. Ne yaparsın?"
+    cevap: "Satırı alelacele çözmem. İki değişikliğin amacını commit mesajlarından ve PR'lardan anlar, gerekirse değişikliği yapanlara sorarım. Çözümden sonra yetkinin hâlâ çalıştığını testle doğrular ve bir başkasına da bakmasını isterim."
+    ipucu: "Bir güvenlik satırını silmek ya da ikiye katlamak neyi bozabilir?"
 derinDalis:
   - tur: kitap
     baslik: "Pro Git, 'Git Branching' bölümü"
@@ -45,6 +53,47 @@ derinDalis:
   - tur: lab
     baslik: "Learn Git Branching"
     ayrinti: "Dalları görsel olarak deneyebileceğin etkileşimli bir oyun (arama motorunda adıyla bulabilirsin)."
+hizliKontrol:
+  - soru: "`main` sen dal açtığından beri hiç ilerlemediyse dalı birleştirirken Git ne yapar?"
+    secenekler: 
+      - "Çakışma bildirir"
+      - "İşaretçiyi öne alır (ileri sarma, fast-forward)"
+      - "Her zaman merge commit oluşturur"
+      - "Dalı siler"
+    dogru: 1
+    aciklama: "Tarihçeler ayrışmadıysa Git yalnız işaretçiyi taşır; ayrıştıysa merge commit oluşturur."
+    ipucu: "Dallar ayrışmadıysa birleştirilecek bir şey yok, sadece ilerlemek var."
+  - soru: "`git merge --abort` ne yapar?"
+    secenekler: 
+      - "Birleştirmeyi zorla tamamlar"
+      - "Dalı uzak depoya gönderir"
+      - "Son commit'i siler"
+      - "Çakışmalı birleştirmeden vazgeçip birleştirme öncesi duruma döner"
+    dogru: 3
+    aciklama: "Çakışma çıktığında vazgeçmek için kullanılır; dosyalar eski durumuna döner."
+    ipucu: "Komutun adındaki \"abort\" sözcüğünü düşün."
+sikHatalar:
+  - hata: "Çakışma işaretlerini (`<<<<<<<`) dosyada bırakıp commitlemek."
+    dogrusu: "Kararı ver, üç işaret satırını da sil, `git add` ve `git commit` ile bitir."
+  - hata: "Haftalarca ayrı bir dalda çalışıp sonra birleştirmek."
+    dogrusu: "Küçük, kısa ömürlü dallar aç ve ana dalı sık sık içeri al; çakışma azalır."
+terimler:
+  - "Branch"
+  - "Merge"
+  - "Merge conflict"
+sema:
+  baslik: "Çakışma nasıl çözülür"
+  adimlar:
+    - etiket: "Git durur"
+      aciklama: "`git merge` çakışma bildirir ve dosyaya işaretler koyar."
+    - etiket: "Karar ver"
+      aciklama: "Hangi sürümün doğru olduğunu (ya da karışımını) seçersin."
+    - etiket: "İşaretleri sil"
+      aciklama: "`<<<<<<<`, `=======` ve `>>>>>>>` satırlarını kaldırırsın."
+    - etiket: "git add"
+      aciklama: "Dosyayı çözüldü olarak işaretlersin."
+    - etiket: "git commit"
+      aciklama: "Birleştirmeyi bitirirsin."
 ---
 
 Git'te **dal** (branch), bir commit'i gösteren hafif bir isimdir. Yeni dal açmak dosyaları kopyalamaz; yalnız yeni bir işaretçi oluşturur. Bu yüzden saniyeler sürer ve ucuzdur. Varsayılan dal genellikle `main` adını taşır.

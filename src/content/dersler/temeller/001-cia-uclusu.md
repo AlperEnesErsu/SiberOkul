@@ -26,15 +26,43 @@ sorular:
   - id: temeller-001-s1
     soru: "CIA üçlüsündeki üç harf neyi ifade eder ve her biri tek cümleyle ne demektir?"
     cevap: "Confidentiality (gizlilik): bilgiye yalnız yetkililer ulaşır. Integrity (bütünlük): bilgi izinsiz değişmez, doğruluğu korunur. Availability (erişilebilirlik): bilgi ve hizmet ihtiyaç duyulduğunda kullanılabilir."
+    ipucu: "Her harfin hangi soruya cevap verdiğini düşün: kim görür, kim değiştirir, kim kullanabilir?"
   - id: temeller-001-s2
     soru: "Bir çalışan müşteri listesini yanlış kişiye e-postayla gönderdi. Hangi CIA ögesi ihlal edildi?"
     cevap: "Gizlilik. Bilgi yetkisiz birinin eline geçti. Bilgi değişmediği ve hizmet çalıştığı için bütünlük ve erişilebilirlik bu olayda sağlam."
+    ipucu: "Yanlış kişiye giden bilgi değişmedi ve hizmet de durmadı; geriye hangi soru kalıyor?"
   - id: temeller-001-s3
     soru: "Bir saldırgan veritabanındaki fiyatları gizlice değiştirdi, kimse fark etmedi. Bu neden bütünlük ihlalidir ve neden tehlikeli?"
     cevap: "Veri yerinde duruyor ve erişilebiliyor ama artık doğru değil. Tehlikesi, bozulmanın fark edilmemesidir: yanlış veriye güvenerek kararlar verilir. Bu yüzden değişiklik kayıtları ve doğrulama gerekir."
+    ipucu: "Veri yerinde ve erişilebilir ama bir şey artık eskisi gibi değil; hangi özellik bozuldu?"
   - id: temeller-001-s4
     soru: "Neden her şeyi aynı anda en üst seviyede korumak genelde mümkün değildir? Bir örnek ver."
     cevap: "Önlemler birbirinin aleyhine çalışabilir. Örneğin sistemi çok sıkı kilitlemek gizliliği artırır ama meşru kullanıcıların işini zorlaştırıp erişilebilirliği düşürür. Bu yüzden her varlık için hangisinin daha önemli olduğuna karar verilir."
+    ipucu: "Bir önlemi sertleştirirken meşru kullanıcıya ne olduğunu düşün."
+  - id: temeller-001-s5
+    soru: "Gece 3'te izleme sistemi sana bir uyarı gönderdi: sipariş veritabanındaki 'iptal edildi' durumundaki yüzlerce kayıt kimse dokunmadan 'teslim edildi' olmuş. Site çalışıyor, müşteri verisi dışarı çıkmamış görünüyor. Hangi CIA ögesi zedelendi ve ilk ne yaparsın?"
+    cevap: "Bütünlük zedelendi: veri duruyor ve erişilebilir ama artık doğru değil. İlk iş, değişiklik kayıtlarına (audit log) bakıp değişikliği kimin ya da hangi servisin yaptığını belirlemek ve o hesabı ya da servisi sınırlamaktır. Sonra yedekle karşılaştırıp bozulan kayıtların kapsamını çıkar, olayı ilgili ekibe bildir."
+    ipucu: "Veri çalınmadı ve hizmet durmadı; sorun verinin doğruluğunda."
+hizliKontrol:
+  - soru: "Hash ile doğrulanan bir yazılım paketinin içeriği yolda değiştirildi. Hangi CIA ögesi bozuldu?"
+    secenekler: ["Bütünlük","Gizlilik","Erişilebilirlik","Yetkilendirme"]
+    dogru: 0
+    aciklama: "İçerik değiştiği için bütünlük bozuldu. Hash, bu tür değişikliği fark etmenin yoludur."
+    ipucu: "Değişen şey bilginin kendisi."
+  - soru: "Sistem bir DDoS saldırısıyla yanıt veremez hale geldi. Aşağıdakilerden hangisi bu durumu en doğru anlatır?"
+    secenekler: ["Veri gizliliği kesin olarak bozuldu","Veri bütünlüğü kesin olarak bozuldu","Erişilebilirlik zedelendi; veri değişmeden yerinde olabilir","Kimlik doğrulama başarısız oldu"]
+    dogru: 2
+    aciklama: "DDoS hizmeti kullanılamaz yapar; veriyi okumak ya da değiştirmek zorunda değildir."
+    ipucu: "Hizmetin kullanılabilirliğini hedefleyen saldırıyı düşün."
+sikHatalar:
+  - hata: "Bir olayı yalnız 'veri sızdı' diye raporlamak."
+    dogrusu: "Hangi ögenin (gizlilik, bütünlük, erişilebilirlik) ne kadar etkilendiğini ayrı ayrı yaz; öncelik ve müdahale buna göre belirlenir."
+  - hata: "Her sistemi aynı anda en sıkı korumaya çalışmak."
+    dogrusu: "Önlemler birbiriyle gerilim yaratır; her varlık için en önemli ögeyi seçip dengeyi ona göre kur."
+terimler:
+  - "Gizlilik"
+  - "Bütünlük"
+  - "Erişilebilirlik"
 derinDalis:
   - tur: kitap
     baslik: "Security Engineering (Ross Anderson)"

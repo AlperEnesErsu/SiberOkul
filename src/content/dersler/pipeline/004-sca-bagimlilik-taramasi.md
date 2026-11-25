@@ -24,15 +24,54 @@ sorular:
   - id: pipeline-004-s1
     soru: "Doğrudan (direct) ve geçişli (transitive) bağımlılık nedir? Neden geçişli olanlar daha sinsidir?"
     cevap: "Doğrudan: senin listeye yazdığın paket. Geçişli: o paketin kendi çektiği paketler. Listede görmediğin bir kütüphanedeki açık de seni etkiler; bu yüzden tarama kilit dosyasındaki (lockfile) tüm ağaca bakmalıdır."
+    ipucu: "Listene yazdığın paket ile o paketin çektiği paketler aynı şey değil."
   - id: pipeline-004-s2
     soru: "Dependabot alert ile Dependabot version/security update PR'ı arasındaki fark nedir?"
     cevap: "Alert, açık olduğunu haber verir ve düzeltme sürümü varsa gösterir. Güncelleme PR'ı ise sürümü yükselten değişikliği senin için hazırlar. İkisi ayrı ayarlardır ve birlikte kullanılır."
+    ipucu: "Biri haber verir, diğeri senin yerine değişikliği hazırlar."
   - id: pipeline-004-s3
     soru: "Taramada 'kritik' çıkan bir açık, uygulamandaki kodun o kısmı hiç çağrılmıyorsa da acil midir?"
     cevap: "Her zaman değil. Açığın sömürülebilmesi için o kodun erişilebilir olması gerekir. Ama bunu varsaymak yerine doğrulamalısın; çağrılmıyorsa öncelik düşer, yine de güncelleme planlanır, çünkü kullanım sonradan değişebilir."
+    ipucu: "Açığın sömürülebilmesi için kodun hangi şartı sağlaması gerekir?"
   - id: pipeline-004-s4
     soru: "Kilit dosyası (`package-lock.json`) neden SCA için önemlidir?"
     cevap: "Kilit dosyası tam olarak hangi sürümlerin kurulduğunu sabitler. Tarayıcı 'gerçekte hangi sürüm çalışıyor' sorusunu ancak onunla cevaplar; kilit yoksa her kurulumda farklı sürüm gelebilir."
+    ipucu: "Tarayıcı 'gerçekte kurulan' sürümü nereden öğrenir?"
+  - id: pipeline-004-s5
+    soru: "Dependabot sabah 'lodash'ta kritik açık' alert'i verdi, ama senin package.json'da lodash yok. Ne yaparsın?"
+    cevap: "Büyük olasılıkla geçişli bağımlılıktır: başka bir paket lodash'ı getiriyor. `npm ls lodash` ile hangi paketin çektiğini bul. Üst paketin lodash'ı güncelleyen bir sürümü varsa onu yükselt; yoksa kilit dosyasında sürüm zorlayan bir yöntem (override) düşün ve sonrasında testleri çalıştır. Açığın uygulamada erişilebilir olup olmadığını da değerlendirip önceliği buna göre belirle."
+    ipucu: "Görmediğin bir paket hangi yoldan projeye girmiş olabilir; ağaca bakan bir komutu düşün."
+hizliKontrol:
+  - soru: Bir projede 5 doğrudan bağımlılık var ama kilit dosyasında 80 paket görünüyor. Fark nereden gelir?
+    secenekler:
+      - Kilit dosyası hatalıdır
+      - Geçişli bağımlılıklar da kilit dosyasında listelenir
+      - npm rastgele paket ekler
+      - Test paketleri sayıyı iki katına çıkarır
+    dogru: 1
+    aciklama: Her paket kendi bağımlılıklarını getirir; açıklar çoğu zaman bu katmandadır.
+    ipucu: Paketlerin paketleri var.
+  - soru: SCA aracı hangi iki veriyi eşleştirir?
+    secenekler:
+      - Kod satırlarını ve commit mesajlarını
+      - Envanterdeki paket sürümlerini ve zafiyet veritabanındaki etkilenen sürüm aralıklarını
+      - Sunucu loglarını ve parolaları
+      - Dockerfile'ı ve lisansı
+    dogru: 1
+    aciklama: "Envanter + veritabanı + eşleştirme: sürüm bir açığın etkilenen aralığındaysa bulgu çıkar."
+    ipucu: "Üç parçayı hatırla: envanter, veritabanı, eşleştirme."
+sikHatalar:
+  - hata: Dependabot PR'ını testlere bakmadan birleştirmek.
+    dogrusu: Güncelleme de bir kod değişikliğidir; testler geçmeli ve değişiklik notu okunmalı.
+  - hata: Kilit dosyasını (`package-lock.json`) depoya koymamak.
+    dogrusu: Kilit dosyası sürümleri sabitler; olmazsa taranan sürüm ile üretimdeki sürüm farklı olabilir.
+  - hata: Geliştirme araçlarındaki düşük önemli bulgu ile üretim bağımlılığındaki kritik bulguyu aynı sayıp kafayı karıştırmak.
+    dogrusu: Her bulguyu ağırlık, erişilebilirlik ve düzeltme durumuna göre sırala.
+terimler:
+  - SCA
+  - Geçişli bağımlılık
+  - Kilit dosyası
+  - OSV
 derinDalis:
   - tur: okuma
     baslik: "GitHub: Dependabot alerts hakkında"
@@ -76,5 +115,13 @@ Her bulgu için üç soru sor:
 ### Pipeline'a koymak
 
 CI'da `npm audit --audit-level=high` gibi bir adım, yüksek ve kritik bulguda sıfırdan farklı çıkış kodu döndürerek job'ı durdurur. Neyin build'i durdurması gerektiği kararını 011. derste ele alacağız; şimdilik kural: tarama sadece çalışmakla kalmasın, sonucu birinin sorumluluğunda olsun.
+
+### Dependabot alert, güvenlik güncellemesi ve sürüm güncellemesi
+
+Üç ayrı özellik karıştırılır. **Alert** yalnız haber verir. **Güvenlik güncellemesi** açığı kapatan sürüm için otomatik PR açar. **Sürüm güncellemesi** (`dependabot.yml` ile) güvenlik açığı olmasa bile bağımlılıkları düzenli aralıklarla yükseltir. Güvenlik güncellemeleri gerekirse sürüm güncellemelerinden bağımsız açık tutulabilir.
+
+Aklında tut: Dependabot yalnız **bilinen** ve veritabanına girmiş açıkları gösterir. Yeni bir açık yayımlandığında, depoda hiçbir şey değişmese bile yeni bir alert gelebilir; yani dünkü "temiz" sonuç bugünkü sonucu garanti etmez. Bu yüzden taramayı bir kez değil, sürekli çalıştırırsın.
+
+Küçük bir kural: bir bulguyu **kapatırken** (örneğin "kullanılmıyor") nedenini yaz. Altı ay sonra o kodun kullanımı değişirse o not seni uyarır.
 
 **Güvenlik notu:** Bağımlılık güncellemesi de bir kod değişikliğidir. Güncelleme PR'larını da testten ve incelemeden geçir; ele geçirilmiş bir paket yeni sürümle gelebilir.

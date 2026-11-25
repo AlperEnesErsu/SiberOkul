@@ -26,20 +26,70 @@ sorular:
   - id: devops-009-s1
     soru: "`FROM`, `COPY` ve `RUN` satırları ne yapar?"
     cevap: "`FROM` temel imajı seçer. `COPY` host'taki dosyaları imaja kopyalar. `RUN` imaj oluşturulurken bir komut çalıştırır ve sonucu yeni bir katman olarak kaydeder."
+    ipucu: "Temel imaj, kopyalama, çalıştırma: üç satır, üç iş."
   - id: devops-009-s2
     soru: "`RUN` ile `CMD` arasındaki fark nedir?"
     cevap: "`RUN` imajı oluştururken (build sırasında) çalışır. `CMD` container başlayınca çalışacak varsayılan komuttur."
+    ipucu: "Biri imaj yapılırken, diğeri container başlarken çalışır."
   - id: devops-009-s3
     soru: "`.dockerignore` neden önemlidir?"
     cevap: "Build bağlamına hangi dosyaların girmeyeceğini söyler. `.git`, `.env`, `node_modules` gibi gereksiz ya da hassas dosyaların imaja kopyalanmasını önler ve build'i hızlandırır."
+    ipucu: "Build bağlamına neyin girmemesi gerektiğini düşün."
   - id: devops-009-s4
     soru: "Bir katmanda sır olan dosyayı sonraki katmanda silmek neden yetmez?"
     cevap: "Her katman değişmez bir kayıttır. Silme, yeni bir katmanda dosyayı gizler ama önceki katman imajın içinde durur ve çıkartılabilir."
+    ipucu: "Her katman değişmez bir kayıttır."
+  - id: devops-009-s5
+    soru: "Bir Dockerfile'da `COPY . .` var, depoda `.env` ve `.git` klasörü duruyor ve `.dockerignore` yok. İmaj herkese açık registry'ye gidecek. Ne yaparsın?"
+    cevap: "Yüklemeyi durdururum. `.dockerignore` ile `.env`, `.git`, `*.pem` gibi dosyaları bağlamdan çıkarır ve imajı yeniden build ederim. Daha önce yüklenmiş bir imaj varsa içindeki sırları sızmış sayıp döndürürüm."
+    ipucu: "`COPY . .` neyi kopyalar ve `.dockerignore` bunu nasıl sınırlar?"
 derinDalis:
   - tur: okuma
     baslik: "Docker: Build en iyi uygulamaları"
     ayrinti: "Temel imaj sabitleme, .dockerignore ve katman düzeni önerileri."
     url: "https://docs.docker.com/build/building/best-practices/"
+hizliKontrol:
+  - soru: "Bağımlılık dosyasını kodtan önce kopyalayıp kurmak neyi sağlar?"
+    secenekler: 
+      - "Kod değişince paket kurulumunun yeniden çalışmamasını"
+      - "İmajın şifrelenmesini"
+      - "Container'ın root olmasını"
+      - "Katman sayısının sıfırlanmasını"
+    dogru: 0
+    aciklama: "Seyrek değişen katman önce gelirse önbellekten kullanılır."
+    ipucu: "Önbellek hangi satırdan sonrasını geçersiz kılar?"
+  - soru: "`CMD` ne zaman çalışır?"
+    secenekler: 
+      - "Build sırasında"
+      - "Container başlayınca"
+      - "Registry'ye yüklenirken"
+      - "Hiçbir zaman"
+    dogru: 1
+    aciklama: "`RUN` build sırasında, `CMD` container başlarken çalışır."
+    ipucu: "İmaj yapılırken mi, çalıştırılırken mi?"
+sikHatalar:
+  - hata: "`COPY . .` yazıp `.dockerignore`u kontrol etmemek."
+    dogrusu: "`.env`, `.git`, `*.pem` gibi dosyaları `.dockerignore`a yaz."
+  - hata: "Sırrı bir katmanda ekleyip sonraki `RUN rm` ile silmek."
+    dogrusu: "Silme dosyayı yalnız gizler; önceki katman imajda durur. Sırrı imaja hiç koyma."
+terimler:
+  - "Dockerfile"
+  - "Layer"
+  - ".dockerignore"
+  - "Image"
+sema:
+  baslik: "Önbellek dostu katman sırası"
+  adimlar:
+    - etiket: "FROM"
+      aciklama: "Temel imajı seç."
+    - etiket: "COPY bağımlılık dosyası"
+      aciklama: "Yalnız `requirements.txt` gibi dosyayı kopyala."
+    - etiket: "RUN kurulum"
+      aciklama: "Paketleri kur; bu katman seyrek değişir."
+    - etiket: "COPY kod"
+      aciklama: "Sık değişen uygulama kodunu en sona koy."
+    - etiket: "CMD"
+      aciklama: "Container'ın varsayılan komutunu belirle."
 ---
 
 **Dockerfile**, bir imajın nasıl yapılacağını adım adım yazan metin dosyasıdır. `docker build` onu okur ve imajı üretir.

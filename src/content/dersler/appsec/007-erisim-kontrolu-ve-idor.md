@@ -41,20 +41,46 @@ sorular:
   - id: appsec-007-s1
     soru: "Yatay ve dikey yetki aşımı arasındaki fark nedir?"
     cevap: "Yatay: aynı yetki düzeyindeki başka bir kullanıcının verisine erişmek (başkasının faturası). Dikey: daha yüksek yetkili işleve erişmek (sıradan kullanıcının yönetici paneline girmesi)."
+    ipucu: "Sunucu, isteği yapanın bu kayda sahip olup olmadığına bakıyor mu?"
   - id: appsec-007-s2
     soru: "Erişim kontrolü neden istemcide (gizli düğme, gizli menü) yapılamaz?"
     cevap: "İstemci saldırganın kontrolündedir. Düğmeyi saklamak isteği engellemez; saldırgan isteği doğrudan gönderebilir. Her isteğin yetkisi sunucuda denetlenmelidir."
+    ipucu: "Yatay mı, dikey mi: aynı yetki düzeyinde başkasının verisi ya da üst yetki?"
   - id: appsec-007-s3
     soru: "'Varsayılan olarak reddet' (deny by default) ilkesi ne demektir?"
     cevap: "Açıkça izin verilmeyen her erişim reddedilir. Yeni bir uç nokta eklendiğinde yetki kuralı unutulursa, açık kalmak yerine erişim kapalı olur."
+    ipucu: "Gizlenen bir düğmeyi bir saldırgan kullanmadan isteği gönderebilir mi?"
   - id: appsec-007-s4
     soru: "ID'leri sıralı sayı yerine rastgele UUID yapmak IDOR'u çözer mü?"
     cevap: "Hayır, tahmini zorlaştırır ama asıl sorunu çözmez. ID sızarsa ya da öğrenilirse yetki kontrolü yoksa yine erişilir. Sahiplik denetimi olmazsa olmaz; UUID ek bir zorluktur."
+    ipucu: "Kimlik tahmin edilemese bile sahiplik denetimi olmazsa ne olur?"
+  - id: appsec-007-s5
+    soru: Bir bug bounty raporunda `PUT /api/profil/812` isteğinde sayıyı değiştirerek başkasının e-postasını güncelleyebildiği yazıyor. Düzeltmeyi nasıl yaparsın?
+    cevap: Uç noktada, isteği yapan kullanıcının (oturumdan) 812 numaralı kayda sahip olduğunu sunucuda doğrularsın; ID'yi istekten değil oturumdan türetmek daha da güvenlidir. Aynı desen başka uç noktalarda da aranır, bir test eklenir. Düzeltme sonrası eski kayıtlarda kötüye kullanım olup olmadığına günlüklerden bakılır.
+    ipucu: ID'ye değil, isteği yapanın kim olduğuna güven.
 derinDalis:
   - tur: okuma
     baslik: "OWASP Authorization Cheat Sheet"
     ayrinti: "Varsayılan reddet, her istekte denetim, IDOR ve sunucu tarafı kontrol."
     url: "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+hizliKontrol:
+  - soru: IDOR'u ana hatta çözen şey hangisidir?
+    secenekler:
+      - Kimlikleri UUID yapmak
+      - Her istekte sunucuda sahiplik/yetki denetimi yapmak
+      - URL'yi şifrelemek
+      - Düğmeyi arayüzden gizlemek
+    dogru: 1
+    aciklama: UUID tahmini zorlaştırır ama erişim kontrolü sunucuda yapılmazsa açık sürer.
+    ipucu: Karar mercii istemci değil, sunucudur.
+sikHatalar:
+  - hata: Yönetici düğmesini arayüzden gizlemeyi yetki kontrolü saymak.
+    dogrusu: Kontrol her istekte sunucuda yapılır; gizli düğme güvenlik değildir.
+  - hata: "'Kimse bu numarayı tahmin edemez' diyerek denetimi atlamak."
+    dogrusu: Kimlik sızdığında (bağlantı paylaşımı, günlük) denetim olmadan açık sürer.
+terimler:
+  - IDOR
+  - Varsayılan olarak reddet
 ---
 
 **Kimlik doğrulama** "sen kimsin?", **yetkilendirme** (authorization) "bunu yapabilir misin?" sorusudur. Erişim kontrolü bozukluğu, ikinci sorunun hiç sorulmadığı ya da yanlış sorulduğu durumdur ve en sık görülen web açıklarından biridir.

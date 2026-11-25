@@ -25,15 +25,56 @@ sorular:
   - id: temeller-003-s1
     soru: "Kimlik doğrulama (authentication) ile yetkilendirme (authorization) arasındaki fark nedir?"
     cevap: "Kimlik doğrulama 'sen kimsin?' sorusunu yanıtlar ve iddia edilen kimliği kanıtlar. Yetkilendirme 'bu kimlik ne yapabilir?' sorusunu yanıtlar. Önce doğrulama, sonra yetkilendirme gelir."
+    ipucu: "Biri 'kimsin?' sorusuna, diğeri 'ne yapabilirsin?' sorusuna cevap verir."
   - id: temeller-003-s2
     soru: "Bir kullanıcı giriş yaptıktan sonra neden her istekte parolasını yeniden girmek zorunda kalmaz? Bunu ne sağlar?"
     cevap: "Giriş başarılı olunca sunucu bir oturum (session) başlatır ve tarayıcıya bir oturum kimliği ya da token verir. Tarayıcı bunu her istekle gönderir; böylece parola tekrar tekrar iletilmez."
+    ipucu: "Her istekte parola sormak yerine sunucunun elinde ne tutulduğunu düşün."
   - id: temeller-003-s3
     soru: "Bir oturum token'ı çalınırsa saldırgan neden parolayı bilmeden hesaba girebilir?"
     cevap: "Token, 'bu kişi zaten doğrulandı' kanıtıdır. Sunucu onu gösteren kişiyi doğrulanmış sayar. Bu yüzden token gizli tutulmalı, süresi kısa olmalı ve gerektiğinde iptal edilebilmelidir."
+    ipucu: "Sunucu isteği gönderenin kim olduğunu nereden anlıyor?"
   - id: temeller-003-s4
     soru: "'Herkes giriş yaptıysa her sayfayı görebilir' tasarımı hangi sorunu doğurur?"
     cevap: "Yetkilendirme eksikliği. Kimliği doğrulanmış bir kullanıcı, yetkisi olmayan verilere (başkasının kaydı, yönetici paneli) erişebilir. Her işlemde 'bu kullanıcı bunu yapabilir mi?' ayrıca kontrol edilmelidir."
+    ipucu: "Giriş yapmış olmak ile belirli bir sayfaya yetkili olmak aynı şey mi?"
+  - id: temeller-003-s5
+    soru: "Bir ekip arkadaşın kullanıcı panelinde /fatura/1042 adresini /fatura/1043 yapınca başka bir müşterinin faturasını görebildiğini söyledi. Giriş yapmış herkes görebiliyor. Bu hangi kavramdaki eksiktir ve nasıl düzeltilir?"
+    cevap: "Yetkilendirme eksiği: kullanıcı kimliği doğrulanmış ama faturanın ona ait olup olmadığı denetlenmiyor. Düzeltme, sunucu tarafında her istekte 'bu fatura bu kullanıcıya mı ait?' kontrolü yapmaktır. Arayüzde bağlantıyı gizlemek yetmez, çünkü adres elle değiştirilebilir."
+    ipucu: "Kimlik doğrulama geçti; sorulması gereken 'bu kayıt senin mi?' sorusu."
+hizliKontrol:
+  - soru: "Sunucu 401 yerine 403 döndürdüğünde en olası anlam hangisidir?"
+    secenekler: ["Sunucu kapalıdır","Kimlik bilinir ama bu işlem için izin yoktur","Parola yanlıştır","İstek adresi bulunamadı"]
+    dogru: 1
+    aciklama: "403, yetkilendirme reddidir: kimlik tanınır ama izin verilmez. Doğrulanamayan kimlik genelde 401 ile cevaplanır."
+    ipucu: "Kimlik tanınıyor; reddedilen şey izin."
+  - soru: "Oturum token'ının asıl işlevi nedir?"
+    secenekler: ["Parolayı şifreli saklamak","Girişin ardından her istekte kimliğin doğrulandığını kanıtlamak","Kullanıcının yetkilerini kalıcı olarak artırmak","Sunucuyu DDoS'tan korumak"]
+    dogru: 1
+    aciklama: "Token giriş sonrası verilir ve istekle birlikte gönderilerek doğrulanmış oturumu kanıtlar; bu yüzden gizli tutulmalıdır."
+    ipucu: "Her istekte parola yerine ne gönderiliyor?"
+sikHatalar:
+  - hata: "Yetki kontrolünü yalnız arayüzde (butonu gizleyerek) yapmak."
+    dogrusu: "Yetki kontrolü her istekte sunucu tarafında yapılır; arayüz sadece kolaylıktır."
+  - hata: "401 ile 403'ü karıştırmak."
+    dogrusu: "401 kimlik doğrulanamadı, 403 kimlik biliniyor ama yetki yok demektir."
+terimler:
+  - "Kimlik doğrulama"
+  - "Yetkilendirme"
+  - "Token"
+sema:
+  baslik: "Giriş ve oturum akışı"
+  adimlar:
+    - etiket: "Giriş"
+      aciklama: "Kullanıcı kimlik bilgilerini gönderir."
+    - etiket: "Doğrulama"
+      aciklama: "Sunucu bilgileri kontrol eder ve kimliği doğrular."
+    - etiket: "Token"
+      aciklama: "Sunucu bir oturum token'ı üretip kullanıcıya verir."
+    - etiket: "İstek"
+      aciklama: "Kullanıcı sonraki isteklerde token'ı gönderir."
+    - etiket: "Yetki kontrolü"
+      aciklama: "Sunucu token'dan kimi bulur ve işleme izin olup olmadığına bakar."
 derinDalis:
   - tur: kitap
     baslik: "Web Application Security (Andrew Hoffman)"

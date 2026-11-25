@@ -30,20 +30,67 @@ sorular:
   - id: devops-002-s1
     soru: "Çalışma dizini, hazırlık alanı (staging) ve depo arasındaki ilişki nedir?"
     cevap: "Dosyayı çalışma dizininde değiştirirsin, `git add` ile hazırlık alanına koyarsın, `git commit` ile hazırlık alanındakileri depoya kalıcı bir kayıt olarak yazarsın."
+    ipucu: "Dosyayı değiştirmek, seçmek ve kaydetmek üç ayrı adımdır."
   - id: devops-002-s2
     soru: "Commit mesajı neden önemlidir?"
     cevap: "Altı ay sonra bir değişikliğin neden yapıldığını yalnız mesaj anlatır. İyi mesaj, hata aramayı ve güvenlik incelemesini hızlandırır."
+    ipucu: "Altı ay sonra o satıra bakan kişinin neye ihtiyacı olacağını düşün."
   - id: devops-002-s3
     soru: "`git diff` ne gösterir?"
     cevap: "Çalışma dizinindeki, henüz hazırlık alanına eklenmemiş değişiklikleri satır satır gösterir: hangi satır silindi, hangisi eklendi."
+    ipucu: "Henüz `git add` ile hazırlanmamış değişiklikleri düşün."
   - id: devops-002-s4
     soru: "Git her dosyanın yalnız farkını mı yoksa tamamını mı tutar? Bunun güvenlik açısından sonucu ne?"
     cevap: "Kavramsal olarak her commit projenin o anki bir görüntüsüdür. Sonuç: bir dosyayı sonradan silsen bile eski committe içeriği durur. Bu yüzden sızan bir sır silmekle gitmez (devops-005'te göreceğiz)."
+    ipucu: "Her commit bir görüntüdür; sonradan silinen dosya eski görüntüde ne olur?"
+  - id: devops-002-s5
+    soru: "`git log` çıktısında \"düzeltme\", \"bir şeyler\", \"son\" gibi mesajlar görüyorsun ve bir hatanın hangi commit'te girdiğini arıyorsun. Neden zorlanıyorsun ve ekibe ne önerirsin?"
+    cevap: "Mesajlar neyin neden değiştiğini söylemediği için her commit'in farkını tek tek açman gerekir. Ekibe küçük, tek amaçlı commit'ler ve ne ile neden'i anlatan mesajlar öneririm; hata avı çok hızlanır."
+    ipucu: "Mesajın altı ay sonra kime ve neye yarayacağını düşün."
 derinDalis:
   - tur: kitap
     baslik: "Pro Git (Scott Chacon, Ben Straub)"
     ayrinti: "Ücretsiz çevrimiçi kitap; 'Git Basics' bölümü bu dersin konusudur."
     url: "https://git-scm.com/book/en/v2"
+hizliKontrol:
+  - soru: "`git diff --staged` neyi gösterir?"
+    secenekler: 
+      - "Yalnız uzak depodaki farkları"
+      - "Hazırlık alanına eklenmiş ama henüz commitlenmemiş değişiklikleri"
+      - "Çalışma dizininde hiç hazırlanmamış değişiklikleri"
+      - "Silinmiş commit'leri"
+    dogru: 1
+    aciklama: "`git diff` hazırlanmamış değişiklikleri, `--staged` ise hazırlanmış olanları gösterir."
+    ipucu: "Hazırlık alanı bir sonraki commit'in sepetidir."
+  - soru: "Git bir commit'i hangi kimlikle tanır?"
+    secenekler: 
+      - "Dosya adıyla"
+      - "Yazarın e-posta adresiyle"
+      - "Commit'in içeriğinden ve bilgilerinden hesaplanan uzun bir karma değeriyle (hash)"
+      - "Sıra numarasıyla"
+    dogru: 2
+    aciklama: "Her commit'in benzersiz bir hash'i vardır; `git log --oneline` onun ilk karakterlerini gösterir."
+    ipucu: "Kimlik içerikten hesaplanır, kişiden ya da sıradan değil."
+sikHatalar:
+  - hata: "`git add .` yazıp ne eklendiğine bakmadan commitlemek."
+    dogrusu: "Önce `git status`, sonra `git diff --staged` ile neyin gideceğini gör; `.env` gibi dosyalar böyle yakalanır."
+  - hata: "`git add` yapınca değişikliğin kaydedildiğini sanmak."
+    dogrusu: "`add` yalnız hazırlık alanına koyar; kalıcı kayıt `git commit` ile oluşur."
+terimler:
+  - "Commit"
+  - "Staging area"
+  - "Secret"
+sema:
+  baslik: "Üç alan arasında yolculuk"
+  adimlar:
+    - etiket: "Düzenle"
+      aciklama: "Dosyayı çalışma dizininde değiştirirsin."
+    - etiket: "git add"
+      aciklama: "Değişiklik hazırlık alanına (staging) girer."
+    - etiket: "git commit"
+      aciklama: "Hazırlananlar depoya kalıcı kayıt olur."
+    - etiket: "git log"
+      aciklama: "Kayıtları tarihçede görürsün."
 ---
 
 **Git**, bir klasördeki dosyaların tarihçesini tutan dağıtık bir **sürüm kontrol sistemidir** (version control system). "Dağıtık" demek, projenin bütün tarihçesinin her kullanıcıdaki kopyada bulunması demektir.

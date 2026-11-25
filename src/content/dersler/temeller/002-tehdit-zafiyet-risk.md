@@ -24,15 +24,45 @@ sorular:
   - id: temeller-002-s1
     soru: "Tehdit, zafiyet ve risk arasındaki farkı birer cümleyle anlat."
     cevap: "Tehdit, zarar verebilecek bir olay ya da aktördür (ör. fidye grubu). Zafiyet, sistemdeki bir zayıflıktır (ör. yamalanmamış yazılım). Risk, bir tehdidin bir zafiyeti kullanarak zarar verme ihtimali ile o zararın büyüklüğünün birleşimidir."
+    ipucu: "Üç kavramdan biri dış tehlike, biri sistemdeki açık, biri de sonuçtur."
   - id: temeller-002-s2
     soru: "Risk = olasılık × etki formülünde zafiyet yamalandı ama hâlâ risk kaldı. Bu nasıl olabilir?"
     cevap: "Yama bir zafiyeti kapatır ama başka zafiyetler, insan hataları ya da henüz bilinmeyen açıklar kalabilir. Risk hiçbir zaman sıfırlanmaz; amaç onu kabul edilebilir seviyeye indirmektir."
+    ipucu: "Risk iki şeyin çarpımı; yamalanan zafiyet bunlardan hangisini sıfırlar, hangisini etkilemez?"
   - id: temeller-002-s3
     soru: "CVE nedir, CVSS nedir? İkisi aynı şey mi?"
     cevap: "CVE, herkese açık bilinen bir zafiyete verilen kimliktir (ör. CVE-YYYY-NNNN biçiminde). CVSS ise zafiyetin teknik şiddetini 0-10 arası puanlayan sistemdir. CVE 'hangi zafiyet', CVSS 'ne kadar ciddi' sorusunu yanıtlar; farklı şeylerdir."
+    ipucu: "Biri bir kaydın adı, diğeri ona verilen puan."
   - id: temeller-002-s4
     soru: "Bir riskle başa çıkmanın dört yolu nedir? Kısaca birer örnek ver."
     cevap: "Azaltmak (yama, güvenlik duvarı), kaçınmak (riskli özelliği hiç sunmamak), aktarmak (siber sigorta), kabul etmek (maliyeti riskten büyük ve etkisi küçükse bilinçli olarak bırakmak)."
+    ipucu: "Riski kabul etmek, azaltmak, aktarmak ya da kaçınmak; her biri için günlük hayattan bir örnek düşün."
+  - id: temeller-002-s5
+    soru: "Haftalık tarama raporunda iki bulgu var: internete açık ödeme servisinde CVSS 7.5'lik bir zafiyet ve içeride, sadece bir geliştirici laptopunda duran bir araçta CVSS 9.8'lik bir zafiyet. Sabah toplantısında hangisini önce yamalayacağını nasıl savunursun?"
+    cevap: "Önce internete açık ödeme servisini yamalarım. CVSS teknik şiddeti gösterir; risk ise olasılık ve etkiyle belirlenir. Dışarıdan erişilebilen ve para akışına dokunan serviste olasılık ve etki yüksektir. Laptoptaki zafiyeti de takvime alırım, ama ikinci sıraya koyarım."
+    ipucu: "Puan tek başına karar vermez; zafiyete kimin ulaşabildiğine bak."
+hizliKontrol:
+  - soru: "Risk için doğru ifade hangisidir?"
+    secenekler: ["Zafiyetin CVSS puanına eşittir","Yalnızca saldırganın niyetidir","Olasılık ile etkinin birlikte düşünülmesidir","Yama yapıldığında her zaman sıfırdır"]
+    dogru: 2
+    aciklama: "Risk, bir olayın gerçekleşme olasılığı ile gerçekleşirse yaratacağı etkinin birleşimidir."
+    ipucu: "Formülde iki çarpan var."
+  - soru: "Bir yönetici, riskli bir eski sistemi tamamen kapatmaya karar verdi. Bu, dört yoldan hangisidir?"
+    secenekler: ["Riski aktarmak","Riski kabul etmek","Riski azaltmak","Riskten kaçınmak"]
+    dogru: 3
+    aciklama: "Riskli faaliyeti tamamen bırakmak riskten kaçınmaktır. Sigorta aktarma, önlem almak azaltma, bilerek yaşamak kabuldür."
+    ipucu: "Sistemi ortadan kaldırınca risk de ortadan kalkıyor."
+sikHatalar:
+  - hata: "En yüksek CVSS puanlı zafiyeti her zaman ilk yamalamak."
+    dogrusu: "Puana ek olarak sistemin internete açık olup olmadığına ve etkisine bak; sonra sırala."
+  - hata: "CVE ile CVSS'i aynı şey sanmak."
+    dogrusu: "CVE zafiyetin kimliğidir, CVSS ona verilen ciddiyet puanıdır."
+terimler:
+  - "Tehdit"
+  - "Zafiyet"
+  - "Risk"
+  - "CVE"
+  - "CVSS"
 derinDalis:
   - tur: okuma
     baslik: "FIRST: CVSS"

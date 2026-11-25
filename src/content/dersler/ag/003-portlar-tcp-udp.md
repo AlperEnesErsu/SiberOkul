@@ -23,15 +23,55 @@ sorular:
   - id: ag-003-s1
     soru: "Port numarası ne işe yarar? Bir IP adresi tek başına neden yetmez?"
     cevap: "IP adresi hangi makineye gidileceğini söyler; port ise o makinede hangi programa (servise) gidileceğini. Bir makinede aynı anda web, SSH ve veritabanı çalışabilir."
+    ipucu: "Posta kutusu numarasını düşün: adres binayı, numara hangi daireyi gösterir?"
   - id: ag-003-s2
     soru: "TCP ile UDP arasındaki temel fark nedir? Her biri için bir kullanım örneği ver."
     cevap: "TCP bağlantı kurar, sıra ve teslimi garanti eder (web, SSH). UDP bağlantısızdır, garanti vermez ama hızlı ve hafiftir (DNS sorguları, canlı yayın)."
+    ipucu: "Biri bağlantı kurar ve teslimi garanti eder, diğeri atıp unutur."
   - id: ag-003-s3
     soru: "TCP üçlü el sıkışmanın adımlarını sırala."
     cevap: "İstemci SYN yollar, sunucu SYN-ACK ile yanıtlar, istemci ACK gönderir. Ondan sonra bağlantı kurulmuş sayılır ve veri akar."
+    ipucu: "Üç adım: istek, onay+istek, onay."
   - id: ag-003-s4
     soru: "22, 80 ve 443 numaralı portlar hangi servislerin varsayılan portlarıdır?"
     cevap: "22 SSH, 80 HTTP, 443 HTTPS. Bunlar ezber olmasa da çok görürsün; DNS için 53 de aynı listeye eklenir."
+    ipucu: "SSH, HTTP ve HTTPS için küçük sayılar düşün."
+  - id: ag-003-s5
+    soru: "Bir geliştirici test için bir web uygulamasını `0.0.0.0:8000` üzerinde başlatmış ve `ss -tulpn` bunu gösteriyor. Sunucu internete açık bir bulut makinesi. Ne yaparsın?"
+    cevap: "0.0.0.0 bütün arayüzlerden erişilebilir demektir. Yalnız yerel kullanım gerekiyorsa servisi 127.0.0.1'e bağlatırım; dışarıdan erişim gerekiyorsa güvenlik duvarıyla yalnız gereken adreslere izin veririm. Gereksiz servis varsa durdururum."
+    ipucu: "`0.0.0.0` ile `127.0.0.1` arasındaki farkı yerel adresin kapsamı üzerinden düşün."
+hizliKontrol:
+  - soru: "Hangi protokol veri göndermeden önce bağlantı kurmaz ve teslimi garanti etmez?"
+    secenekler:
+      - "TCP"
+      - "UDP"
+      - "SSH"
+      - "HTTPS"
+    dogru: 1
+    aciklama: "UDP bağlantısızdır: paketi yollar ve unutur; bunun karşılığı hız ve düşük yüktür."
+    ipucu: "El sıkışmayan protokolü bul."
+sikHatalar:
+  - hata: "Açık port gördüğünde 'zafiyet var' diye panik yapmak ya da tam tersi 'sorun yok' demek."
+    dogrusu: "Açık port zafiyet demek değildir ama her gereksiz port bir saldırı yüzeyidir; hangi servisin dinlediğine bak ve gerekmeyeni kapat."
+  - hata: "`ss` çıktısında `127.0.0.1` ile `0.0.0.0` farkını gözden kaçırmak."
+    dogrusu: "127.0.0.1 yalnız aynı makineden, 0.0.0.0 tüm arayüzlerden erişim demektir."
+terimler:
+  - "Port"
+  - "TCP"
+  - "UDP"
+  - "Üçlü el sıkışma"
+  - "Saldırı yüzeyi"
+sema:
+  baslik: "TCP üçlü el sıkışma"
+  adimlar:
+    - etiket: "SYN"
+      aciklama: "İstemci 'konuşmak istiyorum' der."
+    - etiket: "SYN-ACK"
+      aciklama: "Sunucu duyduğunu ve hazır olduğunu söyler."
+    - etiket: "ACK"
+      aciklama: "İstemci onaylar, bağlantı kurulur."
+    - etiket: "Veri"
+      aciklama: "Artık iki yönde veri akar."
 derinDalis:
   - tur: okuma
     baslik: "RFC 9293: Transmission Control Protocol (TCP)"

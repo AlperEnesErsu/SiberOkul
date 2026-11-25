@@ -30,15 +30,54 @@ sorular:
   - id: linux-008-s1
     soru: "`>` ile `>>` arasındaki fark nedir? Hangisini yanlışlıkla kullanmak veri kaybettirir?"
     cevap: "`>` dosyayı sıfırlayıp üzerine yazar, `>>` sona ekler. Mevcut bir log ya da notu `>` ile yönlendirirsen eski içerik silinir; bu yüzden ekleme niyetindeysen `>>` kullan."
+    ipucu: "`>` ve `>>`'ın dosyaya ne yaptığını karşılaştır."
   - id: linux-008-s2
     soru: "stdin, stdout ve stderr nedir? Numaraları kaçtır?"
     cevap: "Her programın üç standart akışı vardır: stdin (0) girdi, stdout (1) normal çıktı, stderr (2) hata mesajları. `>` stdout'u, `2>` stderr'i yönlendirir. İkisinin ayrı olması, hataları normal çıktıdan ayırmayı mümkün kılar."
+    ipucu: "Üç akışın numaralarını say."
   - id: linux-008-s3
     soru: "`komut > dosya 2>&1` ne yapar?"
     cevap: "Önce stdout'u dosyaya yönlendirir, sonra stderr'i (2) stdout'un (1) gittiği yere, yani aynı dosyaya bağlar. Böylece hem normal çıktı hem hatalar tek dosyada toplanır. Sıralama önemlidir: `2>&1` önce yazılırsa hata hâlâ ekrana gider."
+    ipucu: "Sıra önemli: önce hangisini yönlendiriyor?"
   - id: linux-008-s4
     soru: "`sort | uniq -c` birlikte neden kullanılır? Yalnız `uniq -c` yazsan ne olur?"
     cevap: "`uniq` yalnızca art arda gelen aynı satırları birleştirir. Önce `sort` ile aynı satırlar yan yana getirilmezse sayım yanlış çıkar. `sort | uniq -c`, her satırdan kaç tane olduğunu verir."
+    ipucu: "`uniq`'in hangi satırları birleştirdiğini hatırla."
+  - id: linux-008-s5
+    soru: "Gece çalışan betiğin ekrana yazdığı hatalar kayboluyor. Hataları bir dosyada toplamak istiyorsun. Ne yazarsın?"
+    cevap: "`betik.sh > cikti.log 2>&1` ile hem normal çıktıyı hem hatayı aynı dosyaya alırsın; yalnız hatalar için `2> hatalar.log` yeterlidir. Her çalıştırmada eski kayıt silinmesin diye `>>` kullanırsın."
+    ipucu: "Hatalar hangi akıştan gidiyor?"
+hizliKontrol:
+  - soru: "`komut 2> hata.txt` neyi dosyaya yazar?"
+    secenekler: ["stdout'u","stdin'i","stderr'i","Hepsini"]
+    dogru: 2
+    aciklama: "`2>` hata akışını (stderr) yönlendirir."
+    ipucu: "2 numaralı akış hangisi?"
+sikHatalar:
+  - hata: "Önemli bir dosyaya `>` ile yönlendirip eski içeriği silmek."
+    dogrusu: "Eklemek istiyorsan `>>` kullan."
+  - hata: "`uniq -c`'yi `sort` olmadan kullanmak."
+    dogrusu: "`uniq` yalnız bitişik satırları sayar; önce `sort`."
+terimler:
+  - "Standart akış"
+  - "Yönlendirme"
+  - "Boru hattı"
+  - "Kabuk (shell)"
+sema:
+  baslik: "Boru hattı akışı"
+  adimlar:
+    - etiket: "Okuma"
+      aciklama: "`cat log` dosyayı okur ve stdout'a yazar."
+    - etiket: "Bağlama"
+      aciklama: "`"
+    - etiket: "` stdout'u sonraki komutun stdin'ine bağlar."
+      aciklama: ""
+    - etiket: "Sıralama"
+      aciklama: "`sort` satırları sıralar."
+    - etiket: "Sayma"
+      aciklama: "`uniq -c` bitişik aynı satırları sayar."
+    - etiket: "Sonuç"
+      aciklama: "Son çıktı ekrana ya da `>` ile dosyaya yazılır."
 derinDalis:
   - tur: kitap
     baslik: "The Linux Command Line (William Shotts)"

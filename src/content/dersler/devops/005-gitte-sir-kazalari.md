@@ -27,15 +27,23 @@ sorular:
   - id: devops-005-s1
     soru: "Sır, depoya girdikten sonra dosyadan silinirse neden hâlâ risklidir?"
     cevap: "Git tarihçeyi saklar. Eski commit okunabilir durumdadır ve başkalarının klonlarında, fork'larda kopyası olabilir."
+    ipucu: "Git tarihçeyi silmemek üzere tasarlandı."
   - id: devops-005-s2
     soru: "Sızan bir anahtar için doğru sıra nedir?"
     cevap: "Önce anahtarı iptal edip yenisiyle değiştir (rotation), sonra kullanım kayıtlarında kötüye kullanım var mı bak, en son istersen tarihçeyi temizle. Temizlik tek başına yetmez."
+    ipucu: "Önce sızan kilidi geçersiz kıl, temizliği sonra düşün."
   - id: devops-005-s3
     soru: "`.gitignore` ne işe yarar ve neyi korumaz?"
     cevap: "Git'in izlemeyeceği dosya desenlerini söyler, böylece `git add` yanlışlıkla sırlı dosyayı almaz. Ama dosya zaten commitlenmişse onu tarihçeden silmez."
+    ipucu: "`.gitignore` yalnız henüz izlenmeyen dosyalar için etkilidir."
   - id: devops-005-s4
     soru: "Sızıntıları baştan yakalamak için hangi önlemler kullanılır?"
     cevap: "Commit öncesi sır taraması (pre-commit kancası), CI'da sır tarayıcıları ve platformun sır tarama özelliği. Hiçbiri kusursuz değildir, bu yüzden döndürme alışkanlığı yine de gerekir."
+    ipucu: "Önlem birden çok katmanda olur: commit öncesi, CI ve platform."
+  - id: devops-005-s5
+    soru: "Bir iş arkadaşın \"yanlışlıkla AWS anahtarını herkese açık depoya pushladım, hemen sildim, tamam mı?\" diye yazıyor. İlk ne söylersin?"
+    cevap: "Silmenin yetmediğini söylerim: anahtarı hemen AWS tarafında devre dışı bırakıp yenisini üretmesini (rotation) isterim. Sonra AWS kayıtlarında anahtarın yetkisiz kullanılıp kullanılmadığına bakarız. Tarihçe temizliği en son ve isteğe bağlıdır."
+    ipucu: "Sırrı kimlerin çoktan kopyalamış olabileceğini düşün; ilk adım depoyla ilgili değil."
 derinDalis:
   - tur: okuma
     baslik: "GitHub: Depodan hassas veriyi kaldırmak"
@@ -45,6 +53,48 @@ derinDalis:
     baslik: "GitHub: Secret scanning hakkında"
     ayrinti: "Platformun depolardaki sızan kimlik bilgilerini nasıl taradığı."
     url: "https://docs.github.com/en/code-security/secret-scanning/introduction/about-secret-scanning"
+hizliKontrol:
+  - soru: "Sızan bir anahtar için ilk adım hangisidir?"
+    secenekler: 
+      - "Dosyayı silip yeni commit atmak"
+      - "Depoyu private yapmak"
+      - "Anahtarı iptal edip yenisini üretmek"
+      - "Tarihçeyi `git filter-repo` ile yeniden yazmak"
+    dogru: 2
+    aciklama: "Önce anahtar geçersiz kılınır; tarihçe temizliği ancak sonra gelir."
+    ipucu: "Kopyalar zaten dışarıda olabilir."
+  - soru: "`.gitignore` zaten commitlenmiş bir dosyayı korur mu?"
+    secenekler: 
+      - "Evet, tarihçeden siler"
+      - "Hayır, yalnız henüz izlenmeyen dosyaların eklenmesini önler"
+      - "Evet ama yalnız `.env` için"
+      - "Hayır, yalnız klasörleri etkiler"
+    dogru: 1
+    aciklama: "`.gitignore` izlenmeyen dosyalar içindir; eski commit'leri değiştirmez."
+    ipucu: "Dosya zaten tarihçedeyse bu dosya neyi değiştirebilir?"
+sikHatalar:
+  - hata: "Sırrı silip yeni commit attıktan sonra işin bittiğini sanmak."
+    dogrusu: "Eski commit duruyor; önce sırrı iptal edip döndür, sonra kullanımı incele."
+  - hata: "Depo özel (private) diye sır koymanın güvenli olduğunu düşünmek."
+    dogrusu: "Özel depo açılabilir, hesap ele geçirilebilir, depo klonlanabilir. Sırrın yeri depo değildir."
+terimler:
+  - "Secret"
+  - "Rotation"
+  - "Secret scanning"
+  - ".gitignore"
+sema:
+  baslik: "Sızan sır için müdahale sırası"
+  adimlar:
+    - etiket: "İptal et"
+      aciklama: "Sırrı kaynak serviste devre dışı bırakırsın."
+    - etiket: "Döndür"
+      aciklama: "Yeni sırrı üretip kullanan yerlere verirsin (rotation)."
+    - etiket: "İncele"
+      aciklama: "Servis günlüklerinde yetkisiz kullanım var mı bakarsın."
+    - etiket: "Temizle"
+      aciklama: "İsteğe bağlı olarak tarihçeyi yeniden yazarsın."
+    - etiket: "Önle"
+      aciklama: "`.gitignore`, commit öncesi tarama ve CI taraması kurarsın."
 ---
 
 Bir önceki derslerde Git'in tarihçeyi silmemek üzere tasarlandığını gördün. Bu, sırlar için kötü haberdir.

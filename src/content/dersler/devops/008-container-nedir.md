@@ -25,15 +25,23 @@ sorular:
   - id: devops-008-s1
     soru: "Container ile sanal makine (VM) arasındaki temel fark nedir?"
     cevap: "VM kendi işletim sistemi ve çekirdeğini başlatır. Container ise host'un çekirdeğini paylaşan, izole çalıştırılan sıradan bir süreçtir; bu yüzden küçük ve hızlıdır."
+    ipucu: "Çekirdeği (kernel) kimin çalıştırdığını düşün."
   - id: devops-008-s2
     soru: "İmaj (image) ile container arasındaki ilişki nedir?"
     cevap: "İmaj, uygulamayı ve ihtiyaçlarını içeren salt okunur bir şablondur. Container, o imajdan başlatılmış çalışan örneğidir. Bir imajdan çok sayıda container çıkabilir."
+    ipucu: "Tarif ile pişmiş yemek arasındaki ilişkiyi hatırla."
   - id: devops-008-s3
     soru: "`docker run --rm alpine echo merhaba` komutunda `--rm` ne yapar?"
     cevap: "Container işini bitirince onu otomatik siler. Böylece diskte kullanılmayan durmuş container birikmez."
+    ipucu: "Bittikten sonra diskte neyin kalmamasını istiyorsun?"
   - id: devops-008-s4
     soru: "Container izolasyonu neden VM izolasyonundan zayıf kabul edilir?"
     cevap: "Çekirdek ortaktır. Çekirdekteki bir açık ya da fazla yetkili ayar, container'dan host'a geçişe yol açabilir. VM'de ise arada bir sanallaştırma katmanı vardır."
+    ipucu: "Ortak olan bir şeyin zayıflığı hepsini etkiler."
+  - id: devops-008-s5
+    soru: "Bir ekip arkadaşın, tanımadığın bir kullanıcının Docker Hub imajını `docker run --privileged -v /:/host` ile denemeyi öneriyor. Ne dersin?"
+    cevap: "Hayır derim. `--privileged` ve host kök dizinini bağlamak izolasyonu fiilen kaldırır; imaj zararlıysa host'un tamamı risktedir. Resmi ya da doğrulanmış imaj kullanır, yetkileri kısar, gerekirse izole bir sanal makinede denerim."
+    ipucu: "Container'ın host ile paylaştığı şeyleri ve bu seçeneklerin onları ne kadar açtığını düşün."
 derinDalis:
   - tur: okuma
     baslik: "Docker: Container nedir?"
@@ -43,6 +51,47 @@ derinDalis:
     baslik: "Docker Engine güvenliği"
     ayrinti: "Daemon'a kimin erişebileceği ve izolasyonun dayanağı."
     url: "https://docs.docker.com/engine/security/"
+hizliKontrol:
+  - soru: "Container'ı sanal makineden ayıran temel özellik hangisidir?"
+    secenekler: 
+      - "Kendi işletim sistemi çekirdeğini çalıştırması"
+      - "Host'un çekirdeğini paylaşması"
+      - "Her zaman root olarak çalışması"
+      - "Yalnız Linux'ta çalışması"
+    dogru: 1
+    aciklama: "Container izole bir süreçtir ve host'un çekirdeğini paylaşır; VM ise kendi çekirdeğini başlatır."
+    ipucu: "Boot edilen bir işletim sistemi var mı?"
+  - soru: "İmaj ile container arasındaki ilişki hangisidir?"
+    secenekler: 
+      - "Container, imajdan başlatılmış çalışan örnektir"
+      - "İmaj, container'ın çalışan halidir"
+      - "İkisi aynı şeydir"
+      - "Container imajı siler"
+    dogru: 0
+    aciklama: "İmaj salt okunur şablondur; bir imajdan çok sayıda container çıkabilir."
+    ipucu: "Tarif ve yemek benzetmesini hatırla."
+sikHatalar:
+  - hata: "Container'ın sanal makine kadar izole olduğunu sanmak."
+    dogrusu: "Çekirdek ortaktır; yetkileri kıs, imajı sınırlı çalıştır, ek önlemleri unutma."
+  - hata: "Container silinince içine yazılan verinin kalacağını sanmak."
+    dogrusu: "Container geçicidir; kalıcı veri için volume kullan."
+terimler:
+  - "Container"
+  - "Image"
+  - "Volume"
+sema:
+  baslik: "`docker run alpine echo merhaba` ne yapar"
+  adimlar:
+    - etiket: "İmaj var mı"
+      aciklama: "Docker yerelde `alpine` imajı olup olmadığına bakar."
+    - etiket: "İndir"
+      aciklama: "Yoksa kayıt defterinden çeker."
+    - etiket: "Container oluştur"
+      aciklama: "İmajdan yeni bir container başlatılır."
+    - etiket: "Komut çalışır"
+      aciklama: "`echo merhaba` çalışır ve çıkar."
+    - etiket: "Temizlik"
+      aciklama: "`--rm` varsa container silinir; imaj yerelde kalır."
 ---
 
 **Container**, bir uygulamayı ve çalışması için gereken her şeyi (kütüphaneler, ayarlar) paketleyip diğerlerinden **izole** çalıştırma yöntemidir. "Bende çalışıyor" sorununu çözer: paket, nerede çalışırsa çalışsın aynı davranır.

@@ -29,20 +29,44 @@ sorular:
   - id: bulut-006-s1
     soru: "KMS ne işe yarar ve anahtarın kendisi neden dışarı çıkmaz?"
     cevap: "KMS (Key Management Service) şifreleme anahtarlarını güvenli donanımda tutar. Uygulama anahtarı almaz; şifrele ya da çöz isteği gönderir. Anahtar sızma riski ve erişim denetimi bu şekilde azalır."
+    ipucu: "Anahtarın servis dışına çıkıp çıkmadığını düşün."
   - id: bulut-006-s2
     soru: "Zarf şifrelemesi (envelope encryption) kısaca nedir?"
     cevap: "Veri, veri anahtarıyla şifrelenir; veri anahtarı da KMS'teki ana anahtarla şifrelenip veriyle birlikte saklanır. Böylece büyük veri KMS'e gönderilmez ve ana anahtar sende kontrol altında kalır."
+    ipucu: "İki katmanlı anahtar yapısını hatırla: veri anahtarı ve ana anahtar."
   - id: bulut-006-s3
     soru: "Secrets Manager rotasyonu neden önemlidir?"
     cevap: "Sır düzenli aralıklarla otomatik değiştirilir. Bir sır sızsa bile geçerlilik süresi sınırlıdır, ayrıca kimse eski parolayı elle bilmek zorunda kalmaz. Rotasyon hem sırın hem hizmetin kimlik bilgisini günceller."
+    ipucu: "Sızan sırrın geçerli kalma süresini kısaltan şey ne?"
   - id: bulut-006-s4
     soru: "Sırları ortam değişkenine koymak ile Secrets Manager'dan çalışma anında çekmek arasındaki fark nedir?"
     cevap: "Ortam değişkeni dağıtım ya da süreç dökümünde görünebilir ve değiştirmek için yeniden dağıtım gerekir. Secrets Manager'da erişim IAM ile kısıtlanır, kayıt altındadır, sır güncellenebilir ve rotasyon desteklenir."
+    ipucu: "Hangisinde erişim kısıtlanır, kayıt tutulur ve değerler yenilenir?"
+  - id: bulut-006-s5
+    soru: "Bir geliştirici veritabanı parolasını yanlışlıkla public repoya push etti, 10 dakika sonra commit'i sildi. Ne yaparsın?"
+    cevap: "Silmek yetmez: parolayı hemen değiştirir (iptal ve rotasyon) ve sırrı kullanan servisleri güncellerim. Sonra veritabanı erişim kayıtlarında yabancı bağlantı ararım. Gelecek için commit öncesi sır taraması ve Secrets Manager kullanımını öneririm."
+    ipucu: "Git geçmişini ve botların tarama hızını düşün."
 derinDalis:
   - tur: okuma
     baslik: "AWS: Secrets Manager sırlarını döndürmek"
     ayrinti: "Yönetilen rotasyon ile Lambda tabanlı rotasyon arasındaki fark."
     url: "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html"
+hizliKontrol:
+  - soru: "Zarf şifrelemesinde veri anahtarı nasıl saklanır?"
+    secenekler: ["Düz metin olarak veriyle birlikte","KMS ana anahtarıyla şifrelenip veriyle birlikte","Kod deposunda","Hiç saklanmaz, her seferinde üretilir"]
+    dogru: 1
+    aciklama: "Veri anahtarı ana anahtarla şifrelenir ve veriyle birlikte saklanır."
+    ipucu: "Zarfın içinde bir anahtar, dışında bir kilit düşün."
+sikHatalar:
+  - hata: "Sırrı sızdıktan sonra yalnız dosyadan silmek."
+    dogrusu: "Sırrı iptal et ve değiştir; geçmişi temizlemek ikincil adımdır."
+  - hata: "Parolayı `.env` dosyasında repoya koymak."
+    dogrusu: "Sırları Secrets Manager'dan çalışma anında çek; `.env` repoya girmesin."
+terimler:
+  - "KMS"
+  - "Zarf şifrelemesi"
+  - "Secrets Manager"
+  - "Rotasyon"
 ---
 
 **Sır** (secret), bir sistemin kimliğini kanıtlayan her değerdir: parola, API anahtarı, erişim anahtarı, veritabanı bağlantı adresi, özel anahtar. Sırlarda üç kural vardır: **kodda durmasın, ömrü kısa olsun, kim kullandı bilinsin.**

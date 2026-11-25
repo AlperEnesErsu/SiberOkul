@@ -23,15 +23,43 @@ sorular:
   - id: ag-012-s1
     soru: "Keşif (reconnaissance) saldırının ve savunmanın neresinde yer alır?"
     cevap: "Saldırgan için ilk adımdır: hangi makine, port ve servis var diye bakar. Savunmacı da aynı işi kendi sistemine yaparak saldırı yüzeyini önce görür ve gereksiz açık portları kapatır."
+    ipucu: "Saldırgan ilk ne yapar? Savunmacı aynısını neden yapar?"
   - id: ag-012-s2
     soru: "nmap bir portu `open`, `closed` ve `filtered` olarak raporlarsa bu üç durum ne demektir?"
     cevap: "open: dinleyen servis var. closed: erişilebilir ama dinleyen yok. filtered: cevap yok, bir güvenlik duvarı ya da filtre engelliyor olabilir."
+    ipucu: "Üç durum: dinleyen var, erişilebilir ama dinleyen yok, cevap yok."
   - id: ag-012-s3
     soru: "Bir sistemi taramadan önce hangi izin gerekir? 'Sadece bakıyorum' neden yeterli bir gerekçe değildir?"
     cevap: "Sistem sahibinden yazılı izin (kapsam, tarih, IP aralığı) gerekir. Tarama hukuken ülkeden ülkeye farklı yorumlanır ve izinsiz yapılınca suç, iş sözleşmesi ihlali ya da hizmet aksaması sayılabilir. Niyet iyi olsa da sorumluluk seninle kalır."
+    ipucu: "İzin kimden alınır ve nasıl belgelenir?"
   - id: ag-012-s4
     soru: "Yazılı bir 'kapsam' (scope) belgesinde neler bulunur ve neden önemlidir?"
     cevap: "Hangi adreslerin, hangi yöntemlerle, hangi tarihlerde test edileceği ve kimin yetkili olduğu yazar. Kapsam dışına çıkmamak hem hukuki korumadır hem de üretim sistemlerinin kazara zarar görmesini önler."
+    ipucu: "Hangi adresler, hangi yöntemler, hangi tarihler?"
+  - id: ag-012-s5
+    soru: "Yazılı kapsamı `10.0.1.0/24` olan bir testte, tarama sırasında `10.0.2.15` adresinde ilginç bir servis fark ediyorsun. Ne yaparsın?"
+    cevap: "O adres kapsam dışıdır, taramayı ya da sızmayı denemem. Bulguyu kayda geçirip müşteriye bildiririm ve kapsamın yazılı olarak genişletilmesini beklerim. Kapsam dışına çıkmak hukuki ve operasyonel risk doğurur."
+    ipucu: "Yazılı kapsamda olmayan hiçbir adrese dokunulmaz."
+hizliKontrol:
+  - soru: "nmap bir portu `filtered` raporlarsa en olası anlam nedir?"
+    secenekler:
+      - "Port kapalıdır ve dinleyen yoktur"
+      - "Servis çökmüştür"
+      - "Cevap alınamıyor; güvenlik duvarı ya da filtre engelliyor olabilir"
+      - "Port açıktır ve güvenlidir"
+    dogru: 2
+    aciklama: "`filtered`, tarayıcının net bir cevap alamadığı anlamına gelir; genelde bir güvenlik duvarı araya girmiştir."
+    ipucu: "Cevabın hiç gelmemesini düşün."
+sikHatalar:
+  - hata: "'Sadece bakıyorum' diyerek izinsiz tarama yapmak."
+    dogrusu: "Sistem sahibinden yazılı izin al; iyi niyet sorumluluğu kaldırmaz."
+  - hata: "Kapsamı sözlü anlaşmayla geçiştirmek."
+    dogrusu: "Adres, yöntem, tarih ve yetkiliyi yazılı kapsam belgesine koy."
+terimler:
+  - "Keşif"
+  - "Saldırı yüzeyi"
+  - "Port"
+  - "Güvenlik duvarı"
 derinDalis:
   - tur: okuma
     baslik: "Nmap: Hukuki konular"

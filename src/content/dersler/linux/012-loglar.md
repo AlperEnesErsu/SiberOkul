@@ -26,15 +26,52 @@ sorular:
   - id: linux-012-s1
     soru: "`/var/log/auth.log` hangi olayları içerir?"
     cevap: "Kimlik doğrulama ve yetkilendirme olaylarını: SSH girişleri, başarısız parola denemeleri, `sudo` kullanımları, kullanıcı değişiklikleri. Güvenlik incelemesinde en çok bakılan log dosyalarından biridir (Ubuntu'da)."
+    ipucu: "Satırdaki `invalid user` ifadesini yorumla."
   - id: linux-012-s2
     soru: "`journalctl -u ssh --since today` ne yapar?"
     cevap: "systemd günlüğünden yalnız `ssh` servisinin bugünkü kayıtlarını getirir. `-u` birimi (servisi) seçer, `--since` zaman aralığını daraltır."
+    ipucu: "Kimlik doğrulama olayları hangi dosyada tutulur?"
   - id: linux-012-s3
     soru: "Bir logda aynı IP adresinden dakikada onlarca `Failed password` satırı görüyorsun. Bu ne anlama gelir ve ilk savunma adımların nedir?"
     cevap: "Büyük olasılıkla kaba kuvvet ya da parola tahmin saldırısıdır. İlk adımlar: kaynak IP'yi güvenlik duvarında engellemek, SSH'ta parola girişini kapatıp anahtar tabanlı girişe geçmek ve başarılı bir giriş olup olmadığını (`Accepted`) kontrol etmek."
+    ipucu: "`-u` ve `--since` neyi daraltıyor?"
   - id: linux-012-s4
     soru: "Saldırganlar neden logları silmeye ya da değiştirmeye çalışır ve savunma olarak ne yapılır?"
     cevap: "İzlerini kapatmak, olayın incelenmesini zorlaştırmak için. Savunma: logları yalnız yerelde tutmamak, merkezi bir log sunucusuna ya da buluta gerçek zamanlı göndermek ve log dosyalarını yazmaya kapalı tutmak (izinler)."
+    ipucu: "Aynı kaynaktan çok sayıda başarısız denemenin anlamını düşün."
+  - id: linux-012-s5
+    soru: "Gece 3'te alarm: `auth.log`'ta aynı IP'den dakikada 60 `Failed password`, ardından bir `Accepted password`. İlk ne yaparsın?"
+    cevap: "Kabul edilen girişi öncelikli sayarsın: hangi hesap, hangi IP? O hesabın oturumunu sonlandırır, parolasını sıfırlar ve anahtar tabanlı girişe geçmeyi planlarsın. Logları dışarıya kopyalayıp kanıtı korur, IP'yi engeller ve olayı raporlarsın."
+    ipucu: "Başarılı giriş ne anlama gelebilir?"
+hizliKontrol:
+  - soru: "`auth.log` ne içerir?"
+    secenekler: ["Kimlik doğrulama ve sudo olayları","Disk kullanımı","Ağ hızı","Paket listesi"]
+    dogru: 0
+    aciklama: "auth.log giriş, başarısız deneme ve sudo kayıtlarını tutar."
+    ipucu: "Kimlik doğrulama olayları nerede?"
+sikHatalar:
+  - hata: "Log'ta yalnız `Failed` satırlarına bakıp `Accepted` satırını aramamak."
+    dogrusu: "Başarılı girişler asıl tehlikeyi gösterir; ikisini birlikte incele."
+  - hata: "Logları yalnız sunucuda tutmak."
+    dogrusu: "Merkezi bir sunucuya gönder; saldırgan yerel logu silebilir."
+terimler:
+  - "Log"
+  - "Kaba kuvvet saldırısı"
+  - "systemd"
+  - "grep"
+sema:
+  baslik: "Log ile olay inceleme"
+  adimlar:
+    - etiket: "Belirti"
+      aciklama: "Alarm ya da şüpheli bir belirti gelir."
+    - etiket: "Zaman"
+      aciklama: "`journalctl` ya da `auth.log` ile ilgili zaman aralığına bakılır."
+    - etiket: "Süzme"
+      aciklama: "`grep` ile IP ve kullanıcı süzülür."
+    - etiket: "Başarı"
+      aciklama: "Başarılı girişleri bulmak için `Accepted` satırları aranır."
+    - etiket: "Müdahale"
+      aciklama: "Engelleme, parola sıfırlama ve kanıt kaydı yapılır."
 derinDalis:
   - tur: kitap
     baslik: "The Linux Command Line (William Shotts)"

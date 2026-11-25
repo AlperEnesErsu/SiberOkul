@@ -26,15 +26,38 @@ sorular:
   - id: container-005-s1
     soru: "Role ile ClusterRole arasındaki fark nedir?"
     cevap: "Role tek bir isim alanı (namespace) içindeki kaynaklar için geçerlidir. ClusterRole bütün kümeyi ya da isim alanına bağlı olmayan kaynakları (düğümler gibi) kapsar. Mümkünse Role tercih edilir; çünkü kapsamı dardır."
+    ipucu: "Joker karakter (*) hem fiilde hem kaynakta ne kadar yetki demektir?"
   - id: container-005-s2
     soru: "RBAC kuralları 'izin verir' mi 'yasaklar' mı? Yasaklama kuralı yazılabilir mi?"
     cevap: "RBAC yalnız izin verir; varsayılan 'yasak', yani kural yoksa erişim yoktur. Yasaklama (deny) kuralı yazılamaz; yetkiyi eksiltmek için ilgili izni vermemek ya da bağlantıyı kaldırmak gerekir."
+    ipucu: "Kapsam: biri tek isim alanında, diğeri bütün kümede geçerli."
   - id: container-005-s3
     soru: "ServiceAccount nedir ve pod'larda neden önemlidir?"
     cevap: "Pod içinde çalışan sürecin API sunucusuna kendini tanıtmak için kullandığı kimliktir. Pod ele geçirilirse saldırgan bu kimliğin yetkileriyle API'ye erişir; bu yüzden hizmet hesabına yalnız gereken yetki verilmeli."
+    ipucu: "Kural yoksa ne olduğunu düşün; 'yasakla' diye bir kural var mı?"
   - id: container-005-s4
     soru: "`kubectl auth can-i ... --as=...` neden güvenlik denetiminde yararlıdır?"
     cevap: "Bir kimliğin fiilen ne yapabildiğini kural dosyalarını tek tek okumadan sorgulatır. 'Bu hesap Secret okuyabiliyor mu?' sorusuna hızlı ve kanıtlı cevap verir."
+    ipucu: "Başkası gibi davranarak yetkiyi nasıl sınayabilirsin?"
+  - id: container-005-s5
+    soru: "Bir pod'un içinden `kubectl get secrets -A` komutunun çalıştığını görüyorsun; pod varsayılan ServiceAccount'u kullanıyor. Ne yaparsın?"
+    cevap: "O ServiceAccount'a bağlı Role/ClusterRole'leri incelersin (`kubectl auth can-i --list --as=...`) ve gereksiz olanı kaldırırsın. Uygulamaya ayrı, en az yetkili bir ServiceAccount verirsin; API'ye ihtiyacı yoksa `automountServiceAccountToken: false` yaparsın."
+    ipucu: "Bir pod'un kümeye konuşma yetkisi nereden gelir?"
+hizliKontrol:
+  - soru: "RBAC'ta 'şu kullanıcı bunu yapamasın' diyen bir deny kuralı yazılabilir mi?"
+    secenekler: ["Evet, `deny` fiiliyle","Hayır; yalnız izin verilir, kural yoksa erişim yoktur","Evet, yalnız ClusterRole ile","Evet, yalnız Role ile"]
+    dogru: 1
+    aciklama: "RBAC yalnız izin ekler (additive); yasaklama kuralı yoktur."
+    ipucu: "RBAC'ın yapısı toplayıcıdır."
+sikHatalar:
+  - hata: "CI hesabına kolaylık olsun diye `cluster-admin` bağlamak."
+    dogrusu: "Yalnız gereken kaynak ve fiilleri içeren bir Role yaz ve bunu tek isim alanına bağla."
+  - hata: "Varsayılan ServiceAccount'u her pod için kullanmak."
+    dogrusu: "Uygulama başına ayrı ServiceAccount aç; API gerekmiyorsa token'ı bağlama."
+terimler:
+  - "RBAC"
+  - "ServiceAccount"
+  - "kube-apiserver"
 derinDalis:
   - tur: okuma
     baslik: "Kubernetes: RBAC yetkilendirmesi"

@@ -26,15 +26,43 @@ sorular:
   - id: temeller-006-s1
     soru: "Simetrik şifrelemede hangi anahtar kullanılır ve en büyük pratik sorun nedir?"
     cevap: "Şifrelemek ve çözmek için aynı anahtar kullanılır. En büyük sorun, bu anahtarı iletişim kuran taraflara güvenli biçimde ulaştırmak ve saklamaktır (anahtar dağıtımı ve yönetimi)."
+    ipucu: "Şifreleyen ve çözen anahtarın aynı olduğunu hatırla; asıl yük nerede?"
   - id: temeller-006-s2
     soru: "AES nedir ve neden kendi şifreleme algoritmanı yazmamalısın?"
     cevap: "AES, yıllarca açık biçimde incelenmiş standart bir blok şifreleme algoritmasıdır. Kendi algoritmanı yazarsan uzmanlar bile hata yapar ve açık gözden kaçar. Kanıtlanmış algoritma ve kütüphane kullanılır."
+    ipucu: "Kasayı koruyan şey kilidin gücü mü, anahtarın nerede durduğu mu?"
   - id: temeller-006-s3
     soru: "Şifreleme bir dosyanın bütünlüğünü de garanti eder mi?"
     cevap: "Her zaman değil. Bazı kipler (ör. CBC) şifreli veride değişiklik yapılmasını tek başına yakalamaz. Gizlilik ile bütünlüğü birlikte sağlayan kipler (ör. GCM) ya da ayrı bir doğrulama kodu tercih edilir."
+    ipucu: "Şifreleme veriyi gizler; verinin değişmediğini ayrıca ne kanıtlar?"
   - id: temeller-006-s4
     soru: "Bir anahtarın ele geçirildiğinden şüphelendin. Ne yapman gerekir?"
     cevap: "Anahtarı hemen iptal edip yenisini üretirsin (anahtar döndürme, rotation) ve eski anahtarla şifrelenmiş veriyi yeni anahtarla yeniden şifrelersin. Ele geçirilen anahtarın erişimi olduğu süre de olay incelemesine eklenir."
+    ipucu: "Anahtar sızmış olabilir; hangi veriler tehlikede ve ne yenilenmeli?"
+  - id: temeller-006-s5
+    soru: "Bir depoda şifreli bir veri yedeği ve yanında 'anahtar.txt' dosyası olduğunu fark ettin. Ekip 'AES-256 kullanıyoruz, güvenli' diyor. Ne yaparsın?"
+    cevap: "AES güçlü olsa da anahtar yedekle aynı yerdeyse şifreleme koruma sağlamaz: depoya erişen herkes ikisini de alır. Anahtarı yedekten ayırıp bir anahtar yönetim hizmetine ya da gizli yönetimi aracına taşırım, erişimini sıkılaştırırım ve açıkta kalan anahtarı sızmış sayıp yenisini üretir, veriyi yeniden şifrelerim."
+    ipucu: "Anahtar nerede durursa şifrenin değeri biter?"
+hizliKontrol:
+  - soru: "Simetrik şifrelemede en büyük pratik sorun nedir?"
+    secenekler: ["Algoritmaların çok yavaş olması","Aynı anahtarın tarafların arasında güvenle paylaşılması ve saklanması","Verinin geri çözülememesi","Anahtarın her seferinde otomatik değişmesi"]
+    dogru: 1
+    aciklama: "Algoritmalar hızlıdır; zor olan, ortak anahtarı güvenle dağıtmak ve korumaktır."
+    ipucu: "İki taraf aynı sırrı nasıl paylaşır?"
+  - soru: "Kendi şifreleme algoritmanı yazmak neden önerilmez?"
+    secenekler: ["Standart algoritmalar yasal olarak zorunludur","Yıllarca incelenmiş algoritmalar bile hatasız değilken yeni bir tasarım çok daha kırılgan olur","Kendi algoritman her zaman daha yavaştır","Algoritmalar telifli olduğu için"]
+    dogru: 1
+    aciklama: "Güvenlik gizli algoritmadan değil, geniş inceleme görmüş yöntemlerden ve gizli anahtardan gelir."
+    ipucu: "Binlerce uzmanın incelediği bir şeyle tek kişinin yazdığı şeyi kıyasla."
+sikHatalar:
+  - hata: "Anahtarı kodun ya da yedeğin yanında saklamak."
+    dogrusu: "Anahtar veriden ayrı ve daha sıkı korunan bir yerde (anahtar yönetim hizmeti, gizli yönetimi) tutulur."
+  - hata: "Şifrelemenin içeriğin değişmediğini de kanıtladığını sanmak."
+    dogrusu: "Şifreleme gizliliği korur; bütünlük için doğrulamalı mod (ör. AES-GCM), hash ya da imza gerekir."
+terimler:
+  - "Simetrik şifreleme"
+  - "Gizlilik"
+  - "Bütünlük"
 derinDalis:
   - tur: kitap
     baslik: "Serious Cryptography (Jean-Philippe Aumasson)"

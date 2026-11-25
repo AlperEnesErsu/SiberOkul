@@ -24,15 +24,39 @@ sorular:
   - id: linux-001-s1
     soru: "`kullanici@makine:~$` istem satırında `kullanici`, `makine`, `~` ve `$` ne anlatır?"
     cevap: "`kullanici` oturum açmış kullanıcının adı, `makine` bilgisayarın adı (hostname), `~` şu an bulunduğun dizin (ev dizinin), `$` ise sıradan bir kullanıcı olduğunu ve komut beklendiğini gösterir. Root kullanıcısında `$` yerine `#` görünür."
+    ipucu: "Prompt'ta `@` işaretinin sağında ve solunda ne olduğunu düşün."
   - id: linux-001-s2
     soru: "`pwd` komutu ne yapar ve adı neyin kısaltmasıdır?"
     cevap: "Bulunduğun dizinin tam yolunu yazar. Adı 'print working directory', yani 'çalışma dizinini yazdır' demektir."
+    ipucu: "`pwd` kısaltmasının açılımını ve ne döndürdüğünü hatırla."
   - id: linux-001-s3
     soru: "WSL nedir ve bu okulda neden onu kullanıyoruz?"
     cevap: "Windows Subsystem for Linux: Windows'un içinde gerçek bir Linux çekirdeği çalıştıran katman. Ayrı bir bilgisayar ya da ağır bir sanal makine kurmadan gerçek Ubuntu komutlarını çalıştırmamızı sağlar."
+    ipucu: "WSL'in Windows ile ilişkisini ve neden sanal makine kadar ağır olmadığını düşün."
   - id: linux-001-s4
     soru: "Linux komutlarında büyük-küçük harf fark eder mi? `PWD` yazsan ne olur?"
     cevap: "Fark eder. Linux büyük-küçük harfe duyarlıdır; `PWD` diye bir komut yoktur, terminal 'command not found' (komut bulunamadı) der. Dosya adları için de aynı kural geçerlidir: `Notlar.txt` ile `notlar.txt` iki ayrı dosyadır."
+    ipucu: "Linux ve Windows'ta büyük-küçük harfe bakış farkını hatırla."
+  - id: linux-001-s5
+    soru: "Bir arkadaşın WSL'de `Whoami` yazdı ve hata aldı, 'Linux bozuk' diyor. Ne söylersin?"
+    cevap: "Linux büyük-küçük harfe duyarlıdır: komut `whoami` (hepsi küçük). `Whoami` diye bir program olmadığı için 'command not found' alır. Hata mesajını okumasını, yazımı düzeltmesini ve gerekirse `ls` ile adlara bakmasını önerirsin."
+    ipucu: "Hata metninin tam olarak ne dediğine ve komut adındaki harflere bak."
+hizliKontrol:
+  - soru: "`ayse@lab:~$` isteminde `~` neyi gösterir?"
+    secenekler: ["Root kullanıcısını","Ev dizinini","Makinenin adını","Boş bir dizini"]
+    dogru: 1
+    aciklama: "`~` kullanıcının ev dizininin kısaltmasıdır; `ayse` için `/home/ayse`."
+    ipucu: "Ev dizininin kısa gösterimi hangisiydi?"
+sikHatalar:
+  - hata: "Komutları büyük harfle yazmak (`LS`, `PWD`)."
+    dogrusu: "Linux büyük-küçük harfe duyarlıdır; komutlar çoğunlukla küçük harfle yazılır: `ls`, `pwd`."
+  - hata: "İstem satırındaki `$` veya `~` işaretlerini de komutun parçası sanıp yazmak."
+    dogrusu: "İstem satırı terminalin sana gösterdiği süstür; yalnız komutun kendisini yaz."
+terimler:
+  - "Terminal"
+  - "Kabuk (shell)"
+  - "WSL"
+  - "Ev dizini"
 derinDalis:
   - tur: kitap
     baslik: "The Linux Command Line (William Shotts)"

@@ -24,15 +24,43 @@ sorular:
   - id: ag-007-s1
     soru: "`ping` hangi protokolü kullanır ve ne zaman yanıltıcı olabilir?"
     cevap: "ICMP echo isteği kullanır. Birçok güvenlik duvarı ICMP'yi engeller; yanıt gelmemesi makinenin kapalı olduğunu göstermez. Yanıt gelmesi de uygulamanın çalıştığını göstermez."
+    ipucu: "ICMP'yi engelleyen bir güvenlik duvarı ping'e ne der?"
   - id: ag-007-s2
     soru: "`traceroute` çıktısında bir satırda `* * *` görürsen sorun mu var?"
     cevap: "Her zaman değil. O duraktaki yönlendirici yanıt vermemeyi seçmiş olabilir; sonraki duraklara ulaşılıyorsa yol çalışıyordur. Yolun sonunda da `* * *` sürüyorsa engel orada olabilir."
+    ipucu: "Yanıt vermeyen bir yönlendirici yolu kapalı mı demektir?"
   - id: ag-007-s3
     soru: "`nc -zv host 443` neyi test eder ve `-z` bayrağı ne işe yarar?"
     cevap: "Hedef makinede 443 portuna bir TCP bağlantısı kurulup kurulamadığını test eder. `-z` veri göndermeden yalnız bağlantıyı dener, `-v` sonucu ayrıntılı yazar."
+    ipucu: "Kapı çalınıyor ama içeri girilmiyor: neyi test eder?"
   - id: ag-007-s4
     soru: "Bir sitenin açılmadığı durumda teşhisi hangi sırayla yaparsın?"
     cevap: "Önce IP'ye ping (ağ var mı), sonra adla ping ya da `dig` (DNS çalışıyor mu), sonra `nc -zv` (port açık mı), en sonda `curl -v` (uygulama ne diyor). Her adım bir katmanı eler."
+    ipucu: "Katmanları alttan üste, birer birer eleyerek ilerle."
+  - id: ag-007-s5
+    soru: "Bir uygulama veritabanına bağlanamıyor. `ping db` yanıt vermiyor ama veritabanı çalışıyor gibi görünüyor. Sırasıyla ne denersin?"
+    cevap: "Ping'in engellenmiş olabileceğini düşünür, doğrudan `nc -zv db 5432` ile veritabanı portuna TCP bağlantısı denerim. Başarısızsa `dig db` ile adın çözülüp çözülmediğine, güvenlik duvarı kuralına ve servisin dinlediği adrese bakarım. Port açıksa sorun uygulama ya da kimlik bilgileridir."
+    ipucu: "Ping ICMP kullanır; uygulamanın gerçekten kullandığı protokolü doğrudan dene."
+hizliKontrol:
+  - soru: "Hedef porta TCP bağlantısı kurulup kurulamadığını hangi komut hızlıca test eder?"
+    secenekler:
+      - "`traceroute host`"
+      - "`nc -zv host 443`"
+      - "`ping host`"
+      - "`ip route`"
+    dogru: 1
+    aciklama: "`nc -zv` veri göndermeden yalnız bağlantıyı dener ve sonucu yazar."
+    ipucu: "Port numarası alan komutu seç."
+sikHatalar:
+  - hata: "Ping yanıt vermedi diye makinenin kapalı olduğunu sanmak."
+    dogrusu: "Birçok güvenlik duvarı ICMP'yi engeller; portu `nc -zv` ya da `curl -v` ile ayrıca dene."
+  - hata: "`traceroute` çıktısındaki `* * *` satırını hemen sorun saymak."
+    dogrusu: "O durak yanıt vermemeyi seçmiş olabilir; sonraki duraklara ulaşılıyorsa yol çalışıyordur."
+terimler:
+  - "ICMP"
+  - "Port"
+  - "DNS"
+  - "TCP"
 derinDalis:
   - tur: kitap
     baslik: "Computer Networking: A Top-Down Approach (Kurose, Ross)"

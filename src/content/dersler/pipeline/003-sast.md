@@ -38,15 +38,53 @@ sorular:
   - id: pipeline-003-s1
     soru: "SAST 'statik' ne demektir ve DAST'tan temel farkı nedir?"
     cevap: "Statik: kod çalıştırılmadan, kaynağı okunarak analiz edilir. DAST ise çalışan uygulamaya dışarıdan istek gönderir. SAST erken ve ucuzdur; DAST çalışma zamanı sorunlarını görür."
+    ipucu: "Kod çalışırken mi, yazı olarak mı inceleniyor?"
   - id: pipeline-003-s2
     soru: "Yanlış pozitif (false positive) ve yanlış negatif (false negative) nedir? Hangisi daha tehlikelidir?"
     cevap: "Yanlış pozitif: sorun olmayan yerde uyarı. Yanlış negatif: gerçek sorunu kaçırmak. Yanlış negatif daha tehlikelidir çünkü sahte bir güven verir; ama çok yanlış pozitif de uyarıların yok sayılmasına yol açar."
+    ipucu: "Biri 'yok yere alarm', diğeri 'gerçek sorunu kaçırmak'; sonuçlarını karşılaştır."
   - id: pipeline-003-s3
     soru: "SAST aracı 'temiz' çıktı. Bundan ne sonucu çıkarabilirsin, ne çıkaramazsın?"
     cevap: "Aracın kurallarındaki bilinen kalıplar bulunamadı sonucunu çıkarırsın. Kodun güvenli olduğunu çıkaramazsın; yetkilendirme mantığı, yapılandırma ve iş akışı hataları gibi sorunları SAST çoğu zaman göremez."
+    ipucu: "Aracın bildiği kalıpların dışında kalan hata türlerini düşün."
   - id: pipeline-003-s4
     soru: "Bir bulgunun gerçekten yanlış pozitif olduğuna karar verdin. Bunu nasıl kaydedersin?"
     cevap: "Satırı kural ya da araca özgü bir yorumla (ör. Semgrep'te `nosemgrep`) işaretleyip gerekçeyi yazarsın. Böylece karar kayıtlı kalır ve aynı bulgu her PR'da yeniden çıkmaz."
+    ipucu: "Karar kimin işine yaracak ve aynı bulgu bir daha çıkacak mı?"
+  - id: pipeline-003-s5
+    soru: "Yeni eklediğin Semgrep işi ilk PR'da 150 bulgu verdi, ekip 'araç çöp' diyor ve kapatmak istiyor. Ne önerirsin?"
+    cevap: "Aracı kapatmak yerine kuralları daralt: yalnız yüksek güvenli birkaç kuralı build'i durduracak şekilde bırak, gürültülü kuralların önemini düşür. Mevcut bulguları taban çizgisi olarak kaydet ki yalnız yeni kod için engellesin. Yanlış pozitifleri gerekçeli `nosemgrep` yorumuyla işaretle ve ekibin itirazlarını kural ayarına geri besle."
+    ipucu: "Hem gürültüyü hem gerçek bulguları kaybetmeden nasıl ilerlenir; eşik ve istisna araçlarını düşün."
+hizliKontrol:
+  - soru: SAST aracı bir projede hiç bulgu vermedi. Hangi çıkarım doğrudur?
+    secenekler:
+      - Kod güvenlidir
+      - Yetkilendirme mantığında hata yoktur
+      - Aracın kurallarındaki bilinen kalıplar bulunamadı
+      - DAST artık gereksizdir
+    dogru: 2
+    aciklama: Temiz rapor yalnız kuralların tanıdığı kalıpların bulunmadığını söyler.
+    ipucu: Araç yalnız bildiği şeyi arar.
+  - soru: Hangisi veri akışı (taint) analizinin yaptığı iştir?
+    secenekler:
+      - Satırlardaki boşlukları saymak
+      - Kullanıcı girdisinin filtrelenmeden tehlikeli bir çağrıya ulaşıp ulaşmadığını izlemek
+      - Dosya adlarını kontrol etmek
+      - Uygulamaya istek göndermek
+    dogru: 1
+    aciklama: Taint analizi kaynak (girdi) ile hedef (tehlikeli çağrı) arasındaki yolu izler; uygulamayı çalıştırmaz.
+    ipucu: Kaynak ve hedef kelimelerine dikkat et.
+sikHatalar:
+  - hata: Gürültülü bir aracı tamamen kapatmak.
+    dogrusu: Kuralları daralt, önem derecelerini ayarla, yalnız güvenilir bulguları engelleyici yap.
+  - hata: "'SAST temiz' çıktığında kodun güvenli olduğunu varsaymak."
+    dogrusu: Bu yalnız bilinen kalıpların bulunmadığını gösterir; mantık ve yapılandırma hataları için inceleme ve DAST gerekir.
+  - hata: Bulguyu okumadan 'yanlış pozitif' diye kapatmak.
+    dogrusu: Önce kodu oku, doğruysa gerekçeyi yorumla kayda geç.
+terimler:
+  - SAST
+  - Yanlış pozitif
+  - DAST
 derinDalis:
   - tur: okuma
     baslik: "OWASP: Source Code Analysis Tools"
@@ -86,5 +124,13 @@ Her araç yanlış pozitif üretir. Yönetim yolları:
 ### Kendi kuralını yazmak
 
 Semgrep kuralı kısa bir YAML'dir: `pattern`, `message`, `languages`, `severity`. Görevdeki gibi tek satırlık bir kural, şirkete özgü bir kuralı (örneğin "kendi şifreleme kütüphanemiz dışında kripto çağrısı yapma") yazmaya başlamak için yeterlidir. GitShield'in YAML kural dosyasına benzer bir mantık: veriyle tanımlanan kurallar, kodu değiştirmeden eklenir.
+
+### Pipeline'da SAST nasıl çalıştırılır?
+
+Semgrep gibi bir aracı CI'da çalıştırırken iki ayar önemlidir. Birincisi, aracın bulgu bulunca **build'i durdurup durdurmayacağı**: Semgrep'te bu ancak `--error` bayrağıyla olur, yoksa bulgu olsa da çıkış kodu 0'dır ve job yeşil kalır. İkincisi, **kapsam**: büyük depolarda yalnız PR'da değişen dosyaları taramak süreyi kısaltır, ama tüm depo için periyodik tam tarama da gerekir.
+
+Bulgular için SARIF çıktısı kullanırsan GitHub bunları PR'da satıra bağlı gösterir (011. derste ayrıntısı var).
+
+Son bir ipucu: kural yazarken önce **kötü örnekle** (kuralın yakalaması gerekeni) ve **iyi örnekle** (yakalamaması gerekeni) test et. Kural yalnız kötü örneği yakalıyorsa ama iyi örneği de yakalıyorsa, gerçek kodda gürültü üretecektir.
 
 **Güvenlik notu:** Çıktıdaki bulgu bir iddiadır, kanıt değil. Her bulguyu kodu okuyarak doğrula; doğrulamadan "düzelttim" demek yeni hata ekleyebilir.

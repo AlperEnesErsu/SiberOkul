@@ -24,15 +24,43 @@ sorular:
   - id: container-001-s1
     soru: "Dockerfile'a `USER` satırı eklemek neden iyi bir savunmadır?"
     cevap: "Uygulama root olmayan bir kullanıcıyla çalışır. Uygulamadaki bir açık sömürülse bile saldırganın yetkisi sınırlı kalır; dosya sistemini değiştirmek, paket kurmak ya da konak kaynaklarına yaklaşmak zorlaşır."
+    ipucu: "Container içindeki sürecin kimliği, saldırı sonrası yetkisini belirler."
   - id: container-001-s2
     soru: "`--read-only` bayrağı ne sağlar ve uygulama yine de geçici dosya yazması gerekiyorsa ne yapılır?"
     cevap: "Container'ın kök dosya sistemini salt okunur yapar; saldırgan zararlı dosya bırakamaz. Geçici yazma gerekiyorsa yalnız gereken yola `--tmpfs /tmp` gibi bellekte yazılabilir bir alan ya da volume bağlanır."
+    ipucu: "Saldırgan kalıcı bir dosya bırakabilmek için neye ihtiyaç duyar?"
   - id: container-001-s3
     soru: "Minimal imaj (ör. `alpine`, `distroless`) neden güvenlik açısından avantajlıdır?"
     cevap: "İçinde daha az paket ve araç vardır: sömürülecek kütüphane, kabuk ya da indirme aracı azdır. Taranınca çıkan zafiyet sayısı da düşer; ayrıca imaj küçüldüğü için indirmesi hızlıdır."
+    ipucu: "Hazır gelen araçlar (kabuk, paket yöneticisi) saldırgan için ne anlama gelir?"
   - id: container-001-s4
     soru: "`--cap-drop ALL` ve `no-new-privileges` ne işe yarar?"
     cevap: "`--cap-drop ALL` container'ın Linux yetkilerini (capabilities) sıfırlar; yalnız gerekenler tek tek geri eklenir. `no-new-privileges` süreçlerin `setuid` gibi yollarla sonradan yetki kazanmasını engeller."
+    ipucu: "Root'un güçleri parçalara bölünür; hangisini gerçekten kullandığını düşün."
+  - id: container-001-s5
+    soru: "İncelediğin bir Compose dosyasında bir servis `privileged: true` ve konağın `/` dizinini bağlayarak çalışıyor. Geliştirici 'hata ayıklamak için koymuştuk' diyor. Ne yaparsın?"
+    cevap: "İkisini de kaldırmasını istersin: privileged bütün izolasyonu açar, konak dizinini bağlamak ise saldırgana konağın dosyalarını verir. Gerçekten bir aygıta ya da yola ihtiyaç varsa yalnız onu, salt okunur ve gereken capability ile ekletirsin. Kural kodda kalmasın diye CI'a bir Dockerfile/Compose tarayıcısı eklemeyi önerirsin."
+    ipucu: "Bayrağın verdiği yetki ile işin gerçekten gerektirdiği yetkiyi karşılaştır."
+hizliKontrol:
+  - soru: "Dockerfile'da `USER` belirtilmezse süreç hangi kullanıcıyla başlar?"
+    secenekler: ["Rastgele atanan yetkisiz bir kullanıcı","nobody","Root (uid 0)","İmajı build eden kullanıcı"]
+    dogru: 2
+    aciklama: "Varsayılan kullanıcı root'tur; bu yüzden `USER` ile açıkça düşük yetkili bir kullanıcıya geçilir."
+    ipucu: "Derste 'varsayılan' kelimesine dikkat et."
+  - soru: "Salt okunur kök dosya sistemine rağmen uygulamanın `/tmp`'ye yazması gerekiyor. En uygun çözüm hangisi?"
+    secenekler: ["`--read-only` bayrağını kaldırmak","Yalnız `/tmp` için bellekte yazılabilir bir alan (`--tmpfs`) vermek","Container'ı `--privileged` çalıştırmak","Konaktan geniş bir dizin bağlamak"]
+    dogru: 1
+    aciklama: "Korumayı bozmadan yalnız gereken yolu yazılabilir yaparsın."
+    ipucu: "Yazma ihtiyacı küçük ve belli; çözüm de o kadar dar olmalı."
+sikHatalar:
+  - hata: "Container izole olduğu için içinde root çalışmak sorun değildir diye düşünmek."
+    dogrusu: "İzolasyon çekirdeği paylaşır; yapılandırma hatası ya da çekirdek açığında root riski büyütür. Uygulamayı root olmayan kullanıcıyla çalıştır."
+  - hata: "Uygulama yazamıyor diye `--read-only` bayrağını tamamen kaldırmak."
+    dogrusu: "Yalnız gereken yola `--tmpfs` ya da volume ekle; geri kalan dosya sistemi salt okunur kalsın."
+terimler:
+  - "Container"
+  - "Capability"
+  - "securityContext"
 derinDalis:
   - tur: okuma
     baslik: "Docker: Dockerfile en iyi uygulamalar"

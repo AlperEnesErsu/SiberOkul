@@ -36,19 +36,51 @@ sorular:
   - id: bulut-012-s1
     soru: "'Sola kaydırma' (shift left) ne demektir?"
     cevap: "Güvenlik kontrollerini sürecin başına, yani kod yazılırken ve derlenirken yapmak. Hata ne kadar erken bulunursa düzeltme maliyeti o kadar düşük olur."
+    ipucu: "Güvenlik kontrolünün zincirde hangi yöne kaydığını düşün."
   - id: bulut-012-s2
     soru: "Neden yalnız önleme değil, aynı zamanda izleme ve tespit de gerekir?"
     cevap: "Hiçbir önleme kusursuz değildir. Bir kontrol atlandığında ya da yeni bir zafiyet çıktığında izleme olayı fark ettirir, müdahale ve yedek de zararı sınırlar."
+    ipucu: "Önlemenin kaçırdığı şeyi hangi katman yakalar?"
   - id: bulut-012-s3
     soru: "Zincirde bir halka zayıfsa diğerleri onu telafi eder mi? Örnek ver."
     cevap: "Kısmen. Örneğin sır taraması atlanıp anahtar sızsa, en az yetkili rol ve alarm hasarı küçültebilir. Ama hiçbir halka tamamen yerine geçmez; bu yüzden katmanlı savunma hedeflenir."
+    ipucu: "Bir halka zayıfsa sonrasındaki halkaların yükü ne olur?"
   - id: bulut-012-s4
     soru: "Bu programdaki bölgeleri DevSecOps zincirinde nereye yerleştirirsin?"
     cevap: "Linux ve ağ bölgeleri altyapı temelini, kod ve güvenlik bölgeleri geliştirme ve pipeline taramalarını, konteyner/Kubernetes üretim katmanını, bulut ve izleme bölgesi ise kimlik, depolama, kayıt, uyarı ve kurtarmayı oluşturur."
+    ipucu: "Kod, pipeline, container, bulut, izleme, müdahale sırasını hatırla."
+  - id: bulut-012-s5
+    soru: "Üretimde bir bucket'ın herkese açık olduğu fark edildi. Zincirde hangi halkalar kaçırdı ve hangileri yakalayabilirdi?"
+    cevap: "Pipeline'daki altyapı taraması `Principal: \"*\"` kuralını yakalayabilirdi, kod incelemesi de öyle. Bulutta Block Public Access ve Access Analyzer ikinci katmandı. İzleme alarmı olayı en azından erken göstermeliydi. Her eksik halka için bir sprint görevi açılır."
+    ipucu: "Her halka için 'bunu yakalayabilir miydi' diye sor."
 derinDalis:
   - tur: kitap
     baslik: "Accelerate (Forsgren, Humble, Kim)"
     ayrinti: "Yazılım teslim performansını etkileyen pratikler; güvenlik pratiklerinin teslim hızıyla nasıl birlikte gittiği."
+hizliKontrol:
+  - soru: "Sola kaydırma (shift left) ne demektir?"
+    secenekler: ["Kontrolleri üretime daha yakın koymak","Güvenlik kontrollerini sürecin mümkün olduğunca erken aşamasına taşımak","Yalnız bulut izlemeyi artırmak","Yedek sayısını artırmak"]
+    dogru: 1
+    aciklama: "Hataları kod yazılırken ve pipeline'da yakalamak, üretimde yakalamaktan ucuzdur."
+    ipucu: "Zaman çizelgesinin sol ucunu düşün."
+sikHatalar:
+  - hata: "Yalnız önlemeye güvenip izlemeyi atlamak."
+    dogrusu: "Önleme, tespit ve müdahale birlikte gerekir."
+  - hata: "Güvenliği en sonda bir kez yapmak."
+    dogrusu: "Her aşamaya kontrol koy; erken yakalamak ucuzdur."
+sema:
+  baslik: "DevSecOps zinciri"
+  adimlar:
+    - { etiket: "Kod", aciklama: "Commit öncesi sır taraması ve kod incelemesi." }
+    - { etiket: "Pipeline", aciklama: "Bağımlılık, statik analiz ve altyapı taraması; rolle bulut erişimi." }
+    - { etiket: "Container", aciklama: "İmaj taraması, root olmayan kullanıcı, imza." }
+    - { etiket: "Bulut", aciklama: "Dar rol, özel alt ağ, kapalı ve şifreli depolama." }
+    - { etiket: "İzleme", aciklama: "CloudTrail, alarmlar, SIEM kuralları." }
+    - { etiket: "Müdahale", aciklama: "Yazılı plan ve test edilmiş yedekler." }
+terimler:
+  - "Sola kaydırma"
+  - "Secrets Manager"
+  - "CloudTrail"
 ---
 
 Bu program boyunca parçaları ayrı ayrı gördün. Şimdi tek bir değişikliğin hayatını baştan sona izleyelim: bir geliştirici bir özellik ekliyor.

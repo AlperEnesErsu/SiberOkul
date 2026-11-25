@@ -23,15 +23,43 @@ sorular:
   - id: ag-009-s1
     soru: "'Varsayılan reddet' (default deny) ilkesi nedir ve neden 'varsayılan izin ver'den iyidir?"
     cevap: "Açıkça izin verilmeyen her şey engellenir. Bir şeyi unutursan sonuç 'erişilemiyor' olur (güvenli hata); 'varsayılan izin'de unutulan her şey açık kalır."
+    ipucu: "Unutulan bir kuralın sonucu: erişim yok mu, her şey açık mı?"
   - id: ag-009-s2
     soru: "Durum izlemeli (stateful) güvenlik duvarı ne demek?"
     cevap: "Hangi bağlantıların içeriden başlatıldığını hatırlar; dönüş trafiğine otomatik izin verir. Böylece yalnız yeni gelen bağlantılar kural kontrolüne takılır, cevap paketleri için ayrı kural yazmak gerekmez."
+    ipucu: "Cevap paketleri için ayrı kural yazmak gerekiyor mu?"
   - id: ag-009-s3
     soru: "ufw kuralı `ufw allow from 10.0.1.0/24 to any port 5432` neyi sağlar?"
     cevap: "Yalnız 10.0.1.0/24 alt ağındaki makinelerin bu sunucunun 5432 portuna (PostgreSQL) bağlanmasına izin verir. Diğer kaynaklar varsayılan reddedilir."
+    ipucu: "Kaynak alt ağı, hedef portu oku."
   - id: ag-009-s4
     soru: "Uzaktaki bir sunucuda `ufw enable` demeden önce neye dikkat etmelisin?"
     cevap: "SSH portuna (genelde 22) izni önceden eklemelisin. Aksi halde güvenlik duvarı açılır açılmaz kendi bağlantını keser ve sunucuya erişemez hale gelirsin."
+    ipucu: "Kuralı etkinleştirince kendi oturumun ne olur?"
+  - id: ag-009-s5
+    soru: "Bir sunucuda `ufw status` çıktısında 22, 80, 443 ve 3306 portlarına herkes için `ALLOW` görüyorsun. 3306 MySQL portu ve uygulama aynı makinede. Ne yaparsın?"
+    cevap: "3306'ya dışarıdan erişim gerekmediği için kuralı silerim ve MySQL'in yalnız 127.0.0.1'de dinlediğini `ss -tulpn` ile doğrularım. SSH için de kaynak adresi sınırlayabiliyorsam sınırlarım. Kural değişikliğini kayda geçerim."
+    ipucu: "Hangi portun dışarıya gerçekten gerektiğini sor."
+hizliKontrol:
+  - soru: "'Varsayılan reddet' ilkesi hangisini ifade eder?"
+    secenekler:
+      - "Açıkça izin verilmeyen her şey engellenir"
+      - "Her bağlantı loglanır"
+      - "Yalnız giden trafik denetlenir"
+      - "Engellenmeyen her şeye izin verilir"
+    dogru: 0
+    aciklama: "İzin listesi mantığıdır: unutulan şey kapalı kalır, bu yüzden güvenli hata verir."
+    ipucu: "Unutulan bir kuralın sonucu ne olmalı?"
+sikHatalar:
+  - hata: "Uzak sunucuda SSH portuna izin vermeden `ufw enable` demek."
+    dogrusu: "Önce `ufw allow 22/tcp` (ya da kendi SSH portun) ekle, sonra etkinleştir; yoksa kendi bağlantını kesersin."
+  - hata: "Güvenlik duvarı varsa uygulamanın güvenli olduğunu düşünmek."
+    dogrusu: "Güvenlik duvarı ağ erişimini sınırlar; açık bırakılan porttaki uygulamanın zafiyetlerini engellemez."
+terimler:
+  - "Güvenlik duvarı"
+  - "Varsayılan reddet"
+  - "Port"
+  - "CIDR"
 derinDalis:
   - tur: okuma
     baslik: "Ubuntu Server belgeleri: Güvenlik duvarları"

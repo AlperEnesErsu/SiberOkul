@@ -34,15 +34,63 @@ sorular:
   - id: pipeline-009-s1
     soru: "`permissions:` bloğu neden önemlidir ve varsayılan nasıl olmalıdır?"
     cevap: "Workflow'un GITHUB_TOKEN ile ne yapabileceğini belirler. En az yetki ilkesiyle varsayılanı yalnız okuma (`contents: read`) yaparsın, yazma iznini yalnız gereken job'a verirsin. Böylece ele geçirilen bir adım daha az zarar verir."
+    ipucu: "Token'a ne kadar yetki verirsen, ele geçirildiğinde saldırgan o kadar iş yapar."
   - id: pipeline-009-s2
     soru: "`uses: actions/checkout@v4` ile `uses: actions/checkout@<40 karakterlik SHA>` arasındaki güvenlik farkı nedir?"
     cevap: "Etiket (v4) taşınabilir ya da silinebilir; aksiyonun deposu ele geçirilirse etiket kötü koda yönlenebilir. Tam commit SHA'sı değişmez bir kayıttır, o yüzden SHA ile sabitlemek GitHub'ın önerisidir. SHA'nın aksiyonun asıl deposundan geldiğini de doğrulamalısın."
+    ipucu: "Hareketli bir etiket mi, değişmez bir kayıt mı daha güvenli?"
   - id: pipeline-009-s3
     soru: "`pull_request_target` tetikleyicisi neden riskli ve en tehlikeli kullanımı nedir?"
     cevap: "Hedef depo bağlamında çalışır: sırlara ve yazma yetkisine erişebilir. Bu workflow aynı zamanda PR'ın (fork'tan gelen) kodunu checkout edip çalıştırırsa, saldırgan kendi kodunu yetkili ortamda çalıştırır."
+    ipucu: "Bu tetikleyici hangi bağlamda, hangi sırlarla çalışır?"
   - id: pipeline-009-s4
     soru: "Dışarıdan gelen PR'ları test etmek için güvenli desen nedir?"
     cevap: "Yetkisiz `pull_request` workflow'unda build ve test yapıp sonuçları artefakt olarak kaydetmek, ayrıcalıklı iş gerekiyorsa ayrı bir `workflow_run` workflow'unda yalnız o artefaktı güvenilmez veri olarak işlemek. PR koduna sırlar verilmez."
+    ipucu: "Yetkisiz bir ortamda test, yetkili bir ortamda ikinci adım: iki adımı ayır."
+  - id: pipeline-009-s5
+    soru: "Bir PR incelemesinde workflow'a şu satır eklenmiş: `run: echo \"${{ github.event.pull_request.title }}\"`. Ne söylersin?"
+    cevap: "PR başlığı saldırgan kontrolündedir ve ifade, çalışmadan önce metin olarak komuta yerleştirilir; başlığa kabuk komutu yazan biri workflow'da komut çalıştırabilir (script injection). Başlığı `env:` ile bir ortam değişkenine ver ve komutta `\"$BASLIK\"` olarak kullan; böylece veri olarak işlenir."
+    ipucu: "Başlığı kim yazıyor ve kabuk onu komut mu veri mi sayıyor?"
+hizliKontrol:
+  - soru: "`permissions: contents: read` ne sağlar?"
+    secenekler:
+      - Workflow'un depoya yazmasına izin verir
+      - GITHUB_TOKEN'ın yetkisini yalnız okumayla sınırlar
+      - Sırları gizler
+      - Aksiyonları sabitler
+    dogru: 1
+    aciklama: Token'ı en dar yetkiyle çalıştırmak, bir adım ele geçirilse bile zararı sınırlar.
+    ipucu: Hangi nesnenin yetkisini daraltıyor?
+  - soru: Hangisi SHA ile sabitlemenin bir sınırıdır?
+    secenekler:
+      - SHA'nın kimin deposundan alındığını ayrıca doğrulamak gerekir
+      - Aksiyon artık çalışmaz
+      - Sırlara erişim kaldırılır
+      - Dependabot kullanılamaz
+    dogru: 0
+    aciklama: SHA'yı aksiyonun resmi deposundan almak gerekir; sabitlemek aksiyonun sırlara erişimini kaldırmaz.
+    ipucu: Bir fork'tan alınan SHA'ya ne kadar güvenebilirsin?
+sikHatalar:
+  - hata: "`pull_request_target` ile fork PR'ın kodunu checkout edip çalıştırmak."
+    dogrusu: Test için `pull_request` kullan; ayrıcalıklı işi ayrı bir `workflow_run` ile yap.
+  - hata: Workflow'da `permissions` yazmamak, varsayılana güvenmek.
+    dogrusu: "En üstte `contents: read` yaz, yazma iznini yalnız gereken job'a ver."
+  - hata: Üçüncü taraf aksiyonu `@v1` ile çağırmak.
+    dogrusu: Tam commit SHA ile sabitle, yoruma sürümü yaz, Dependabot ile güncelle.
+olay:
+  baslik: tj-actions/changed-files tedarik zinciri ihlali (CVE-2025-30066)
+  yil: 2025
+  ozet: Mart 2025'te popüler bir GitHub Action olan tj-actions/changed-files ele geçirildi; CISA'ya göre kötü amaçlı sürüm 12-15 Mart 2025 arasında erişim anahtarları, GitHub tokenları, npm tokenları ve özel RSA anahtarları gibi sırların açığa çıkmasına yol açabiliyordu. CISA etkilenen workflow'ların sırlarının döndürülmesini önerdi.
+  ders: Üçüncü taraf aksiyon, workflow'un sırlarını görür. Aksiyonları commit SHA ile sabitlemek ve sırları kısıtlamak bu tür bir ele geçirilmenin etkisini azaltır; olay sonrası sırları döndürmek şarttır.
+  kaynak:
+    ad: "CISA: Supply Chain Compromise of Third-Party GitHub Action (CVE-2025-30066)"
+    url: https://www.cisa.gov/news-events/alerts/2025/03/18/supply-chain-compromise-third-party-github-action-cve-2025-30066
+terimler:
+  - GITHUB_TOKEN
+  - Commit SHA sabitleme
+  - pull_request_target
+  - GitHub Action
+  - En az yetki
 derinDalis:
   - tur: okuma
     baslik: "GitHub Docs: Actions'ta güvenli kullanım"
@@ -103,5 +151,11 @@ Normal `pull_request` tetikleyicisi fork'tan gelen PR'larda sırları vermez; g�
 - Workflow dosyalarını da CODEOWNERS ile koru (bir sonraki ders).
 
 GitShield'i GitHub Action olarak çalıştırırken de aynı kurallar geçerlidir: izni `contents: read` ile sınırla, SARIF yüklemek için gereken yazma iznini yalnız o job'a ver.
+
+### Self-hosted runner ve ortamlar
+
+Kendi sunucunda çalışan (**self-hosted**) runner'lar GitHub'ın temiz, tek kullanımlık makinelerinden farklı olarak işler arasında kalıcıdır. Public bir depoda fork PR'larının bu runner'larda çalışmasına izin verirsen, saldırgan makineye kalıcı bir kötü yazılım bırakabilir. Public depolarda self-hosted runner kullanmaktan kaçın; kullanacaksan tek kullanımlık ve yalıtılmış yap.
+
+Sırlar için **environment** özelliği de değerlidir: "production" ortamına bağlı sırlar yalnız belirli dallardan ve onaydan sonra verilir. Yani deploy sırrı her PR'da değil, yalnız onaylanmış bir çalışmada kullanılabilir. Bu, en az yetki ilkesini sırlara uygulamaktır.
 
 **Güvenlik notu:** Workflow dosyasını değiştirebilen kişi, pipeline'ın yetkilerini de değiştirebilir. Bu dosyayı kod incelemesinden muaf tutma.

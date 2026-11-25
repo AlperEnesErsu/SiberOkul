@@ -23,15 +23,54 @@ sorular:
   - id: ag-001-s1
     soru: "Veri neden tek parça yerine paketlere bölünerek gönderilir?"
     cevap: "Paketler farklı yollardan gidebilir, kaybolan küçük bir parça yeniden gönderilebilir ve bir hat birçok kişi arasında paylaşılabilir. Büyük tek parça bütün hattı uzun süre meşgul ederdi."
+    ipucu: "Paketin başlığıyla yükünü zarf ve mektup olarak düşün: hangisi yol bilgisi taşır?"
   - id: ag-001-s2
     soru: "TCP/IP modelinin dört katmanını sırala ve her birine bir örnek ver."
     cevap: "Uygulama (HTTP, DNS), taşıma (TCP, UDP), internet (IP) ve bağlantı (Ethernet, Wi-Fi). Üstteki katman altındakini kullanır."
+    ipucu: "Dört katmanı aşağıdan yukarı sırala: önce kablo/Wi-Fi, sonra adres."
   - id: ag-001-s3
     soru: "İstemci ile sunucu arasındaki fark nedir? Tarayıcın ne, bir web sitesi ne?"
     cevap: "İstemci (client) hizmet isteyen, sunucu (server) isteği karşılayan taraftır. Tarayıcın istemci, web sitesini sunan program sunucudur. Aynı makine bir durumda istemci, başka durumda sunucu olabilir."
+    ipucu: "Aynı makinede hem web sitesi çalışıp hem tarayıcı açık olabilir; rol neye göre değişir?"
   - id: ag-001-s4
     soru: "Bir site açılmıyor. Sorunun olabileceği iki farklı katmanı ve nedenini söyle."
     cevap: "Bağlantı katmanında Wi-Fi kopmuş olabilir; taşıma katmanında bir güvenlik duvarı portu kapatmış olabilir; uygulama katmanında DNS adı çözmüyor ya da sunucu hata veriyor olabilir."
+    ipucu: "Her katman farklı bir soruyu yanıtlar: kablo mu, adres mi, port mu, uygulama mı?"
+  - id: ag-001-s5
+    soru: "Bir meslektaşın 'sunucuya erişemiyorum' diyor. Tarayıcıda sayfa açılmıyor, ama aynı Wi-Fi'daki başka siteler açılıyor. Katman fikrini kullanarak ilk hangi soruları sorarsın?"
+    cevap: "Katmanları aşağıdan yukarı elerim: Wi-Fi bağlı mı ve diğer siteler açıldığına göre bağlantı ve IP katmanı büyük olasılıkla sağlam. Sonra bu siteye özel sorulara geçerim: ad IP'ye çözülüyor mu (DNS), porta ulaşılıyor mu (güvenlik duvarı), sunucu uygulaması hata mı veriyor? Böylece her adım bir katmanı eler."
+    ipucu: "Diğer sitelerin açılması hangi katmanların çalıştığını kanıtlıyor?"
+hizliKontrol:
+  - soru: "Ağdaki bir paket hangi iki kısımdan oluşur?"
+    secenekler:
+      - "Yük ve sertifika"
+      - "Başlık ve yük"
+      - "Port ve protokol"
+      - "İstemci ve sunucu"
+    dogru: 1
+    aciklama: "Başlıkta kimden kime gittiği gibi bilgiler, yükte asıl veri bulunur."
+    ipucu: "Zarfın üstündeki adres ile içindeki mektubu düşün."
+sikHatalar:
+  - hata: "'Site açılmıyor' sorununun hep sunucudan kaynaklandığını varsaymak."
+    dogrusu: "Sorun kablo, adres, port ya da uygulama katmanında olabilir; aşağıdan yukarı sırayla eleyerek bul."
+  - hata: "Yoldaki cihazların paket içeriğini göremediğini sanmak."
+    dogrusu: "Şifrelenmemiş protokollerde (düz HTTP) yoldaki cihazlar içeriği okuyabilir; bu yüzden şifreleme gerekir."
+terimler:
+  - "Paket"
+  - "İstemci-sunucu"
+  - "IP adresi"
+  - "TCP"
+sema:
+  baslik: "Bir web sitesine giden yolculuk"
+  adimlar:
+    - etiket: "DNS"
+      aciklama: "Ad, IP adresine çevrilir."
+    - etiket: "TCP"
+      aciklama: "Sunucuyla bağlantı kurulur."
+    - etiket: "TLS"
+      aciklama: "HTTPS ise bağlantı şifrelenir."
+    - etiket: "HTTP"
+      aciklama: "İstek gider, yanıt gelir."
 derinDalis:
   - tur: kitap
     baslik: "Computer Networking: A Top-Down Approach (Kurose, Ross)"

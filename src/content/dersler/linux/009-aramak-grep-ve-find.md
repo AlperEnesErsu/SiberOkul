@@ -30,15 +30,39 @@ sorular:
   - id: linux-009-s1
     soru: "`grep -rin \"parola\" /etc/uygulama` komutundaki üç seçeneği açıkla."
     cevap: "`-r` dizinin içini özyinelemeli (alt dizinler dahil) arar, `-i` büyük-küçük harf farkını yok sayar, `-n` eşleşen satırın numarasını yazar. Birlikte, bir kelimenin hangi dosyanın hangi satırında geçtiğini bulur."
+    ipucu: "Üç seçeneğin ayrı ayrı ne yaptığını düşün."
   - id: linux-009-s2
     soru: "`find . -name \"*.log\"` komutunda tırnak neden önemlidir?"
     cevap: "Tırnak yoksa kabuk `*.log` ifadesini bulunduğun dizindeki dosya adlarına çevirir ve `find`a yanlış argüman gider. Tırnak içinde kalan desen `find`a olduğu gibi ulaşır ve `find` alt dizinlerde arama yapar."
+    ipucu: "Desen tırnaksız yazılırsa kabuk ne yapar?"
   - id: linux-009-s3
     soru: "`grep`'in çıktısını `wc -l`'e bağlarsan ne öğrenirsin? Bunu `grep -c` ile karşılaştır."
     cevap: "Eşleşen satır sayısını öğrenirsin: `grep \"hata\" log | wc -l`. `grep -c \"hata\" log` aynı sayıyı doğrudan verir. Boru birden çok dosyanın toplamı gibi daha esnek işlemler için kullanışlıdır."
+    ipucu: "`wc -l` neyi sayar?"
   - id: linux-009-s4
     soru: "Son 24 saatte değişen, boyutu 1 MB'tan büyük dosyaları bulmak için `find`'ı nasıl kurarsın?"
     cevap: "`find /yol -type f -mtime -1 -size +1M`. `-mtime -1` son 1 gün içinde değişmiş, `-size +1M` 1 MB'tan büyük demektir. Ölçütler `ve` ile birleşir; hepsi sağlanan dosya listelenir."
+    ipucu: "`-mtime` ve `-size` işaretlerine dikkat et."
+  - id: linux-009-s5
+    soru: "Web dizininde şüpheli bir `.php` dosyası olduğundan şüpheleniyorsun. Son 2 günde değişenleri nasıl bulursun?"
+    cevap: "`find /var/www -type f -name \"*.php\" -mtime -2` ile son 2 günde değişen PHP dosyalarını listelersin. Sonra içeriğinde `eval` gibi şüpheli ifadeleri `grep -rn` ile ararsın. Bulduğunu silmeden önce kaydını alırsın."
+    ipucu: "`-2` hangi zaman aralığını verir?"
+hizliKontrol:
+  - soru: "`find . -name \"*.log\"` komutunda tırnak ne sağlar?"
+    secenekler: ["Kabuğun deseni açmasını önler, desen `find`'a gider","Dosyaları gizler","Aramayı hızlandırır","Yalnız büyük harfle arar"]
+    dogru: 0
+    aciklama: "Tırnaksız desen kabuk tarafından açılır; tırnakla `find` deseni kendisi yorumlar."
+    ipucu: "Joker karakteri kim açardı?"
+sikHatalar:
+  - hata: "`find -name *.log` yazıp tırnağı unutmak."
+    dogrusu: "Deseni tırnağa al: `find -name \"*.log\"`."
+  - hata: "`grep`'te `-i` olmadan büyük harfle yazılmış sonucu kaçırmak."
+    dogrusu: "Harf farkı önemli değilse `-i` ekle."
+terimler:
+  - "grep"
+  - "Joker karakter"
+  - "Setuid"
+  - "Dosya izni"
 derinDalis:
   - tur: kitap
     baslik: "The Linux Command Line (William Shotts)"

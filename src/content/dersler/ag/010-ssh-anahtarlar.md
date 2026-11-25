@@ -24,15 +24,64 @@ sorular:
   - id: ag-010-s1
     soru: "SSH anahtar çiftinde açık ve gizli anahtar neyi yapar? Hangisi paylaşılır?"
     cevap: "Açık anahtar (.pub) sunucuya konur, paylaşılabilir. Gizli anahtar cihazında kalır ve asla paylaşılmaz. Sunucu, gizli anahtara sahip olduğunu kanıtlayan istemciyi içeri alır."
+    ipucu: "Biri sunucuya konur, biri senden hiç ayrılmaz."
   - id: ag-010-s2
     soru: "Parola yerine anahtarla giriş neden daha güvenlidir?"
     cevap: "Anahtar tahmin edilemeyecek kadar uzundur ve ağda gönderilmez; kaba kuvvetle denenemez. Parola ise zayıfsa denemelerle bulunabilir ya da sahte bir sunucuya yazılıp çalınabilir."
+    ipucu: "Parola ağ üzerinden gider mi? Anahtar gider mi?"
   - id: ag-010-s3
     soru: "`~/.ssh/known_hosts` dosyası ne işe yarar?"
     cevap: "Daha önce bağlandığın sunucuların parmak izlerini saklar. Sonraki bağlantıda parmak izi değişmişse uyarı verir; sahte sunucuya karşı korur."
+    ipucu: "Sunucunun kimliğini kim saklıyor?"
   - id: ag-010-s4
     soru: "Bir sunucuda `sshd_config` içinde hangi üç ayar sertleştirme için akla gelir?"
     cevap: "`PasswordAuthentication no` (yalnız anahtar), `PermitRootLogin no` (doğrudan root girişi yok) ve gerekirse `AllowUsers` ile izinli kullanıcıları sınırlamak. Değişiklikten sonra servisi yeniden başlatmadan önce ikinci bir oturum açık tut."
+    ipucu: "Önce ikinci bir oturumu açık tut, sonra değişikliği dene."
+  - id: ag-010-s5
+    soru: "Bir sunucuda `/var/log/auth.log` içinde dışarıdan gelen yüzlerce `Failed password for root` satırı görüyorsun. Ne yaparsın?"
+    cevap: "İnternete açık SSH'ta bu tür deneme olağandır ama kapatılmalıdır: `PasswordAuthentication no` ve `PermitRootLogin no` ayarlar, yalnız anahtarla giriş bırakırım. Gerekirse güvenlik duvarıyla kaynak adresi sınırlar, `fail2ban` gibi bir araç eklerim. Başarılı bir giriş olup olmadığına da loglardan bakarım."
+    ipucu: "Parola denemelerini boşa çıkarmanın en kesin yolu parolayı devre dışı bırakmaktır."
+hizliKontrol:
+  - soru: "SSH anahtar çiftinde sunucuya hangisi konur?"
+    secenekler:
+      - "Gizli anahtar"
+      - "Parola"
+      - "Açık anahtar"
+      - "Parmak izi dosyası"
+    dogru: 2
+    aciklama: "Açık anahtar paylaşılabilir ve sunucunun `authorized_keys` dosyasına eklenir; gizli anahtar cihazında kalır."
+    ipucu: "Paylaşılabilen anahtarı düşün."
+sikHatalar:
+  - hata: "Gizli anahtarı (`id_ed25519`) e-posta ya da depoya koymak."
+    dogrusu: "Yalnız `.pub` dosyasını paylaş; gizli anahtar cihazından çıkmaz ve bir parolayla korunmalıdır."
+  - hata: "Parmak izi uyarısını (`REMOTE HOST IDENTIFICATION HAS CHANGED`) `known_hosts` satırını silip geçmek."
+    dogrusu: "Önce sunucunun gerçekten değişip değişmediğini yönetici ile doğrula; değişmediyse araya girilmiş olabilir."
+terimler:
+  - "SSH"
+  - "Anahtar çifti"
+  - "Parmak izi"
+  - "Port"
+sema:
+  baslik: "SSH ile anahtarla giriş"
+  adimlar:
+    - etiket: "Bağlan"
+      aciklama: "İstemci sunucunun 22 portuna bağlanır."
+    - etiket: "Parmak izi"
+      aciklama: "Sunucunun kimliği known_hosts ile karşılaştırılır."
+    - etiket: "Anahtar teklifi"
+      aciklama: "İstemci açık anahtarını sunar."
+    - etiket: "Kanıt"
+      aciklama: "İstemci gizli anahtara sahip olduğunu kanıtlar."
+    - etiket: "Oturum"
+      aciklama: "Şifreli terminal oturumu açılır."
+olay:
+  baslik: "Debian OpenSSL tahmin edilebilir rastgele sayı üreteci zafiyeti"
+  yil: 2008
+  ozet: "Mayıs 2008'de Debian, OpenSSL paketindeki yanlış bir yamanın rastgele sayı üretecini tahmin edilebilir hâle getirdiğini duyurdu (CVE-2008-0166). Zafiyetli sistemlerde üretilen SSH anahtarları da etkilenmişti ve yeniden oluşturulmaları istendi."
+  ders: "SSH anahtarının gücü, üretildiği rastgeleliğe bağlıdır; zafiyet duyurularında etkilenen anahtarlar yenilenmelidir."
+  kaynak:
+    ad: "Debian Security Advisory DSA-1571-1 openssl"
+    url: "https://lists.debian.org/debian-security-announce/2008/msg00152.html"
 derinDalis:
   - tur: lab
     baslik: "OverTheWire Bandit, seviye 0"

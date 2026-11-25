@@ -13,7 +13,7 @@ gorev:
   komutlar:
     - "openssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null | openssl x509 -noout -subject -issuer -dates"
     - "openssl s_client -connect example.com:443 -servername example.com -showcerts </dev/null 2>/dev/null | grep -E '^ *[0-9] s:|^   i:'"
-    - "openssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null | grep -E 'Protocol|Verification'"
+    - "openssl s_client -connect example.com:443 -servername example.com </dev/null 2>/dev/null | grep -E 'New,|Verification'"
   soru: "Sertifikayı kim imzalamış (`issuer`)? Geçerlilik tarihleri (`notBefore`, `notAfter`) ne kadarlık bir süreyi kapsıyor?"
   telefon:
     soru: "Bir tarayıcı 'Bu bağlantı gizli değil, sertifikanın süresi dolmuş' uyarısı verdi. Neden sadece 'devam et'e basmamalısın?"
@@ -22,15 +22,64 @@ sorular:
   - id: ag-006-s1
     soru: "HTTPS, düz HTTP'ye kıyasla neyi korur?"
     cevap: "Gizlilik (yoldakiler içeriği okuyamaz), bütünlük (içerik yolda değiştirilemez) ve sunucu kimliği (doğru siteyle konuştuğunu doğrular). Ama sitenin güvenilir ya da zararsız olduğunu garanti etmez."
+    ipucu: "Üç şey: kimse okuyamasın, kimse değiştirmesin, doğru siteyle konuşuyor muyum?"
   - id: ag-006-s2
     soru: "Sertifika zinciri nedir? Kök, ara ve yaprak sertifika ne anlama gelir?"
     cevap: "Yaprak sertifika sitenindir; bir ara sertifika otoritesi onu imzalar, ara sertifikayı da tarayıcının ya da işletim sisteminin güvendiği kök sertifika otoritesi imzalar. Tarayıcı zinciri yukarı doğru köke kadar doğrular."
+    ipucu: "Yukarıdan aşağıya: hangisini tarayıcı zaten tanıyor?"
   - id: ag-006-s3
     soru: "Bir saldırgan `ornekbank.com` benzeri `ornekbank-giris.com` alan adı alıp ona geçerli bir sertifika alabilir mi? Bunun anlamı ne?"
     cevap: "Evet; sertifika otoritesi yalnız alan adının sahibinin siz olduğunuzu doğrular. Yani adres çubuğundaki kilit, sitenin güvenilir ya da dürüst olduğunu değil, bağlantının şifreli olduğunu gösterir."
+    ipucu: "Kilit hangi soruyu cevaplıyor: bağlantı mı, site mi?"
   - id: ag-006-s4
     soru: "Üretimde sertifika süresi dolarsa ne olur? Nasıl önlenir?"
     cevap: "Tarayıcılar uyarı verir, API istemcileri bağlantıyı reddeder ve servis fiilen durur. Otomatik yenileme (ACME, certbot gibi) ve bitiş tarihine karşı izleme alarmı kurulur."
+    ipucu: "Süresi dolmuş bir şeyi kim reddeder?"
+  - id: ag-006-s5
+    soru: "Pazar gecesi bir iç API'nin müşterilere `certificate has expired` hatası verdiğini görüyorsun. Ne yaparsın?"
+    cevap: "Sertifikayı hemen yeniler ve sunucuya yüklerim; sonra zincirin tam yüklendiğini `openssl s_client` ya da `curl -v` ile doğrularım. Kalıcı çözüm olarak otomatik yenileme (ACME/certbot) kurar ve bitişten 30 gün önce alarm veren bir izleme eklerim."
+    ipucu: "Önce hizmeti ayağa kaldır, sonra tekrarlanmaması için süreci otomatikleştir."
+hizliKontrol:
+  - soru: "Tarayıcıdaki kilit simgesi tam olarak neyi gösterir?"
+    secenekler:
+      - "Sitenin güvenilir olduğunu"
+      - "Bağlantının şifreli olduğunu"
+      - "Sitede virüs olmadığını"
+      - "Sunucunun yedeklendiğini"
+    dogru: 1
+    aciklama: "Kilit, bağlantının şifreli ve alan adının sertifikayla eşleştiğini gösterir; sitenin dürüstlüğünü değil."
+    ipucu: "Kilit bağlantıyı mı değerlendiriyor, siteyi mi?"
+sikHatalar:
+  - hata: "Kilit varsa site güvenlidir diye düşünmek."
+    dogrusu: "Oltalama siteleri de geçerli sertifika alabilir; kilit yalnız bağlantının şifreli olduğunu söyler."
+  - hata: "Sertifika hatasını 'yine de devam et' ile geçmek."
+    dogrusu: "Hatanın nedenini oku (süre, alan adı, zincir); nedeni anlamadan geçmek ortadaki adam saldırısına kapı açar."
+terimler:
+  - "TLS"
+  - "Sertifika"
+  - "Sertifika otoritesi"
+  - "HTTP"
+sema:
+  baslik: "TLS el sıkışması (özet)"
+  adimlar:
+    - etiket: "Merhaba"
+      aciklama: "İstemci desteklediği ayarları yollar."
+    - etiket: "Sertifika"
+      aciklama: "Sunucu sertifikasını gönderir."
+    - etiket: "Doğrulama"
+      aciklama: "İstemci zinciri köke kadar doğrular."
+    - etiket: "Anahtar"
+      aciklama: "İki taraf ortak oturum anahtarında anlaşır."
+    - etiket: "Şifreli veri"
+      aciklama: "Bundan sonra trafik şifreli akar."
+olay:
+  baslik: "Let's Encrypt eski kök sertifika çapraz imzasının sona ermesi"
+  yil: 2021
+  ozet: "30 Eylül 2021'de Let's Encrypt'in eski cihazlarda güven için kullandığı DST Root CA X3 çapraz imzası sona erdi. Yeni kök olan ISRG Root X1'e güvenmeyen eski cihazlar ve istemciler sertifika uyarısı vermeye başladı. En çok API sağlayıcıları ve nesnelerin interneti cihazları etkilendi."
+  ders: "Sertifika zinciri yalnız sitenin sertifikasından ibaret değildir; zincirdeki herhangi bir halkanın süresi dolunca istemciler bağlantıyı reddedebilir. İstemcilerin güvendiği kökleri bilmek ve süreleri izlemek gerekir."
+  kaynak:
+    ad: "Let's Encrypt: DST Root CA X3 Expiration (September 2021)"
+    url: "https://letsencrypt.org/docs/dst-root-ca-x3-expiration-september-2021/"
 derinDalis:
   - tur: okuma
     baslik: "Let's Encrypt: Nasıl çalışır"

@@ -22,15 +22,43 @@ sorular:
   - id: ag-008-s1
     soru: "`tcpdump` ile Wireshark arasındaki temel fark nedir?"
     cevap: "İkisi de paket yakalar. tcpdump terminalde, hızlı ve sunucularda kullanışlı bir komut satırı aracıdır; Wireshark grafik arayüzle paketleri katman katman ayrıştırıp inceleme sunar. Yakalama dosyası (pcap) ikisi arasında paylaşılabilir."
+    ipucu: "Biri terminal, diğeri grafik arayüz; ama ikisi de aynı işi yapıyor."
   - id: ag-008-s2
     soru: "Düz HTTP isteğini yakalayınca neyi okuyabilirsin? Aynısını HTTPS ile yapsan ne görürdün?"
     cevap: "HTTP'de metot, yol, başlıklar ve gövde açıkça okunur, parola ve çerez dahil. HTTPS'te içerik şifreli görünür; yalnız IP adresleri, portlar, boyutlar ve TLS el sıkışmasındaki bazı bilgiler görünür."
+    ipucu: "Şifrelenmemiş olan açık okunur, şifrelenmiş olanda ne kalır?"
   - id: ag-008-s3
     soru: "`tcpdump -i lo` komutundaki `lo` arayüzü nedir?"
     cevap: "Loopback arayüzüdür; makinenin kendi kendisiyle konuştuğu sanal arayüz (127.0.0.1). Yerel testlerde dış ağa dokunmadan trafik yakalamak için kullanışlıdır."
+    ipucu: "Kendi makinenin kendisiyle konuştuğu sanal arayüz."
   - id: ag-008-s4
     soru: "Paket yakalamak neden yetkili ve izinli ortamlarda yapılmalıdır?"
     cevap: "Yakalanan trafik başkalarının parolalarını, çerezlerini ve özel verisini içerebilir. İzinsiz yakalama hem etik hem yasal sorun doğurur; yakalama dosyalarına da hassas veri gibi davranılır."
+    ipucu: "Yakalanan veri kimin verisi?"
+  - id: ag-008-s5
+    soru: "Bir test sunucusunda yakalama dosyasını (pcap) paylaşmadan önce içinde bir `Authorization: Basic ...` başlığı fark ediyorsun. Ne yaparsın?"
+    cevap: "Dosyayı paylaşmam; içinde gerçek bir kimlik bilgisi sızmış demektir. Basic kimlik doğrulama yalnız kodlanmıştır, şifrelenmemiştir. İlgili hesabın parolasını değiştiririm, uygulamanın HTTPS'e geçmesini isterim ve yakalama dosyasını hassas veri gibi saklayıp işim bitince silerim."
+    ipucu: "Düz HTTP'de başlıklar açıkça okunur; yakalanan dosya da hassas veridir."
+hizliKontrol:
+  - soru: "`tcpdump -i lo` hangi trafiği yakalar?"
+    secenekler:
+      - "Wi-Fi trafiğini"
+      - "Makinenin kendi içindeki loopback trafiğini"
+      - "Yalnız HTTPS trafiğini"
+      - "Yönlendiricinin trafiğini"
+    dogru: 1
+    aciklama: "`lo` loopback arayüzüdür; makinenin kendisiyle konuştuğu 127.0.0.1 trafiğini gösterir."
+    ipucu: "`lo` hangi adresin kısaltması gibi duruyor?"
+sikHatalar:
+  - hata: "İzin almadan ortak bir ağda paket yakalamak."
+    dogrusu: "Yalnız kendi cihazında ya da yazılı izinli ortamlarda yakala; başkalarının trafiği parola ve özel veri içerir."
+  - hata: "HTTPS trafiğinde içeriği okumayı beklemek."
+    dogrusu: "İçerik şifreli görünür; yalnız IP, port, boyut ve el sıkışmanın bazı bilgileri okunur."
+terimler:
+  - "Paket yakalama"
+  - "HTTP"
+  - "TLS"
+  - "Paket"
 derinDalis:
   - tur: okuma
     baslik: "tcpdump kılavuz sayfası"

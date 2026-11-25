@@ -50,15 +50,61 @@ sorular:
   - id: linux-013-s1
     soru: "Betiğin ilk satırındaki `#!/usr/bin/env bash` (shebang) ne işe yarar?"
     cevap: "Betiğin hangi yorumlayıcıyla çalıştırılacağını söyler. Dosya çalıştırılabilir yapılıp `./betik.sh` olarak başlatılınca sistem bu satıra bakıp betiği bash'e verir."
+    ipucu: "Dosyanın ilk satırı neyi seçiyor?"
   - id: linux-013-s2
     soru: "`set -euo pipefail` içindeki üç parçayı ayrı ayrı açıkla."
     cevap: "`-e` bir komut hata (sıfırdan farklı çıkış kodu) verirse betiği durdurur. `-u` tanımsız bir değişken kullanılırsa hata verir. `-o pipefail` boru hattında herhangi bir komut hata verirse tüm hattı hatalı sayar; yoksa yalnız sondaki komutun sonucuna bakılır."
+    ipucu: "Üç seçeneğin her birinin hangi duruma tepki verdiğini ayır."
   - id: linux-013-s3
     soru: "`rm -rf $DIR/*` yazan bir betikte neden `$DIR`'i tırnak içine alıp varlığını kontrol etmelisin?"
     cevap: "Değişken boşsa ya da boşluk içeriyorsa komut yanlış yolları siler (`/*` gibi). `\"$DIR\"` boşluklu adlarda parçalanmayı önler; `set -u` ve bir `if [ -d \"$DIR\" ]` kontrolü de tanımsız ya da yanlış değeri yakalar."
+    ipucu: "Boş değişken komutu nasıl değiştirir?"
   - id: linux-013-s4
     soru: "Bir komutun çıkış kodu nedir ve `$?` neyi gösterir?"
     cevap: "Her komut bittiğinde bir sayı döndürür: 0 başarı, başka bir sayı hata demektir. `$?` son komutun çıkış kodunu tutar. `if`, `&&` ve `set -e` bu koda göre karar verir."
+    ipucu: "Başarı hangi sayıyla gösterilir?"
+  - id: linux-013-s5
+    soru: "CI betiğin ortasındaki bir komut hata veriyor ama betik yine de devam edip 'başarılı' çıkıyor. Neyi kontrol edersin?"
+    cevap: "Betiğin başında `set -euo pipefail` olup olmadığına bakarsın; yoksa hata sonrası devam eder. Ayrıca kritik komutun çıkış kodunu `$?` ile kontrol edebilirsin. Değişkenleri tırnak içine alıp `-u` ile tanımsız kullanımı yakalarsın."
+    ipucu: "Betik hata alınca durmuyor; hangi ayar durdurur?"
+hizliKontrol:
+  - soru: "Çıkış kodu 0 ne demektir?"
+    secenekler: ["Hata","Başarı","Zaman aşımı","Süreç öldürüldü"]
+    dogru: 1
+    aciklama: "0 başarı, diğerleri hata demektir; `$?` son çıkış kodunu verir."
+    ipucu: "Başarı için hangi sayı?"
+sikHatalar:
+  - hata: "Değişkeni tırnaksız kullanmak: `rm -rf $DIR/*`."
+    dogrusu: "`\"$DIR\"` kullan ve `set -u` ekle."
+  - hata: "Betiğe `chmod +x` vermeden `./betik.sh` çalıştırmaya çalışmak."
+    dogrusu: "Önce çalıştırma iznini ver."
+terimler:
+  - "Shebang"
+  - "Çıkış kodu"
+  - "Kabuk (shell)"
+  - "Dosya izni"
+  - "Boru hattı"
+sema:
+  baslik: "Betiğin çalışması"
+  adimlar:
+    - etiket: "Başlat"
+      aciklama: "`./betik.sh` yazılır."
+    - etiket: "Shebang"
+      aciklama: "İlk satır hangi yorumlayıcının kullanılacağını söyler."
+    - etiket: "Güvenlik ağı"
+      aciklama: "`set -euo pipefail` hata ve tanımsız değişkende durdurur."
+    - etiket: "Komutlar"
+      aciklama: "Komutlar sırayla çalışır, her biri çıkış kodu döndürür."
+    - etiket: "Bitiş"
+      aciklama: "Hata olursa betik durur, yoksa 0 ile biter."
+olay:
+  baslik: "Steam'in Linux betiğindeki silme hatası"
+  yil: 2015
+  ozet: "Ocak 2015'te Valve'ın Linux istemcisi için açılan hata kaydında kullanıcılar dosyalarının silindiğini bildirdi ve `steam.sh` içindeki `rm -rf \"$STEAMROOT/\"*` satırı sorumlu olarak gösterildi. Değişken boş kalırsa komutun beklenmedik yerleri hedefleyebileceği tartışıldı."
+  ders: "Boş olabilen bir değişkenle `rm -rf` çok tehlikelidir. `set -u` ve değişken denetimi betiklerde bu yüzden şarttır."
+  kaynak:
+    ad: "Valve Steam for Linux hata kaydı #3671"
+    url: "https://github.com/ValveSoftware/steam-for-linux/issues/3671"
 derinDalis:
   - tur: kitap
     baslik: "The Linux Command Line (William Shotts)"

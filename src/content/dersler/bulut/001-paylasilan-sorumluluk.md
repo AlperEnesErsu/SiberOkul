@@ -37,20 +37,47 @@ sorular:
   - id: bulut-001-s1
     soru: "'Bulutun güvenliği' (security of the cloud) ile 'bulut içindeki güvenlik' (security in the cloud) arasındaki fark nedir?"
     cevap: "Birincisi sağlayıcının işi: veri merkezleri, donanım, ağ altyapısı ve servislerin çalıştığı temel katman. İkincisi müşterinin işi: hesabındaki kimlikler, izinler, veri, ağ kuralları ve uygulama yapılandırması."
+    ipucu: "Hangi tarafın elinde fiziksel donanım, hangisinin elinde hesap ayarları var diye düşün."
   - id: bulut-001-s2
     soru: "Sorumluluk bölümü neden servise göre değişir? Bir örnek ver."
     cevap: "Serviste sağlayıcı ne kadar katman yönetirse müşterinin payı o kadar küçülür. EC2'da işletim sistemi yaması müşteriye aittir; Lambda'da işletim sistemini AWS yönetir, müşteri kod ve izinlerle ilgilenir."
+    ipucu: "EC2 ile Lambda'da işletim sistemini kimin yönettiğini karşılaştır."
   - id: bulut-001-s3
     soru: "Hangi sorumluluk hangi serviste olursa olsun hep müşteridedir?"
     cevap: "Verinin kendisi, kimlik ve erişim yönetimi (kim neye erişebilir) ve hesabın yapılandırması. Servis ne kadar yönetilen olursa olsun bu üçü senin elinde kalır."
+    ipucu: "Servis ne kadar yönetilirse yönetilsin değişmeyen şeyleri say: veri, kimlik, yapılandırma."
   - id: bulut-001-s4
     soru: "Bir ekip arkadaşın 'zaten AWS'de çalışıyoruz, güvenlik onların işi' diyor. Ona ne dersin?"
     cevap: "AWS yalnız altyapıyı korur. Bizim hesabımızdaki IAM politikaları, açık portlar, şifrelenmemiş veri ve sızan anahtarlar bize ait. Hangi kontrolün kimde olduğunu bu modele bakarak belirleriz."
+    ipucu: "Cümledeki 'zaten' sözcüğünün neyi görmezden getirdiğini sor: hesabın içindekiler kimin?"
+  - id: bulut-001-s5
+    soru: "Yeni bir ekip arkadaşı bir S3 bucket'ına müşteri dosyaları yükleyip bucket'ı herkese açık bıraktı; bir hafta sonra dışarıdan okunduğunu fark ettin. Sorumluluk tablosuna göre bu kimin işiydi ve ilk adımın ne olur?"
+    cevap: "Yapılandırma müşteriye ait olduğu için sorumluluk bizdedir (AWS'de değil). İlk adım açıklığı kapatmak: Block Public Access'i açıp politikayı düzeltmek. Sonra erişim kayıtlarına bakıp verinin okunup okunmadığını anlar, olayı raporlar ve aynı hatayı pipeline kontrolüyle önlersin."
+    ipucu: "Bucket erişim politikası tabloda kimin satırında?"
 derinDalis:
   - tur: okuma
     baslik: "AWS: Paylaşılan Sorumluluk Modeli"
     ayrinti: "AWS'nin kendi anlatımı; 'bulutun güvenliği' ve 'bulut içindeki güvenlik' ayrımını kaynağından oku."
     url: "https://aws.amazon.com/compliance/shared-responsibility-model/"
+hizliKontrol:
+  - soru: "Müşteri olarak hangisi her serviste sende kalır?"
+    secenekler: ["Veri merkezinin fiziksel güvenliği","Verinin kendisi ve kimlik/erişim yönetimi","Hipervizör yamaları","Ağ kablolarının bakımı"]
+    dogru: 1
+    aciklama: "Veri, kimlik ve hesap yapılandırması servis ne olursa olsun müşteriye aittir; diğerleri sağlayıcıdır."
+    ipucu: "Tablodaki 'her zaman Sen' satırlarını düşün."
+sikHatalar:
+  - hata: "'AWS'de çalışıyoruz, güvenlik onların işi' diye düşünmek."
+    dogrusu: "AWS yalnız altyapıyı korur; hesaptaki IAM, ağ kuralları, veri ve yapılandırma sana aittir."
+  - hata: "Sorumluluk tablosunu bir kez yazıp bırakmak."
+    dogrusu: "Yeni servis eklendikçe tablo güncellenir; her servis için 'benim payım hangi satırlar?' sorulur."
+olay:
+  baslik: "Capital One veri ihlali"
+  yil: 2019
+  ozet: "Capital One, 2019'da bir dış araştırmacının bildirdiği bir 'yapılandırma açığı' sonrası yetkisiz erişimi doğruladı. Şirketin açıklamasına göre ABD'de yaklaşık 100 milyon, Kanada'da yaklaşık 6 milyon kişi etkilendi."
+  ders: "Olay, bulut içindeki güvenliğin müşterinin payı olduğunu gösterir: sorun altyapıda değil, müşterinin yapılandırmasında aranır."
+  kaynak: { ad: "Capital One: 2019 siber olay bilgilendirmesi", url: "https://www.capitalone.com/digital/facts2019/" }
+terimler:
+  - "Paylaşılan sorumluluk modeli"
 ---
 
 Bulutta bir servis kullandığında güvenlik işi iki tarafa bölünür. Buna **paylaşılan sorumluluk modeli** (shared responsibility model) denir. AWS bunu iki cümleyle özetler: AWS **bulutun güvenliğinden** (security *of* the cloud), müşteri ise **bulut içindeki güvenlikten** (security *in* the cloud) sorumludur.

@@ -31,15 +31,23 @@ sorular:
   - id: bulut-002-s1
     soru: "IAM kullanıcısı (user) ile IAM rolü (role) arasındaki temel fark nedir?"
     cevap: "Kullanıcının kalıcı kimlik bilgileri (parola, erişim anahtarı) vardır. Rolün yoktur; üstlenildiğinde (assume) geçici kimlik bilgileri verilir. Bu yüzden rol, uygulamalar ve otomasyon için tercih edilir."
+    ipucu: "Hangisinin kalıcı bir parolası ya da anahtarı olduğunu düşün."
   - id: bulut-002-s2
     soru: "Kök hesap (root user) neden günlük iş için kullanılmamalı? Ona karşı ne yapılmalı?"
     cevap: "Kök hesap her şeye sınırsız erişir ve IAM politikalarıyla kısıtlanamaz. Günlük işler için yönetici kimliği oluşturulur; köke güçlü parola ve MFA konur, kök için erişim anahtarı üretilmez, kullanımı izlenir."
+    ipucu: "Kökün IAM politikalarıyla ilişkisini ve MFA'yı hatırla."
   - id: bulut-002-s3
     soru: "IAM politikası (policy) ne işe yarar ve varsayılan durum nedir?"
     cevap: "Hangi kimliğin hangi kaynak üzerinde hangi eylemi yapabileceğini JSON ile söyler. Varsayılan her şey yasaktır; izin yalnız bir politika açıkça verirse oluşur."
+    ipucu: "Bir istekte hiçbir şey eşleşmezse ne olur: izin yoksa sonuç ne?"
   - id: bulut-002-s4
     soru: "MFA nedir ve parola sızarsa neyi korur?"
     cevap: "Çok faktörlü doğrulama (multi-factor authentication), parolaya ek bir kanıt ister (uygulama kodu, güvenlik anahtarı). Parola çalınsa bile saldırgan ikinci faktör olmadan giriş yapamaz."
+    ipucu: "Parola tek faktör; ikinci kanıt ne işe yarar?"
+  - id: bulut-002-s5
+    soru: "Gece 3'te CloudTrail'de kök kullanıcıyla bir giriş görüyorsun ve ekipte kimse yaptığını söylemiyor. İlk ne yaparsın?"
+    cevap: "Önce kökün parolasını değiştirip MFA'nın tanımlı olduğunu doğrularım, kök için erişim anahtarı varsa silerim. Sonra o oturumda ne yapıldığını CloudTrail'de incelerim (yeni kullanıcı, anahtar, politika). Güvenlik ekibini bilgilendirir, kök girişi için alarm kurarım."
+    ipucu: "Kökün normalde hiç görülmemesi gerektiğini hatırla."
 derinDalis:
   - tur: okuma
     baslik: "AWS: IAM'de güvenlik en iyi uygulamaları"
@@ -49,6 +57,32 @@ derinDalis:
     baslik: "AWS: Kök kullanıcı için en iyi uygulamalar"
     ayrinti: "Kök hesabı neden ve nasıl kilitleyeceğin."
     url: "https://docs.aws.amazon.com/IAM/latest/UserGuide/root-user-best-practices.html"
+hizliKontrol:
+  - soru: "Bir uygulama AWS'ye bağlanacak. En güvenli kimlik türü hangisi?"
+    secenekler: ["Parolası olan IAM kullanıcısı","Kök kullanıcının erişim anahtarı","Üstlenilen ve geçici bilgi veren IAM rolü","Herkesle paylaşılan ortak anahtar"]
+    dogru: 2
+    aciklama: "Rol, kalıcı kimlik bilgisi taşımaz; geçici bilgiler kısa sürede geçersiz olur."
+    ipucu: "Saklanan uzun ömürlü bir şey olmayan seçeneği ara."
+sikHatalar:
+  - hata: "Kolaylık olsun diye günlük işleri kök hesapla yapmak."
+    dogrusu: "Kök yalnız onu gerektiren işlerde açılır; günlük iş için yönetici bir kimlik kullanılır."
+  - hata: "CI için bir IAM kullanıcısı açıp anahtarı bir dosyaya koymak."
+    dogrusu: "CI platformunun bir rolü üstlenmesini sağla; geçici bilgiler saklanmaz."
+  - hata: "Kullanılmayan kullanıcı ve anahtarları silmeyi unutmak."
+    dogrusu: "Anahtar yaşını ve son kullanımı düzenli kontrol edip kullanılmayanları kapat."
+sema:
+  baslik: "Rol üstlenme akışı"
+  adimlar:
+    - { etiket: "Kimlik", aciklama: "CI işi ya da uygulama kendi kimliğiyle bir rol üstlenmek ister." }
+    - { etiket: "Güven", aciklama: "IAM, rolün güven politikasına bakıp isteği kabul eder." }
+    - { etiket: "Geçici bilgi", aciklama: "Kısa ömürlü erişim bilgileri verilir." }
+    - { etiket: "İşlem", aciklama: "İş bu bilgilerle yalnız rolün izinlerini kullanır." }
+    - { etiket: "Süre sonu", aciklama: "Bilgiler dolunca kendiliğinden geçersiz olur." }
+terimler:
+  - "IAM"
+  - "Kök kullanıcı"
+  - "IAM rolü"
+  - "Erişim anahtarı"
 ---
 
 **IAM** (Identity and Access Management, kimlik ve erişim yönetimi), AWS'de "kim, neyi, hangi koşulda yapabilir?" sorusunu yöneten servistir. Dört temel kavramı bil:

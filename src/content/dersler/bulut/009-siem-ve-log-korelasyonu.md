@@ -34,19 +34,41 @@ sorular:
   - id: bulut-009-s1
     soru: "SIEM'in temel işi nedir?"
     cevap: "Farklı kaynaklardan log toplamak, ortak biçime getirmek, kurallarla ilişkilendirmek (korelasyon), uyarı üretmek ve kanıt olarak saklamaktır."
+    ipucu: "Log'ların tek yerde toplanıp birbirine bağlandığı sistemi düşün."
   - id: bulut-009-s2
     soru: "Korelasyon kuralı hangi üç parçadan oluşur?"
     cevap: "Bir desen (hangi olaylar), bir zaman penceresi (ne kadar süre içinde) ve bir eşik (kaç kez ya da hangi sırayla). Ek olarak bir önem derecesi ve ne yapılacağı tanımlanır."
+    ipucu: "Desen, pencere, eşik gibi parçaları say."
   - id: bulut-009-s3
     soru: "Zaman penceresi çok dar ya da çok geniş olursa ne olur?"
     cevap: "Çok dar pencere yavaş saldırıları kaçırır (yanlış negatif). Çok geniş pencere masum olayları birleştirip gürültü üretir (yanlış pozitif). Pencere gerçek veriye bakılarak ayarlanır."
+    ipucu: "Pencere dar olunca yavaş saldırıya, geniş olunca gürültüye ne olur?"
   - id: bulut-009-s4
     soru: "LogSentry'de yaptığın hangi iş, bir SIEM'in hangi işlevine karşılık gelir?"
     cevap: "Web sunucusu log'unu izlemen log toplamaya, kayan zaman pencereleriyle saldırı deseni bulman korelasyona, ekran/JSONL/Telegram bildirimleri uyarıya, hash zincirli SQLite arşivi ise bütünlüğü korunan saklamaya karşılık gelir."
+    ipucu: "LogSentry'deki hash zinciri ile bir SIEM'in hangi işlevi örtüşüyor?"
+  - id: bulut-009-s5
+    soru: "SIEM'de aynı kimlik hiç kullanmadığı bir bölgede 20 sunucu başlattı. Ne yaparsın?"
+    cevap: "Kimliğin sahibine ulaşırım; meşru değilse anahtarı devre dışı bırakır, sunucuları kapatırım (önce kanıtı korurum). Aynı kimliğin yeni kullanıcı ya da politika değişikliklerine bakar ve olay müdahalesini başlatırım."
+    ipucu: "Kripto madenciliği bulutta tipik bir kötüye kullanımdır."
 derinDalis:
   - tur: kitap
     baslik: "The Practice of Network Security Monitoring (Richard Bejtlich)"
     ayrinti: "Güvenlik izleme mantığı ve olay tespiti; log toplama ve analiz fikirleri için okunacak bir kaynak."
+hizliKontrol:
+  - soru: "Korelasyon kuralındaki 'anahtar' alanı ne işe yarar?"
+    secenekler: ["Şifreleme anahtarı belirtir","Olayları aynı kaynağa (ör. IP) göre gruplar","Alarm sesini seçer","Log dosyasını imzalar"]
+    dogru: 1
+    aciklama: "Anahtar, hangi olayların aynı hikayenin parçası sayılacağını belirler."
+    ipucu: "Tabloda IP'nin hangi satırda geçtiğine bak."
+sikHatalar:
+  - hata: "Her olağandışı olaya yüksek önem vermek."
+    dogrusu: "Önem derecesi ver; her uyarı aynı acil değildir."
+  - hata: "Kuralı yalnız saldırı örneğiyle test etmek."
+    dogrusu: "Normal veriyle de dene; yanlış alarm oranını gör."
+terimler:
+  - "SIEM"
+  - "Korelasyon kuralı"
 ---
 
 **SIEM** (Security Information and Event Management), farklı kaynaklardan gelen log'ları tek yerde toplayan, ortak biçime getiren, aralarında bağ kuran ve uyarı üreten sistemdir. Bu bölgede gördüğün CloudTrail, CloudWatch ve uygulama log'ları, SIEM'in beslendiği kaynaklardır.

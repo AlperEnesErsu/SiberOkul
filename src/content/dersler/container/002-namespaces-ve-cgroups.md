@@ -24,15 +24,38 @@ sorular:
   - id: container-002-s1
     soru: "Namespace ve cgroup arasındaki fark nedir?"
     cevap: "Namespace bir sürecin neyi görebildiğini sınırlar (süreçler, ağ, dosya bağlama noktaları, kullanıcılar). Cgroup ise ne kadar kaynak kullanabileceğini sınırlar (bellek, işlemci, süreç sayısı)."
+    ipucu: "Biri 'ne görürsün' sorusunu, diğeri 'ne kadar kullanırsın' sorusunu cevaplar."
   - id: container-002-s2
     soru: "Container bir sanal makineden nasıl ayrılır ve bu güvenliği nasıl etkiler?"
     cevap: "Sanal makinenin kendi çekirdeği vardır; container'lar konağın çekirdeğini paylaşır. Çekirdekteki bir açık, bütün container'ları etkileyebilir; bu yüzden container izolasyonu sanal makineden daha ince bir sınır sayılır."
+    ipucu: "Sanal makinede ayrı olan bir şey container'da ortak: hangisi?"
   - id: container-002-s3
     soru: "Bellek sınırı (`--memory`) koymamak hangi saldırı ya da hataya kapı açar?"
     cevap: "Hizmet reddi (denial of service): bir container ya da sızılan uygulama konağın belleğini tüketip diğer container'ları ve konağı çökertebilir. Sınır varsa çekirdek yalnız o container'ı durdurur."
+    ipucu: "Sınır yoksa tek bir kötü süreç konağın neyini tüketebilir?"
   - id: container-002-s4
     soru: "`--privileged` ya da `--pid=host` gibi bayraklar neden tehlikelidir?"
     cevap: "Namespace izolasyonunu kaldırır ya da deler: container konağın süreçlerini görür, aygıtlarına ulaşır. Böylece 'container kaçışı' için gereken duvar fiilen yok olur."
+    ipucu: "Bu bayraklar izolasyon duvarının hangi kısmını sökmek anlamına gelir?"
+  - id: container-002-s5
+    soru: "Bir konakta tek bir container'ın işlemciyi %100 kullandığını ve diğer servislerin yavaşladığını görüyorsun. İlk neye bakar ve neyi düzeltirsin?"
+    cevap: "Container'ın kaynak sınırı olup olmadığına bakarsın (`docker inspect` ile bellek/CPU ayarları, Kubernetes'te `resources.limits`). Sınır yoksa cgroup üzerinden CPU ve bellek tavanı koyarsın. Ardından neden bu kadar tükettiğini, yani hatalı kod mu yoksa kötüye kullanım mı olduğunu araştırırsın."
+    ipucu: "Neyin kaynak tüketimini sınırladığını hatırla; görünürlük değil miktar sorunu."
+hizliKontrol:
+  - soru: "Hangisi bir sürecin neleri görebildiğini sınırlar?"
+    secenekler: ["cgroup","Namespace","İmaj katmanı","Hizmet hesabı"]
+    dogru: 1
+    aciklama: "Namespace görünürlüğü (süreçler, ağ, bağlama noktaları) sınırlar; cgroup miktarı sınırlar."
+    ipucu: "Görünürlük mü, miktar mı?"
+sikHatalar:
+  - hata: "Container'ı sanal makine gibi görüp çekirdek açıklarını önemsememek."
+    dogrusu: "Container'lar konağın çekirdeğini paylaşır; çekirdeği güncel tut ve privileged bayraklarından kaçın."
+  - hata: "Bellek ve işlemci sınırı koymadan üretime çıkmak."
+    dogrusu: "Her container için cgroup sınırları (Kubernetes'te resources.limits) tanımla."
+terimler:
+  - "Linux namespace"
+  - "cgroup"
+  - "Container"
 derinDalis:
   - tur: okuma
     baslik: "Linux man sayfası: namespaces(7)"

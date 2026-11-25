@@ -28,15 +28,60 @@ sorular:
   - id: linux-011-s1
     soru: "`apt install paket` çalıştırdığında paket nereden gelir ve gerçek paket olduğundan nasıl emin olunur?"
     cevap: "Paket, `/etc/apt/sources.list` ve `sources.list.d` altında tanımlı depolardan gelir. Depolar ve paketler kriptografik imzalarla doğrulanır; apt imzası eşleşmeyen paketi kurmaz. Güven, eklediğin depo ve onun imza anahtarına dayanır."
+    ipucu: "`update` ile `upgrade`'in neyi güncellediğini ayır."
   - id: linux-011-s2
     soru: "Bir blogda 'şu komutla kur: curl ... | sudo bash' dendi. Neden `apt install` kadar güvenli değildir?"
     cevap: "Doğrudan internetten gelen bir betiği root olarak çalıştırır; ne içerdiğini görmez, imza ya da sürüm doğrulaması yoktur. Sunucu ele geçirilmişse ya da komut değiştirilmişse sistem tehlikeye girer. Betiği önce indirip okumak ya da depodan kurmak daha güvenlidir."
+    ipucu: "Paketin kaynağını ve imzasını düşün."
   - id: linux-011-s3
     soru: "`systemctl status ssh` komutu çıktısında `active (running)` ve `enabled` ifadeleri ne anlama gelir?"
     cevap: "`active (running)` servisin şu an çalıştığını söyler. `enabled` ise açılışta otomatik başlayacak şekilde ayarlı olduğunu söyler. İkisi bağımsızdır: servis çalışıyor ama `disabled` olabilir ya da `enabled` olup durmuş olabilir."
+    ipucu: "İnternetten gelen betiği root yetkisiyle çalıştırmanın sonucunu düşün."
   - id: linux-011-s4
     soru: "Gereksiz servisleri kapatmak neden güvenlik açısından iyi bir alışkanlıktır?"
     cevap: "Çalışan her servis dinleyen bir kapı ve saldırılabilecek kod demektir. Kullanılmayan servis hem saldırı yüzeyini büyütür hem de güncellenmediğinde açık bırakır. Kapatmak (`systemctl disable --now`) yüzeyi küçültür."
+    ipucu: "`active` ve `enabled` aynı şey mi?"
+  - id: linux-011-s5
+    soru: "Güvenlik ekibi 'sunucuda gereksiz bir FTP servisi dinliyor' diyor. Nasıl ilerlersin?"
+    cevap: "`systemctl status` ile servisin durumuna bakıp gerçekten kullanılmadığını doğrularsın. Sonra `sudo systemctl disable --now servis` ile durdurup açılışta kapatırsın. Paket de gerekmiyorsa `apt remove` ile kaldırırsın."
+    ipucu: "`--now` neyi aynı anda yapıyor?"
+hizliKontrol:
+  - soru: "`systemctl enable ssh` ne yapar?"
+    secenekler: ["Servisi hemen durdurur","Servisi açılışta başlayacak şekilde ayarlar","Paketi siler","Parolayı sıfırlar"]
+    dogru: 1
+    aciklama: "`enable` açılışta otomatik başlatmayı ayarlar; hemen başlatmak için `start` ya da `--now` gerekir."
+    ipucu: "Açılış ayarı mı, şimdiki durum mu?"
+sikHatalar:
+  - hata: "`apt update` yaptım, paketler güncellendi sanmak."
+    dogrusu: "`update` yalnız listeyi yeniler; `upgrade` paketleri günceller."
+  - hata: "`curl ... | sudo bash` ile kurulum yapmak."
+    dogrusu: "Betiği indirip oku; mümkünse `apt` gibi imzalı kaynak kullan."
+terimler:
+  - "Paket yöneticisi"
+  - "systemd"
+  - "Saldırı yüzeyi"
+  - "root"
+sema:
+  baslik: "apt ile paket kurma"
+  adimlar:
+    - etiket: "Liste"
+      aciklama: "`sudo apt update` ile paket listesi yenilenir."
+    - etiket: "Arama"
+      aciklama: "`sudo apt install paket` ile paket depoda bulunur."
+    - etiket: "İmza"
+      aciklama: "Paket imzaları doğrulanır."
+    - etiket: "Kurulum"
+      aciklama: "Paket indirilir ve kurulur."
+    - etiket: "Servis"
+      aciklama: "Paket bir servisse `systemctl` ile başlatılır ve izlenir."
+olay:
+  baslik: "XZ Utils arka kapısı"
+  yil: 2024
+  ozet: "CISA, 29 Mart 2024 uyarısında XZ Utils 5.6.0 ve 5.6.1 sürümlerine kötü amaçlı kod gömüldüğünü (CVE-2024-3094) bildirdi. Kod, etkilenen sistemlere yetkisiz erişime izin verebilirdi; öneri 5.4.6 gibi temiz bir sürüme dönmekti."
+  ders: "Güvenilir dağıtımdan gelen bir paketin zinciri bile zehirlenebilir. Dağıtım ve CISA uyarılarını izlemek, kurulu sürümleri bilmek gerekir."
+  kaynak:
+    ad: "CISA uyarısı"
+    url: "https://www.cisa.gov/news-events/alerts/2024/03/29/reported-supply-chain-compromise-affecting-xz-utils-data-compression-library-cve-2024-3094"
 derinDalis:
   - tur: okuma
     baslik: "Ubuntu Server: paket yönetimi"

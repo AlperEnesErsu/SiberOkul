@@ -42,15 +42,23 @@ sorular:
   - id: appsec-008-s1
     soru: "HSTS (Strict-Transport-Security) başlığı ne işe yarar?"
     cevap: "Tarayıcıya siteye belirtilen süre boyunca yalnız HTTPS üzerinden bağlanmasını söyler; düz HTTP istekleri tarayıcı tarafında HTTPS'e yükseltilir."
+    ipucu: "Tarayıcıya 'bu siteye hep HTTPS ile git' diyen başlığı hatırla."
   - id: appsec-008-s2
     soru: "`X-Content-Type-Options: nosniff` neyi önler?"
     cevap: "Tarayıcının, sunucunun bildirdiği içerik türünü yok sayıp dosyanın içeriğine bakarak türü tahmin etmesini (MIME sniffing) engeller; örneğin yüklenen bir metin dosyasının betik gibi çalıştırılmasını."
+    ipucu: "Tarayıcı dosya türünü tahmin etmeye kalkarsa ne olur?"
   - id: appsec-008-s3
     soru: "Üretim ortamında ayrıntılı hata sayfası ve yığın izi (stack trace) göstermek neden sorundur?"
     cevap: "Dosya yolları, sürüm bilgileri, sorgu parçaları gibi bilgiler saldırgana yol haritası verir. Kullanıcıya genel bir hata mesajı gösterilir, ayrıntı yalnız sunucu günlüğüne yazılır."
+    ipucu: "Hata ayrıntısı kime yarar: kullanıcıya mı, saldırgana mı?"
   - id: appsec-008-s4
     soru: "Yanlış yapılandırmaya örnek üç şey say."
     cevap: "Değiştirilmemiş varsayılan şifreler, açık bırakılmış hata ayıklama (debug) modu, herkese açık bulut depolama alanı ya da gereksiz açık portlar/servisler. Hepsi kodda değil, ayarlarda olur."
+    ipucu: "Varsayılan parola, açık yönetim paneli ya da gereksiz servisler hangi sınıfa girer?"
+  - id: appsec-008-s5
+    soru: "Yeni bir ürün canlıya alınmadan önce güvenlik taramasında `Server: Apache/2.4.x` ve `X-Powered-By` başlıkları, herkese açık `/admin` ve varsayılan hata sayfası bulundu. Önceliği nasıl belirlersin?"
+    cevap: Önce herkese açık `/admin` kapatılır ya da kimlik doğrulama ve ağ kısıtıyla korunur; çünkü doğrudan erişim sağlar. Sonra ayrıntılı hata sayfaları genel mesaja çevrilir ve hatalar sunucu günlüğüne yazılır. Sürüm bilgisi veren başlıklar en son temizlenir; tek başına açık değildir ama saldırgana keşif kolaylığı verir.
+    ipucu: Doğrudan erişim sağlayan bulgu, bilgi sızdıran bulgudan önce gelir.
 derinDalis:
   - tur: okuma
     baslik: "OWASP HTTP Security Response Headers Cheat Sheet"
@@ -60,6 +68,32 @@ derinDalis:
     baslik: "OWASP Error Handling Cheat Sheet"
     ayrinti: "Genel hata yanıtı, ayrıntının sunucuda günlüğe yazılması."
     url: "https://cheatsheetseries.owasp.org/cheatsheets/Error_Handling_Cheat_Sheet.html"
+hizliKontrol:
+  - soru: HSTS başlığı tarayıcıya ne söyler?
+    secenekler:
+      - Sayfayı iframe içinde açma
+      - Dosya türünü tahmin etme
+      - Siteye belirtilen süre boyunca yalnız HTTPS ile bağlan
+      - Çerezleri sil
+    dogru: 2
+    aciklama: HSTS, düz HTTP isteklerini tarayıcı tarafında HTTPS'e yükseltir.
+    ipucu: Başlığın adındaki 'Transport' ve 'Security' sözcüklerine bak.
+sikHatalar:
+  - hata: Üretimde hata ayrıntısını (yığın izi, SQL) kullanıcıya göstermek.
+    dogrusu: Kullanıcıya genel mesaj göster, ayrıntıyı sunucu günlüğüne yaz.
+  - hata: Varsayılan parolaları ve örnek hesapları canlıya bırakmak.
+    dogrusu: Kurulumdan sonra varsayılan hesapları kapat ya da parolayı değiştir; sertleştirme kontrol listesi uygula.
+olay:
+  baslik: Capital One veri ihlali
+  yil: 2019
+  ozet: Capital One, 22-23 Mart 2019'da yetkisiz erişim olduğunu, bir güvenlik araştırmacısının 17 Temmuz'da bildirimiyle öğrendiğini ve 19 Temmuz'da olayı belirlediğini açıkladı. Şirket olayı bir yapılandırma açığı olarak tanımladı. ABD'de yaklaşık 100 milyon, Kanada'da yaklaşık 6 milyon kişi etkilendi; kredi kartı başvuru bilgileri ve bazı kişilerin kimlik numaraları erişilen veriler arasındaydı.
+  ders: Tek bir yanlış yapılandırma, bulut ortamındaki çok büyük bir veri kümesini açabilir. Bu derstaki sertleştirme alışkanlıkları ve düzenli yapılandırma denetimi bu risk türünü azaltır.
+  kaynak:
+    ad: Capital One, 2019 siber olayı bilgi sayfası
+    url: https://www.capitalone.com/digital/facts2019/
+terimler:
+  - Güvenlik başlığı
+  - HSTS
 ---
 
 Yanlış yapılandırma (security misconfiguration), kodun değil **ayarların** güvensiz olmasıdır. Top 10'da üst sıralardadır, çünkü sayısız ayar vardır ve varsayılanlar çoğu zaman güvenlik değil kolaylık için seçilmiştir.

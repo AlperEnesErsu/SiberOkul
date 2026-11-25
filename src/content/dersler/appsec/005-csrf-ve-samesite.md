@@ -37,20 +37,60 @@ sorular:
   - id: appsec-005-s1
     soru: "CSRF saldırısı nasıl işler?"
     cevap: "Kullanıcı bir sitede oturum açıkken kötü bir sayfayı ziyaret eder. Kötü sayfa, hedef siteye bir istek (ör. form gönderimi) tetikler. Tarayıcı oturum çerezini ekler, sunucu isteği meşru sanar ve işlemi yapar."
+    ipucu: "Tarayıcı, çerezi isteği kimin başlattığına bakmadan eklerse ne olur?"
   - id: appsec-005-s2
     soru: "CSRF token nasıl korur?"
     cevap: "Sunucu, oturuma bağlı rastgele ve tahmin edilemez bir değeri forma ekler ve istekte geri bekler. Saldırgan başka bir sitede bu değeri okuyamadığı için geçerli bir istek hazırlayamaz."
+    ipucu: "Token'ı saldırganın başka siteden bilememesinin sonucunu düşün."
   - id: appsec-005-s3
     soru: "`SameSite=Lax` ve `Strict` arasındaki fark nedir?"
     cevap: "Strict: çerez, başka bir siteden gelen hiçbir istekte gönderilmez. Lax: çerez üst düzey, güvenli gezintilerde (ör. bağlantıya tıklama) gönderilir ama çapraz site POST ve gömülü isteklerde gönderilmez. Her ikisi de CSRF'yi azaltır."
+    ipucu: "İki değerden hangisi başka siteden gelen bağlantı tıklamasında çerezi gönderir?"
   - id: appsec-005-s4
     soru: "SameSite varken neden yine de CSRF token kullanılır?"
     cevap: "SameSite bir ek savunma katmanıdır; OWASP, çoğu kurulumda uygun bir CSRF savunmasının yerini tutmadığını belirtir. Ayrıca aynı site içinde başka bir alt alan adı ele geçirilirse ya da XSS varsa SameSite yetmeyebilir."
+    ipucu: "SameSite'ın kapsamadığı durumları ve eski tarayıcıları düşün."
+  - id: appsec-005-s5
+    soru: Bir ürün yöneticisi 'SameSite=Lax çerez ayarını açtık, artık CSRF token koduna gerek yok, silelim' diyor. Ne cevap verirsin?
+    cevap: "SameSite güçlü bir ek katmandır ama tek başına yeterli sayılmaz: tarayıcı desteği ve davranış farkları, aynı site içindeki alt alan adları ve bazı istekler (ör. üst düzey GET gezintisi) kapsam dışında kalabilir. Durumu değiştiren isteklerde token doğrulamasını koruyup SameSite'ı ikinci katman olarak bırakırsın."
+    ipucu: Tek savunma katmanı yetmediğinde savunma derinliği ilkesini hatırla.
 derinDalis:
   - tur: okuma
     baslik: "OWASP CSRF Prevention Cheat Sheet"
     ayrinti: "Token desenleri, SameSite'ın rolü, XSS'in CSRF savunmalarını nasıl boşa çıkardığı."
     url: "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html"
+hizliKontrol:
+  - soru: CSRF token neden CSRF'yi engeller?
+    secenekler:
+      - Çerezi şifreler
+      - Saldırganın başka siteden bilemeyeceği bir değeri istekte arar
+      - Parolayı uzatır
+      - İsteği yalnız HTTPS'e yönlendirir
+    dogru: 1
+    aciklama: Doğru token olmayan istek sunucuda reddedilir; saldırgan bu değeri bilemez.
+    ipucu: Saldırganın elinde olmayan şeyi düşün.
+sikHatalar:
+  - hata: Durumu değiştiren işlemi (silme, havale) GET isteğiyle yaptırmak.
+    dogrusu: Durumu değiştiren işlemler POST/PUT/DELETE olmalı ve token ile doğrulanmalı.
+  - hata: "'Çerez var, o halde istek kullanıcıdan geliyor' diye düşünmek."
+    dogrusu: Tarayıcı çerezi başka sitenin isteğine de ekleyebilir; kullanıcının niyetini token kanıtlar.
+sema:
+  baslik: CSRF isteği nasıl akar?
+  adimlar:
+    - etiket: Giriş
+      aciklama: Kullanıcı bankada oturum açar; tarayıcı oturum çerezini saklar.
+    - etiket: Tuzak
+      aciklama: Kullanıcı başka bir siteyi açar; sayfada gizli bir form vardır.
+    - etiket: İstek
+      aciklama: Form, bankanın havale adresine otomatik olarak gönderilir.
+    - etiket: Çerez
+      aciklama: Tarayıcı bankaya giden isteğe oturum çerezini kendiliğinden ekler.
+    - etiket: Sonuç
+      aciklama: Token yoksa banka isteği meşru sayar ve havaleyi yapar.
+terimler:
+  - CSRF
+  - CSRF token
+  - SameSite
 ---
 
 **CSRF** (cross-site request forgery, siteler arası istek sahteciliği), tarayıcının çerezleri kendiliğinden göndermesini kötüye kullanır. Sen bir bankada oturum açıkken kötü bir sayfa açarsan, o sayfa bankaya senin adına istek gönderebilir. Banka yalnız çereze bakıyorsa isteği gerçek sanır.

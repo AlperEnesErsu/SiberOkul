@@ -26,15 +26,43 @@ sorular:
   - id: container-004-s1
     soru: "Pod nedir ve neden doğrudan Pod yazmak yerine Deployment kullanırız?"
     cevap: "Pod, bir ya da birkaç container'ı birlikte çalıştıran en küçük birimdir ve geçicidir. Doğrudan açılan pod çökerse ya da düğüm giderse kimse yenisini başlatmaz. Deployment istenen kopya sayısını korur, güncellemeyi kademeli yapar."
+    ipucu: "Pod'lar geçicidir; onları ayakta tutan üst nesneyi düşün."
   - id: container-004-s2
     soru: "Service neden gereklidir? Pod'un IP'sine doğrudan bağlanmak neden sorun?"
     cevap: "Pod'lar yeniden oluşunca IP'leri değişir. Service, etiketle seçtiği pod'lara sabit bir ad ve adres üzerinden yük dağıtarak erişim sağlar."
+    ipucu: "Pod yenilenince IP'si de değişir; bunun çaresi nedir?"
   - id: container-004-s3
     soru: "Service türlerinden `ClusterIP`, `NodePort` ve `LoadBalancer` hangisi dış dünyaya açılma riski taşır?"
     cevap: "`NodePort` düğümlerin bir portunu, `LoadBalancer` ise bulut sağlayıcıdan genel bir adres açar. `ClusterIP` (varsayılan) yalnız küme içinden erişilebilir. Dışarı açılan her Service bilinçli ve gerekçeli olmalı."
+    ipucu: "Hangi servis türleri kümenin dışına kapı açar?"
   - id: container-004-s4
     soru: "Üretimde imaj etiketi olarak neden `nginx:latest` yerine `nginx:1.27` gibi sabit sürüm yazılır?"
     cevap: "`latest` zamanla farklı içeriğe işaret edebilir; aynı YAML'dan farklı zamanlarda farklı imaj çıkar, geri dönüş ve denetim zorlaşır. Sabit sürüm (daha iyisi digest) tekrarlanabilir ve incelenebilir dağıtım sağlar."
+    ipucu: "Etiket başka bir imaj gösterirse bugün çalışan ile yarın çalışan aynı mı olur?"
+  - id: container-004-s5
+    soru: "Bir denetimde `type: LoadBalancer` olan ve kimlik doğrulaması bulunmayan bir iç yönetim paneli servisi buldun. İlk adımın ne olur?"
+    cevap: "Servisin gerçekten dışarı açılması gerekip gerekmediğini sorarsın. Gerekmiyorsa `ClusterIP` yaparsın ve gerekirse `kubectl port-forward` ile erişim verirsin. Gerekiyorsa en azından kaynak IP kısıtı, kimlik doğrulama ve NetworkPolicy ekletirsin."
+    ipucu: "Dışarı açılan her servisin bir gerekçesi olmalı."
+hizliKontrol:
+  - soru: "Üç kopyalı bir Deployment'ta bir pod silinirse ne olur?"
+    secenekler: ["Kopya sayısı kalıcı olarak ikiye düşer","Deployment (ReplicaSet) eksik pod'un yerine yenisini açar","Service yeni pod'u yaratır","Düğüm yeniden başlar"]
+    dogru: 1
+    aciklama: "İstenen durum ile gerçek durum karşılaştırılır; eksik kopya tamamlanır."
+    ipucu: "İstenen durum fikrini hatırla."
+  - soru: "Hangisi yalnız küme içinden erişilebilen Service türüdür?"
+    secenekler: ["LoadBalancer","NodePort","ClusterIP","Hepsi dışarı açılır"]
+    dogru: 2
+    aciklama: "ClusterIP varsayılan türdür ve yalnız küme içidir."
+    ipucu: "Varsayılan tür en az açık olandır."
+sikHatalar:
+  - hata: "Üretimde `image: nginx:latest` kullanmak."
+    dogrusu: "Sabit sürüm (hatta özet/digest) yaz; böylece ne çalıştığı belli ve tekrarlanabilir olur."
+  - hata: "Pod'u doğrudan YAML ile yazıp elle yönetmek."
+    dogrusu: "Pod'u Deployment gibi bir üst nesneyle yönet; çökünce yeniden başlar, sürüm güncellemesi kolaylaşır."
+terimler:
+  - "Pod"
+  - "Deployment"
+  - "Service"
 derinDalis:
   - tur: okuma
     baslik: "Kubernetes: Pod'lar"

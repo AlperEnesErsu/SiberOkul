@@ -42,20 +42,47 @@ sorular:
   - id: appsec-002-s1
     soru: "Girdi doğrulama ile çıktı kodlama (output encoding) arasındaki fark nedir?"
     cevap: "Girdi doğrulama, veri sisteme girerken biçimini ve aralığını denetler. Çıktı kodlama, veri bir bağlama (HTML, SQL, kabuk komutu) yazılırken özel karakterlerin anlamını nötrler. İkisi birbirinin yerine geçmez."
+    ipucu: "Biri veriyi içeri alırken, öteki dışarı yazarken devreye girer."
   - id: appsec-002-s2
     soru: "Tarayıcıda JavaScript ile yapılan doğrulama neden güvenlik önlemi sayılmaz?"
     cevap: "İstemci saldırganın kontrolündedir; kodu devre dışı bırakabilir ya da isteği doğrudan sunucuya (ör. curl ile) gönderebilir. İstemci doğrulaması yalnız kullanıcıya hızlı geri bildirim içindir; asıl doğrulama sunucuda yapılır."
+    ipucu: "Saldırgan tarayıcıyı atlayıp isteği doğrudan gönderebilir; kontrolü kim yapmalı?"
   - id: appsec-002-s3
     soru: "Kullanıcı girdisini `<div>` içine yazarken hangi kodlama, bir SQL sorgusuna yazarken hangi önlem gerekir?"
     cevap: "HTML bağlamında HTML kodlaması (`<` → `&lt;`). SQL bağlamında kodlama yerine parametreli sorgu. Her bağlamın kendi özel karakterleri olduğu için önlem de bağlama göre seçilir."
+    ipucu: "Her hedef dilin özel karakterleri farklıdır; HTML ve SQL için araçlar aynı mı?"
   - id: appsec-002-s4
     soru: "'Bütün girdilerden tırnak işaretlerini silerim' yaklaşımı neden zayıftır?"
     cevap: "Kötü niyetli girdi yalnız tırnakla sınırlı değildir; farklı bağlamlar farklı karakterleri tehlikeli kılar. Ayrıca meşru veri bozulur (ör. O'Brien soyadı). Doğru yol: bağlama uygun kodlama ve izin listesiyle doğrulama."
+    ipucu: "Silinen karakterin başka bir biçimde geri gelip gelemeyeceğini düşün."
+  - id: appsec-002-s5
+    soru: Bir PR'da, kullanıcı adının `<h1>` içine kodlamadan yazıldığını görüyorsun. Geliştirici 'girişte zaten sadece harf kabul ediyoruz' diyor. Ne yazarsın?
+    cevap: "Giriş doğrulaması iyi bir ilk katmandır ama yeterli değildir: kural bir gün gevşetilebilir, veri başka bir yoldan (içe aktarma, API) gelebilir. Çıktı noktasında HTML kodlaması şart; bunu şablon motorunun otomatik kodlamasıyla yapmasını öner. İki katman birlikte çalışır."
+    ipucu: Veri sisteme başka bir yoldan girerse giriş kuralı ne işe yarar?
 derinDalis:
   - tur: okuma
     baslik: "OWASP Input Validation Cheat Sheet"
     ayrinti: "Sözdizimsel ve anlamsal doğrulama, izin listesi mantığı, sunucu tarafı vurgusu."
     url: "https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html"
+hizliKontrol:
+  - soru: Kullanıcı girdisi bir HTML sayfasına yazılırken hangi işlem uygulanır?
+    secenekler:
+      - SQL parametresi bağlamak
+      - Büyük harfe çevirmek
+      - Bağlama uygun çıktı kodlaması (HTML kodlama)
+      - Girdiyi şifrelemek
+    dogru: 2
+    aciklama: Kodlama, `<` gibi karakterlerin kod değil metin olarak gösterilmesini sağlar.
+    ipucu: Önlem, verinin yazıldığı bağlama göre seçilir.
+sikHatalar:
+  - hata: Girdiyi yalnız tarayıcıda (JavaScript ile) doğrulamak.
+    dogrusu: Doğrulama sunucuda yapılır; tarayıcı kontrolü yalnız kullanıcıya hızlı geri bildirim içindir.
+  - hata: Yasak listesi yazıp 'tehlikeli' kelimeleri silmek.
+    dogrusu: "İzin listesi kullan: neyin kabul edileceğini tanımla, gerisini reddet."
+terimler:
+  - Girdi doğrulama
+  - İzin listesi
+  - Çıktı kodlama
 ---
 
 Uygulamana dışarıdan giren her veri **güvenilmezdir**: form alanları, URL parametreleri, başlıklar, çerezler, yüklenen dosyalar, hatta başka bir servisten gelen yanıtlar. İki savunma birlikte çalışır.

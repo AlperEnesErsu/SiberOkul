@@ -36,20 +36,69 @@ sorular:
   - id: devops-011-s1
     soru: "Docker Compose ne işe yarar?"
     cevap: "Birden çok container'dan oluşan uygulamayı (servisler, ağlar, volume'lar) tek bir YAML dosyasında tanımlayıp tek komutla ayağa kaldırıp kapatmanı sağlar."
+    ipucu: "Birden çok parça, tek dosya."
   - id: devops-011-s2
     soru: "Compose'taki servisler birbirini nasıl bulur?"
     cevap: "Compose varsayılan bir ağ kurar ve servisleri bu ağa bağlar. Her servis diğerine kendi adıyla (ör. `web`, `db`) ulaşır."
+    ipucu: "Servis adı bir adres gibi çalışır."
   - id: devops-011-s3
     soru: "Volume neden gerekir?"
     cevap: "Container silinince içindeki veri gider. Volume veriyi container'ın dışında tutar; veritabanı gibi kalıcı olması gereken veriler için kullanılır."
+    ipucu: "Container silinince verinin ne olduğunu düşün."
   - id: devops-011-s4
     soru: "`ports` ile bir servisi dışarı açmanın riski nedir ve nasıl azaltılır?"
     cevap: "Port host'un ağına açılır ve ağdaki herkes erişebilir. Yalnızca gerekenleri yayınla, geliştirmede `127.0.0.1:` ile yalnız kendi makinene bağla."
+    ipucu: "Yayınlanan portun kimlere açıldığını düşün."
+  - id: devops-011-s5
+    soru: "Bir Compose dosyasında `/var/run/docker.sock:/var/run/docker.sock` bağlanmış ve bir izleme panosu imajı çalışıyor. Güvenlik incelemesinde ne dersin?"
+    cevap: "Docker soketini bağlamak o container'a daemon'a, yani pratikte host üzerinde yüksek yetkiye erişim verir. Gerçekten gerekmiyorsa kaldırırım; gerekiyorsa yalnız güvendiğim bir imajla ve yetkiyi daraltan bir yol arayarak kullanırım."
+    ipucu: "Docker daemon'a erişen birinin host üzerinde neler yapabileceğini düşün."
 derinDalis:
   - tur: okuma
     baslik: "Docker Compose genel bakış"
     ayrinti: "Compose'un ne olduğu ve hangi ortamlarda kullanıldığı."
     url: "https://docs.docker.com/compose/"
+hizliKontrol:
+  - soru: "`docker compose down` varsayılan olarak neyi silmez?"
+    secenekler: 
+      - "Container'ları"
+      - "Varsayılan ağı"
+      - "İsimli volume'ları"
+      - "Çalışan süreçleri"
+    dogru: 2
+    aciklama: "Volume'lar yalnız `-v` ile silinir; böylece veri kazara gitmez."
+    ipucu: "Verinin kalıcı olması için hangisi dışarıda durur?"
+  - soru: "Compose'ta `web` servisi `db` servisine nasıl ulaşır?"
+    secenekler: 
+      - "Servis adıyla, Compose ağı üzerinden"
+      - "Yalnız host IP'siyle"
+      - "Yalnız dışarıya yayınlanmış portla"
+      - "Ulaşamaz"
+    dogru: 0
+    aciklama: "Compose varsayılan bir ağ kurar ve servisler birbirine adıyla ulaşır."
+    ipucu: "Servis adı bu ağda neye yarar?"
+sikHatalar:
+  - hata: "Veritabanı portunu `5432:5432` diye yayınlayıp herkese açmak."
+    dogrusu: "Servisler ağda zaten adıyla ulaşır; yayınlama ya da `127.0.0.1:` ile sınırla."
+  - hata: "`docker compose down -v` ile veriyi istemeden silmek."
+    dogrusu: "`-v` isimli volume'ları da siler; veriyi korumak istiyorsan `down` yeter."
+terimler:
+  - "Docker Compose"
+  - "Volume"
+  - "Container"
+sema:
+  baslik: "`docker compose up` ne yapar"
+  adimlar:
+    - etiket: "Dosyayı oku"
+      aciklama: "`compose.yaml` okunur."
+    - etiket: "Ağ kur"
+      aciklama: "Proje için varsayılan ağ oluşturulur."
+    - etiket: "Volume hazırla"
+      aciklama: "Tanımlı volume'lar oluşturulur."
+    - etiket: "Servisleri başlat"
+      aciklama: "Her servis için container açılır."
+    - etiket: "Adla bul"
+      aciklama: "Servisler birbirine adıyla ulaşır."
 ---
 
 **Docker Compose**, birden çok container'ı tek bir dosyada tanımlayıp birlikte yönetmeni sağlar. Docker'ın tanımıyla: servisleri, ağları ve volume'ları bir YAML dosyasında anlatırsın, tek komutla hepsini başlatırsın.

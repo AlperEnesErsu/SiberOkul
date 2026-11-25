@@ -23,15 +23,44 @@ sorular:
   - id: ag-011-s1
     soru: "NAT neyi çözer ve güvenlik için neden 'tek başına güvenlik duvarı' sayılmaz?"
     cevap: "Çok sayıda özel adresli cihazın tek genel adres üzerinden internete çıkmasını sağlar. Gelen istekleri tablo dışında engellemesi bir yan etkidir; kural tabanlı, denetlenebilir bir güvenlik duvarının yerini tutmaz."
+    ipucu: "NAT'ın asıl amacı güvenlik miydi?"
   - id: ag-011-s2
     soru: "İleri proxy (forward proxy) ile ters proxy (reverse proxy) arasındaki fark nedir?"
     cevap: "İleri proxy istemciler adına dışarıya erişir (şirket içinden internete çıkış denetimi). Ters proxy sunucular adına gelen istekleri karşılar ve arkadaki sunuculara dağıtır (yük dengeleme, TLS sonlandırma)."
+    ipucu: "Biri istemci adına, diğeri sunucu adına çalışır."
   - id: ag-011-s3
     soru: "VPN kullanınca internet sağlayıcın neyi göremez, VPN sağlayıcı neyi görür?"
     cevap: "Sağlayıcı trafiğin içeriğini ve hedef siteleri (şifreli tünel yüzünden) göremez, yalnız VPN'e bağlandığını görür. VPN sağlayıcısı ise tüneli çözdüğü için hedef siteleri ve şifrelenmemiş içeriği görebilir. Güven sağlayıcıya kaymış olur."
+    ipucu: "Tünelin iki ucunu düşün: kim neyi çözebiliyor?"
   - id: ag-011-s4
     soru: "Şirket VPN'i ile ticari 'gizlilik VPN'i' amaç olarak nasıl ayrılır?"
     cevap: "Şirket VPN'i uzaktan çalışanı şirket iç ağına güvenle bağlar. Ticari VPN çıkış adresini değiştirir ve yerel ağdaki dinlemeyi zorlaştırır. Hiçbiri tam anonimlik sağlamaz."
+    ipucu: "Şirkete bağlanmak ile siteden gizlenmek aynı amaç mı?"
+  - id: ag-011-s5
+    soru: "Bir çalışan 'şirket VPN'i açıkken bile sitelerin beni tanıdığını' söylüyor ve VPN'in anonim yaptığını sanıyor. Ona ne dersin?"
+    cevap: "VPN yerel ağdaki ve sağlayıcıdaki gözlemciyi uzaklaştırır, ama hesabına girdiyse çerezler ve oturum seni zaten tanıtır. Şirket VPN'i de seni gizlemez; şirket iç ağına güvenli erişim sağlar ve şirket trafiği görebilir. Anonimlik için ayrı bir tehdit modeli gerekir."
+    ipucu: "VPN'in 'kim gözlüyor' sorusunun cevabını değiştirdiğini, kaldırmadığını hatırla."
+hizliKontrol:
+  - soru: "Ters proxy (reverse proxy) hangi işi yapar?"
+    secenekler:
+      - "Sunucular adına gelen istekleri karşılar ve arkadaki sunuculara dağıtır"
+      - "İstemcilerin internete çıkışını gizler"
+      - "Trafiği yakalayıp dosyaya kaydeder"
+      - "Alan adlarını IP'ye çevirir"
+    dogru: 0
+    aciklama: "Ters proxy sunucu tarafında durur; yük dengeleme ve TLS sonlandırma gibi işler yapar."
+    ipucu: "Hangi taraf adına çalıştığına bak."
+sikHatalar:
+  - hata: "NAT'ı güvenlik duvarı yerine koymak."
+    dogrusu: "NAT'ın engellemesi bir yan etkidir; kural tabanlı, denetlenebilir bir güvenlik duvarı yine gerekir."
+  - hata: "VPN açıkken tamamen anonim olduğunu varsaymak."
+    dogrusu: "Güven yalnız internet sağlayıcıdan VPN sağlayıcıya kayar; hesap ve tarayıcı izleri sürer."
+terimler:
+  - "NAT"
+  - "Proxy"
+  - "VPN"
+  - "IP adresi"
+  - "Özel IP adresi"
 derinDalis:
   - tur: okuma
     baslik: "EFF Surveillance Self-Defense: Doğru VPN'i seçmek"

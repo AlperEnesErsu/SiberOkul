@@ -23,15 +23,56 @@ sorular:
   - id: temeller-009-s1
     soru: "Sosyal mühendislik nedir ve oltalama (phishing) bunun neresindedir?"
     cevap: "Sosyal mühendislik, teknik açık yerine insanın güvenini, aciliyet hissini ya da yardım isteğini kullanarak bilgi ya da erişim koparmaktır. Oltalama, bunun e-posta, SMS ya da sahte site üzerinden yapılan en yaygın biçimidir."
+    ipucu: "Saldırgan teknik açığı değil, insanın hangi eğilimini kullanıyor?"
   - id: temeller-009-s2
     soru: "Oltalama mesajlarında en sık görülen üç işaret nedir?"
     cevap: "Aciliyet ya da korku yaratan dil, kişisel/finansal bilgi ya da şifre talebi, uyuşmayan gönderen adresi ya da benzer görünen sahte alan adı ve kısaltılmış bağlantılar."
+    ipucu: "Acele ettiren, korkutan ya da ödül vaat eden mesajların ortak yanı nedir?"
   - id: temeller-009-s3
     soru: "Hedefli oltalama (spear phishing) toplu oltalamadan nasıl farklıdır, neden daha tehlikelidir?"
     cevap: "Belirli bir kişi ya da kurum için hazırlanır; adını, görevini, iş arkadaşlarını bilir. Kişiselleştirildiği için şüphe uyandırmaz. Geliştiricilere gelen 'sahte işe alım' ya da 'repo daveti' mesajları buna örnektir."
+    ipucu: "Genel bir mesaj ile sana özel hazırlanmış bir mesajın inandırıcılığını kıyasla."
   - id: temeller-009-s4
     soru: "Şüpheli bir mesaj aldığında hangi sırayla ne yaparsın?"
     cevap: "Tıklama, bağlantı açma, eki indirme. Göndereni başka bir kanaldan (bilinen telefon, resmi site) doğrula. Kurumsa güvenlik ekibine bildir. Yanlışlıkla tıkladıysan ya da bilgi girdiysen hemen parolayı değiştir ve bildir."
+    ipucu: "Mesajdaki bağlantıya tıklamadan önce hangi bağımsız kanala dönebilirsin?"
+  - id: temeller-009-s5
+    soru: "Mali işler çalışanı, CEO'nun e-posta adresine çok benzeyen bir adresten 'acil, bir tedarikçiye hemen transfer yap, kimseye söyleme' mesajı aldı ve sana danıştı. İlk ne yaparsın?"
+    cevap: "Transferi durdurmasını, mesajdaki bağlantıya ya da numaraya güvenmeden CEO'yu bilinen bir kanaldan (telefon, şirket içi sohbet) aramasını isterim. Gönderen adresini ve başlıkları inceler, mesajı güvenlik ekibine bildirir, benzer mesajı alan başkaları varsa uyarırım."
+    ipucu: "Aciliyet ve gizlilik baskısı ne işaretidir ve doğrulama hangi kanaldan yapılmalı?"
+hizliKontrol:
+  - soru: "Hedefli oltalama (spear phishing) toplu oltalamadan en çok neyle ayrılır?"
+    secenekler: ["Daha uzun e-posta olmasıyla","Belirli bir kişiye özel bilgilerle hazırlanmasıyla","Yalnız SMS ile yapılmasıyla","Her zaman ek içermesiyle"]
+    dogru: 1
+    aciklama: "Hedefli oltalama kişiye özel bilgilerle hazırlandığı için daha inandırıcıdır."
+    ipucu: "Mesajın içeriği kimin için yazılmış?"
+  - soru: "Şüpheli bir bağlantıyla karşılaştığında en güvenli ilk adım hangisidir?"
+    secenekler: ["Bağlantıya tıklayıp sayfaya bakmak","Mesajı bir arkadaşına iletmek","Bağlantıya tıklamadan, kurumun bilinen resmi kanalından doğrulamak","Parolanı hemen değiştirmek"]
+    dogru: 2
+    aciklama: "Mesajdaki bağlantı ya da numara yerine kurumu bilinen kanaldan doğrulamak güvenlidir."
+    ipucu: "Doğrulamayı saldırganın verdiği kanaldan yapmak mantıklı mı?"
+sikHatalar:
+  - hata: "Mesajdaki 'doğrulama' numarasını arayıp bilgi vermek."
+    dogrusu: "Kurumu kendi bildiğin, resmi kanaldan ara; mesajdaki numaraya güvenme."
+  - hata: "Yalnız yazım hatası olan mesajlara şüphelenmek."
+    dogrusu: "İyi hazırlanmış mesajlar hatasız olabilir; aciliyet, bilgi talebi ve alan adı gibi işaretlere de bak."
+terimler:
+  - "Oltalama"
+  - "Sosyal mühendislik"
+  - "Çok faktörlü doğrulama"
+sema:
+  baslik: "Şüpheli mesajda izlenecek sıra"
+  adimlar:
+    - etiket: "Dur"
+      aciklama: "Acele etme; aciliyet baskısı bir işarettir."
+    - etiket: "İncele"
+      aciklama: "Gönderen adresine ve bağlantının gerçek alan adına bak."
+    - etiket: "Tıklama"
+      aciklama: "Bağlantıya ve eke dokunma."
+    - etiket: "Doğrula"
+      aciklama: "Kurumu bilinen resmi kanaldan ara ya da ilgili kişiye ikinci kanaldan sor."
+    - etiket: "Bildir"
+      aciklama: "Güvenlik ekibine haber ver, bilgi verdiysen parolayı hemen değiştir."
 derinDalis:
   - tur: okuma
     baslik: "CISA: Recognize and Report Phishing"

@@ -27,15 +27,64 @@ sorular:
   - id: temeller-007-s1
     soru: "Asimetrik şifrelemede açık anahtar ve gizli anahtar ne işe yarar?"
     cevap: "Bir anahtar çiftidir. Açık anahtar herkese verilebilir; gizli anahtar yalnız sahibinde kalır. Açık anahtarla şifrelenen veriyi yalnız gizli anahtar çözer. Gizli anahtarla atılan imzayı açık anahtar doğrular."
+    ipucu: "Biri herkese verilir, biri yalnız sende kalır; hangisi ne işe yarar?"
   - id: temeller-007-s2
     soru: "Simetrik şifrelemenin anahtar dağıtımı sorununu asimetrik şifreleme nasıl hafifletir?"
     cevap: "Önceden gizli bir kanal gerekmez. Karşı taraf açık anahtarını herkese açık verir; sen bununla şifrelersin, o kendi gizli anahtarıyla çözer. Pratikte asimetrik yöntem bir simetrik oturum anahtarını güvenle paylaşmak için kullanılır ve verinin kendisi hızlı simetrik şifreleme ile taşınır."
+    ipucu: "Anahtarı önceden gizlice paylaşmak zorunda kalmak yerine ne paylaşılabilir?"
   - id: temeller-007-s3
     soru: "Dijital imza hangi iki şeyi kanıtlar?"
     cevap: "Mesajın imzalandıktan sonra değişmediğini (bütünlük) ve imzayı gizli anahtarın sahibinin attığını (kaynak doğrulama, inkâr edilememe)."
+    ipucu: "İmza hem 'kim yaptı' hem 'değişti mi' sorusuna cevap verir."
   - id: temeller-007-s4
     soru: "Açık anahtarın gerçekten o kişiye ait olduğunu nasıl bilirsin? Sertifika bu soruya nasıl cevap verir?"
     cevap: "Açık anahtarı tek başına gören biri kime ait olduğunu bilemez; sahte bir anahtar sunulabilir. Sertifika, güvenilir bir otoritenin 'bu anahtar bu alan adına/kişiye aittir' diye imzaladığı bir belgedir. TLS dersinde ayrıntısını göreceksin."
+    ipucu: "Açık anahtarın sahibine ait olduğuna kim şahitlik eder?"
+  - id: temeller-007-s5
+    soru: "Bir ekip arkadaşın, 'imzalı güncelleme olduğu için güvenli' diyerek bir güncellemeyi hiç incelemeden dağıtmak istiyor. Haberlerde imzalama altyapısının ele geçirildiği bir olay okumuştun. Neyi hatırlatırsın?"
+    cevap: "İmza paketin imzalayan anahtar sahibinden geldiğini ve sonradan değişmediğini kanıtlar; kodun zararsız olduğunu kanıtlamaz. İmzalama süreci ya da anahtar ele geçirilirse saldırganın zararlı kodu da geçerli imzayla çıkar. Bu yüzden anahtarı sıkı korur, yapı sürecini izler, güncellemeleri kademeli dağıtır ve sapma tespitini sürdürürüm."
+    ipucu: "İmza 'kimden geldi'yi söyler, 'iyi niyetli mi'yi söylemez."
+hizliKontrol:
+  - soru: "Dijital imza oluşturmak için hangi anahtar kullanılır?"
+    secenekler: ["Alıcının açık anahtarı","Gönderenin gizli anahtarı","Alıcının gizli anahtarı","Herkesin bildiği ortak parola"]
+    dogru: 1
+    aciklama: "İmzayı yalnız gizli anahtarın sahibi üretebilir; herkes açık anahtarla doğrular."
+    ipucu: "İmzayı sadece sahibi atabilmeli."
+  - soru: "Sertifikanın temel görevi nedir?"
+    secenekler: ["Verileri şifrelemek","Bir açık anahtarın belirli bir kimliğe ait olduğunu güvenilen bir kurumun imzasıyla bağlamak","Parolayı hash'lemek","Ağ hızını artırmak"]
+    dogru: 1
+    aciklama: "Sertifika, açık anahtar ile sahibi arasındaki bağı güvenilen bir otoritenin imzasıyla belgeler."
+    ipucu: "Açık anahtara kim şahitlik ediyor?"
+sikHatalar:
+  - hata: "Gizli anahtarı e-postayla ya da depoya yükleyerek paylaşmak."
+    dogrusu: "Gizli anahtar kimseyle paylaşılmaz; paylaşılan yalnız açık anahtardır."
+  - hata: "İmzalı olan her yazılımı zararsız saymak."
+    dogrusu: "İmza kaynağı ve bütünlüğü doğrular; imzalayan taraf ele geçirilmişse zararlı kod da imzalı olabilir."
+terimler:
+  - "Asimetrik şifreleme"
+  - "Dijital imza"
+  - "Sertifika"
+sema:
+  baslik: "Dijital imzanın akışı"
+  adimlar:
+    - etiket: "Hash"
+      aciklama: "Gönderen mesajın hash'ini hesaplar."
+    - etiket: "İmzalama"
+      aciklama: "Hash, gönderenin gizli anahtarıyla imzalanır."
+    - etiket: "Gönderim"
+      aciklama: "Mesaj ve imza alıcıya birlikte gider."
+    - etiket: "Doğrulama"
+      aciklama: "Alıcı imzayı gönderenin açık anahtarıyla çözüp hash ile karşılaştırır."
+    - etiket: "Sonuç"
+      aciklama: "Eşleşirse mesaj o anahtardan gelmiştir ve değişmemiştir."
+olay:
+  baslik: "SolarWinds Orion güncellemelerinin kötüye kullanılması"
+  yil: 2020
+  ozet: "Saldırganlar SolarWinds Orion'un yapı sürecine uzun süre gizlice erişti ve Orion sürümlerine SUNBURST/TEARDROP adlı bir arka kapı yerleştirdi. Bu güncellemeler kurumlara normal yazılım güncellemesi olarak ulaştı; CISA Aralık 2020'de etkilenen sürümlerin kapatılmasını isteyen acil bir direktif yayımladı."
+  ders: "Yazılımı üreticisinden gelen güncelleme olarak doğrulamak yetmez; imzalama ve yapı süreci ele geçirilirse zararlı kod güvenilir kanaldan gelir. Bu yüzden yapı sürecinin ve anahtarların korunması şarttır."
+  kaynak:
+    ad: "CISA: ED 21-01, Mitigate SolarWinds Orion Code Compromise"
+    url: "https://www.cisa.gov/news-events/directives/ed-21-01-mitigate-solarwinds-orion-code-compromise"
 derinDalis:
   - tur: kitap
     baslik: "Serious Cryptography (Jean-Philippe Aumasson)"

@@ -38,15 +38,37 @@ sorular:
   - id: container-011-s1
     soru: "IaC taramasını neden uygulamadan önce (kod aşamasında) yaparız?"
     cevap: "Hata kod aşamasında düzeltilince hiçbir kaynak yanlış kurulmaz; üretimde bulununca ise açık bir süre canlı kalır. Düzeltme maliyeti ve risk, tarama ne kadar erken olursa o kadar düşüktür."
+    ipucu: "Hatayı üretimde mi yoksa PR aşamasında mı yakalamak ucuz?"
   - id: container-011-s2
     soru: "Checkov gibi araçlar neyi bulur, neyi bulamaz?"
     cevap: "Koddaki bilinen yanlış yapılandırma desenlerini bulur (açık depolama, şifresiz disk, geniş güvenlik grubu). Çalışma anı davranışını, elle yapılan değişiklikleri (drift) ve iş mantığı hatalarını bulamaz."
+    ipucu: "Statik araç çalışma zamanındaki gerçek davranışı görür mü?"
   - id: container-011-s3
     soru: "Bir tarama aracı 'yanlış pozitif' (false positive) verirse ne yapılır?"
     cevap: "Önce gerçekten yanlış mı diye insan olarak incele. Gerçekten kabul edilmiş bir istisnaysa, sebebiyle birlikte koda ya da yapılandırmaya yazılı bir bastırma (skip) ekle; sessizce kapatma."
+    ipucu: "Yanlış pozitifi sessizce silmek mi, gerekçeli istisna mı?"
   - id: container-011-s4
     soru: "IaC taraması CI'a nasıl yerleşir?"
     cevap: "Her çekme isteğinde araç otomatik çalışır; belirli önem derecesindeki bulgular build'i durdurur ya da yoruma eklenir. Böylece güvensiz yapılandırma birleştirilmeden fark edilir (pipeline-011'de kapıları işleyeceğiz)."
+    ipucu: "Tarama hangi aşamada kapı görevi görmeli?"
+  - id: container-011-s5
+    soru: "CI'da Checkov, bir S3 kovasının herkese açık olduğunu bildirdi ve geliştirici 'yanlış pozitif, bastıralım' diyor. Ne yaparsın?"
+    cevap: "Önce bulgunun gerçekten yanlış olup olmadığını doğrularsın: kova gerçekten halka açık mı? Gerçekse düzeltirsin. Gerçekten bilinçli bir istisna ise gerekçe ve sahibiyle koda yorum olarak yazılmış tek tek bir bastırma kabul edersin."
+    ipucu: "Bastırma gerekçe ve sahip ister."
+hizliKontrol:
+  - soru: "IaC taraması en çok hangi aşamada değerlidir?"
+    secenekler: ["Üretim çalışırken","Altyapı uygulanmadan önce, PR/CI aşamasında","Olaydan sonra","Yıllık denetimde"]
+    dogru: 1
+    aciklama: "Hata daha kodda yakalanınca düzeltme ucuz ve güvenli olur."
+    ipucu: "Erken yakalama ucuzdur."
+sikHatalar:
+  - hata: "Bulguyu anlamadan `skip` ile bastırmak."
+    dogrusu: "Önce riski değerlendir; gerekiyorsa gerekçeli ve sahipli istisna ekle."
+  - hata: "Tarama yeşil diye altyapının güvenli olduğunu sanmak."
+    dogrusu: "Statik tarama yalnız bilinen kalıpları yakalar; mantık hatalarını ve çalışma zamanı sorunlarını yakalamaz."
+terimler:
+  - "IaC"
+  - "Terraform"
 derinDalis:
   - tur: lab
     baslik: "Checkov depo sayfası"

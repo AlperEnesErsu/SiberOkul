@@ -40,15 +40,38 @@ sorular:
   - id: container-010-s1
     soru: "State dosyası ne işe yarar?"
     cevap: "Terraform'un hangi gerçek kaynakları yönettiğini ve onların son bilinen özelliklerini kaydeder. `plan` sırasında kodla gerçek durumu bu kayıt üzerinden karşılaştırır."
+    ipucu: "State, Terraform'un gerçek dünyayı nasıl hatırladığıdır; içinde ne olabilir?"
   - id: container-010-s2
     soru: "`sensitive = true` işaretlemek sırrı state'ten siler mi?"
     cevap: "Hayır. Yalnız terminal çıktısında ve planda değerin gösterilmesini engeller. Değer yine de state dosyasında düz metin saklanır; bu yüzden state'in kendisi korunmalıdır."
+    ipucu: "'Sensitive' etiketi nerede gizler, nerede gizlemez?"
   - id: container-010-s3
     soru: "Yerel state yerine uzak backend (remote backend) kullanmanın güvenlik avantajları nelerdir?"
     cevap: "State merkezi, şifreli ve erişim kontrollü bir yerde durur; kişisel bilgisayarlara dağılmaz, Git'e kaza ile girmez. Ayrıca sürümlenir ve denetim günlüğü tutulabilir."
+    ipucu: "Uzak, şifreli ve erişimi kısıtlı bir yer neleri kazandırır?"
   - id: container-010-s4
     soru: "State kilidi (locking) neden gerekir?"
     cevap: "İki kişi ya da iki CI işi aynı anda `apply` ederse state bozulabilir ya da değişiklikler birbirini ezer. Kilit, aynı anda tek işlemin state'i değiştirmesini sağlar."
+    ipucu: "İki kişi aynı anda apply çalıştırırsa ne olur?"
+  - id: container-010-s5
+    soru: "Git geçmişinde `terraform.tfstate` dosyasının commit edildiğini fark ettin; içinde veritabanı parolası var. Ne yaparsın?"
+    cevap: "Parolayı sızmış sayıp hemen yenilersin. Dosyayı geçmişten temizler, `.gitignore`'a ekler ve state'i şifreli, erişimi kısıtlı uzak backend'e taşırsın. Gelecekte pre-commit ya da CI sır taramasıyla tekrarlanmasını engellersin."
+    ipucu: "Depoya girmiş sırrı 'silmek' yetmez."
+hizliKontrol:
+  - soru: "`sensitive = true` değeri state'ten siler mi?"
+    secenekler: ["Evet, state'e hiç yazılmaz","Hayır; yalnız çıktılarda gizler, state'te düz metin kalabilir","Evet, state şifrelenir","Yalnız yerel backend'de siler"]
+    dogru: 1
+    aciklama: "sensitive bir görüntüleme ayarıdır; state ve plan dosyaları yine değeri içerir."
+    ipucu: "Gizlemek ile saklamamak farklıdır."
+sikHatalar:
+  - hata: "State dosyasını Git'e eklemek."
+    dogrusu: "State'i şifreli, kilitli ve erişimi kısıtlı uzak backend'de tut; `.gitignore`'a ekle."
+  - hata: "`sensitive = true` yazınca sırrın korunduğunu sanmak."
+    dogrusu: "Bu yalnız çıktıları gizler; state'in kendisini koru."
+terimler:
+  - "Terraform state"
+  - "Terraform"
+  - "Secret"
 derinDalis:
   - tur: okuma
     baslik: "Terraform: state'te hassas veri"

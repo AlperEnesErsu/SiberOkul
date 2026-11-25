@@ -25,15 +25,52 @@ sorular:
   - id: pipeline-010-s1
     soru: "Dal koruma kuralıyla hangi üç şeyi zorunlu kılabilirsin?"
     cevap: "Örneğin birleştirmeden önce onaylı inceleme, geçmesi gereken durum kontrolleri (CI/tarama), ve imzalı commit. Ayrıca force push ve dalı silmeyi engelleyebilir, kuralı yöneticilere de uygulatabilirsin."
+    ipucu: "Üç şey: kim onaylar, ne geçmeli, geçmiş yeniden yazılabilir mi?"
   - id: pipeline-010-s2
     soru: "CODEOWNERS dosyası ne işe yarar ve nerede durur?"
     cevap: "Hangi dosya ya da klasör için kimin inceleme yapması gerektiğini belirtir. `.github/`, kök ya da `docs/` dizinindedir. Dal korumada 'kod sahibi onayı' seçilirse, o dosyaları değiştiren PR'a ilgili sahip onay vermeden birleştirilemez."
+    ipucu: "Dosya yoluna göre sahip atayan bir dosyayı düşün."
   - id: pipeline-010-s3
     soru: "Workflow dosyalarını (`.github/workflows/`) neden özellikle CODEOWNERS ile korumak istersin?"
     cevap: "Workflow, pipeline'ın yetkilerini ve adımlarını tanımlar. Değiştirebilen biri güvenlik taramasını kapatabilir ya da sırları çalan bir adım ekleyebilir. Bu yüzden bu dosyalar güvenlik ekibinin onayına bağlanır; CODEOWNERS dosyasının kendisi de sahiplenilmelidir."
+    ipucu: "Workflow dosyasını değiştiren, pipeline'ın yetkisini de değiştirir."
   - id: pipeline-010-s4
     soru: "İmzalı commit neyi kanıtlar, neyi kanıtlamaz?"
     cevap: "Commit'in, imza anahtarının sahibi tarafından yapıldığını kanıtlar; başkası senin adınla commit atamaz. Kodun güvenli ya da hatasız olduğunu kanıtlamaz."
+    ipucu: "Git'te kimliği gösteren metni herkes değiştirebilir; bunu neyle kanıtlarsın?"
+  - id: pipeline-010-s5
+    soru: "Bir PR'da geliştirici `.github/workflows/ci.yml` içindeki güvenlik taraması adımını silmiş ve 'hızlandırdım' demiş. Ne yaparsın?"
+    cevap: "Workflow dosyalarının CODEOWNERS ile güvenlik ekibine ait olması gerekir; böylece bu PR onların onayı olmadan birleşemez. Silmenin nedenini sor: gürültü sorunuysa kuralı ayarla, taramayı kaldırma. Bir de ilgili job'ın zorunlu durum kontrolü olduğundan emin ol; öyleyse job yoksa PR birleştirilemez."
+    ipucu: "Bu dosyaya kimlerin dokunabilmesi gerektiğini ve hangi ayarın dosya sahibi onayını zorunlu kıldığını düşün."
+hizliKontrol:
+  - soru: CODEOWNERS neden kendisini de korumalıdır?
+    secenekler:
+      - Dosya kullanılmadığı için
+      - Başkası dosyayı değiştirip kendini sahip yapabilir
+      - Git bunu gerektirir
+      - Dosya çok büyüktür
+    dogru: 1
+    aciklama: CODEOWNERS dosyasını değiştirebilen, kimin neyi onaylayacağını da değiştirebilir.
+    ipucu: Kural dosyasına kim dokunabilir?
+  - soru: "'Verified' rozeti neyi gösterir?"
+    secenekler:
+      - Kodun hatasız olduğunu
+      - Commit'in beklenen bir anahtarla imzalandığını
+      - Testlerin geçtiğini
+      - PR'ın onaylandığını
+    dogru: 1
+    aciklama: İmza commit'in kaynağını gösterir; kod kalitesini ya da güvenliğini göstermez.
+    ipucu: Rozet kimlik içindir.
+sikHatalar:
+  - hata: Dal koruma kuralını yöneticilere uygulamamak.
+    dogrusu: Kuralı herkese uygula; acil durum için ayrı ve kayıtlı bir yol bırak.
+  - hata: Onaydan sonra gelen commit'te eski onayın geçerli kalması.
+    dogrusu: Yeni commit'te eski onayları geçersiz kıl ki onaylanmış PR'a sonradan kod eklenemesin.
+terimler:
+  - Branch protection
+  - CODEOWNERS
+  - Güvenlik kapısı
+  - Pull request
 derinDalis:
   - tur: okuma
     baslik: "GitHub: Korumalı dallar hakkında"
@@ -81,5 +118,11 @@ Git'te `user.name` ve `user.email` herkesin yazabildiği metindir; başkası sen
 ### Bu bölgeyle bağlantı
 
 GitShield'in GitHub Action'ı ancak zorunlu durum kontrolü yapılırsa bir kapı olur. Aksi halde bulgu görürsün ama kimse birleştirmeyi durdurmaz. Bu ayrımı bir sonraki derste "güvenlik kapısı" olarak ele alacağız.
+
+### Kural setleri (rulesets) ve kapsam
+
+GitHub'da dal koruma artık **ruleset** olarak da tanımlanabilir. Avantajı: aynı kuralı birden fazla depoya ve dal kalıbına (ör. `main` ile `release/*`) tek yerden uygulayabilir, ve uygulama modunu önce "değerlendir" olarak deneyip sonra "zorla"ya geçirebilirsin. Bu, 011. dersteki "önce uyar, sonra engelle" yaklaşımının dal koruma karşılığıdır.
+
+Birkaç pratik not: zorunlu durum kontrolü olarak işaretlediğin job'ın **adı** değişirse kural bozulur ve birleştirme kilitlenir ya da kontrol atlanır. Job adlarını sabit tut. Kod sahiplerinin tek bir kişi olmamasına dikkat et; kişi izne çıkınca PR'lar kilitlenmesin, ekip adı kullan.
 
 **Güvenlik notu:** Koruma kuralını değiştirme izni olan hesaplar, kuralların kendisinden daha değerlidir. Bu hesapları ek doğrulama (MFA) ile koru ve sayısını az tut.
