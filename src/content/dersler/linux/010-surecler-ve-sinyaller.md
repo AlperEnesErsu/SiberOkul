@@ -45,7 +45,6 @@ derinDalis:
   - tur: okuma
     baslik: "man7.org: signal(7)"
     ayrinti: "Sinyallerin tam listesi ve ne anlama geldikleri."
-    url: "https://man7.org/linux/man-pages/man7/signal.7.html"
 ---
 
 Çalışan her program Linux'ta bir **süreçtir** (process). Süreç, programın bellekteki canlı halidir ve çekirdek ona bir **PID** (process ID) verir. Başka bir sürecin başlattığı süreçlerin **PPID**'si (parent PID, ebeveyn) olur. Bir bakıma aile ağacı kurulur.

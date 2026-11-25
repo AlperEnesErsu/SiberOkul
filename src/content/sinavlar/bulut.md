@@ -1,0 +1,77 @@
+---
+donem: 8
+baslik: "Bulut ve izleme bölgesi sınavı"
+sorular:
+  - soru: "Ekibin bir EC2 sunucusunu Lambda fonksiyonuna taşıyor. İşletim sistemi yamalarının sorumluluğu nasıl değişir?"
+    secenekler: ["Yamalar yine tamamen sende kalır", "Yamalar bir daha kimsenin sorumluluğu olmaz", "Sorumluluk müşteri ile üçüncü bir firmaya geçer", "Lambda'da işletim sistemini AWS yönetir, kod ve izinler sende kalır"]
+    dogru: 3
+    aciklama: "Paylaşılan sorumluluk servise göre kayar: EC2'da işletim sistemi yamaları müşteriye aittir, Lambda'da AWS yönetir. Kod, veri ve IAM izinleri her durumda müşteridedir."
+  - soru: "Bir bucket'taki müşteri verisi herkese açık olduğu için sızdı. AWS donanımı ve veri merkezi güvenliği sorunsuz. Sorumluluk kimde?"
+    secenekler: ["Bucket'ı yapılandıran müşteride", "AWS'de, çünkü S3 onların servisi", "Müşteri ve AWS eşit paylaşır", "Veri merkezi sağlayıcısında"]
+    dogru: 0
+    aciklama: "Erişim politikası 'bulut içindeki güvenlik' kapsamındadır ve müşteriye aittir. AWS yalnız altyapıyı (bulutun güvenliğini) korur."
+  - soru: "Yeni bir güvenlik mühendisi hesaptaki kök kullanıcıyı (root) günlük işlerde kullanmayı öneriyor. En doğru cevap hangisi?"
+    secenekler: ["Olur, kökte MFA varsa sorun yoktur", "Olur, çünkü kök kısıtlanabilir", "Olmaz; yönetici bir kimlik kullanılır, kök yalnız onu gerektiren nadir işlerde açılır", "Olmaz, çünkü kök hesap MFA kabul etmez"]
+    dogru: 2
+    aciklama: "Kök her şeye sınırsız erişir ve kısıtlanamaz. AWS, kökü yalnız gerektiren işlerde kullanmayı, MFA koymayı ve köke erişim anahtarı üretmemeyi önerir. MFA kabul eder."
+  - soru: "Bir CI işi uzun süredir 14 aylık bir IAM kullanıcı anahtarıyla AWS'ye bağlanıyor. En iyi iyileştirme hangisi?"
+    secenekler: ["Anahtarı bir not dosyasına yazıp ekibe dağıtmak", "Kullanıcıyı yönetici yapıp anahtarı uzatmak", "İşin geçici kimlik bilgileriyle bir rolü üstlenmesini sağlamak", "Anahtarı repoya şifreli olarak koymak"]
+    dogru: 2
+    aciklama: "Roller geçici kimlik bilgileri verir; saklanan uzun ömürlü anahtar kalmaz ve sızsa bile kısa sürede geçersiz olur. Diğer seçenekler riski artırır."
+  - soru: "Pull request'te şu ifadeyi görüyorsun: Effect Allow, Action \"*\", Resource \"*\" ve bu bir uygulama rolüne bağlanıyor. Ne yaparsın?"
+    secenekler: ["Onaylarım, uygulama çalışsın diye geniş olması normal", "Yalnız Resource'u dar yapıp Action'ı * bırakırım", "Politikanın adını daha anlaşılır yapmasını isterim", "İzinleri uygulamanın gerçekten kullandığı eylem ve kaynaklara daraltmasını isterim"]
+    dogru: 3
+    aciklama: "Her şeye izin veren politika, kimlik çalınırsa hesabın tamamını riske atar. En az yetki ilkesi gereği eylem ve kaynak daraltılır; kullanım için CloudTrail ve Access Analyzer yardımcı olur."
+  - soru: "Bir politikada aynı eylem için hem Allow hem Deny ifadesi eşleşiyor. Sonuç ne olur?"
+    secenekler: ["Allow kazanır", "Hangisi önce yazıldıysa o geçerlidir", "Deny kazanır", "İstek rastgele reddedilir ya da kabul edilir"]
+    dogru: 2
+    aciklama: "IAM'de açık Deny her zaman kazanır. Bu yüzden kritik kısıtlar Deny ile güvenceye alınır."
+  - soru: "Bir veritabanı sunucusu için en güvenli ağ tasarımı hangisi?"
+    secenekler: ["Özel alt ağda, güvenlik grubu yalnız uygulama grubundan 5432'ye izin veriyor", "Genel alt ağda, güvenlik grubunda 0.0.0.0/0'dan 5432 açık", "Genel alt ağda, parola uzun diye hiçbir kural yok", "Özel alt ağda ama güvenlik grubunda tüm portlar herkese açık"]
+    dogru: 0
+    aciklama: "Veritabanı özel alt ağda olmalı ve yalnız ihtiyacı olan kaynaktan gelen trafiğe izin vermeli. Kaynağı başka bir güvenlik grubu olarak yazmak IP değişimlerine karşı da dayanıklıdır."
+  - soru: "Bir EC2 güvenlik grubunda SSH (22) portu 0.0.0.0/0 için açık. Bu neden sorundur?"
+    secenekler: ["Güvenlik grupları SSH'yi kabul etmez", "Sunucu otomatik kapanır", "İnternetteki herkes sürekli parola ya da anahtar denemesi yapabilir", "SSH trafiği şifrelenmez"]
+    dogru: 2
+    aciklama: "Yönetim portlarının dünyaya açılması kaba kuvvet denemelerini davet eder. Kaynak bilinen IP aralıklarına daraltılmalı ya da portsuz erişim yöntemi kullanılmalı. SSH şifrelidir."
+  - soru: "Bir bucket politikasında Principal olarak \"*\" ve Action olarak s3:GetObject var. Bucket müşteri yedeği içeriyor. En doğru ilk adım?"
+    secenekler: ["Hiçbir şey, nesnelerin adını kimse bilmez", "Bucket'ın adını değiştirmek", "Şifrelemeyi kapatmak", "Politikayı kaldırıp Block Public Access'i açarak erişimi kapatmak, ardından erişim kayıtlarını incelemek"]
+    dogru: 3
+    aciklama: "Principal * herkesin okuyabilmesi demektir. Önce açıklığı kapat, sonra olay olup olmadığını anlamak için log'lara bak. Gizli ad güvenlik önlemi değildir."
+  - soru: "S3 yeni nesneleri varsayılan olarak SSE-S3 ile şifreler. İzinli bir kimlik yanlışlıkla nesneyi okursa bu şifreleme ne yapar?"
+    secenekler: ["Okumayı engeller", "Okumayı kayıt altına alıp reddeder", "Bir şey yapmaz; yetkili kimlik için nesne otomatik çözülür", "Nesneyi siler"]
+    dogru: 2
+    aciklama: "Sunucu tarafı şifreleme durağan veriyi korur (disk ele geçirilirse). Yetkili bir istek geldiğinde S3 nesneyi otomatik çözer, bu yüzden şifreleme yanlış erişim politikasının yerine geçmez."
+  - soru: "Bir geliştirici gerçek bir erişim anahtarını public repoya push etti ve birkaç dakika sonra commit'i sildi. Ne yapmalısın?"
+    secenekler: ["Anahtarı devre dışı bırakıp yenisini üretmek ve CloudTrail'de kullanımını incelemek", "Silindiği için sorun yoktur", "Repoyu private yapıp beklemek", "Yalnız geliştiriciye uyarı e-postası atmak"]
+    dogru: 0
+    aciklama: "Anahtar git geçmişinde ve kopyalarda durur, tarayıcılar dakikalar içinde bulabilir. Anahtarı iptal edip döndürmek ve kullanımı incelemek gerekir."
+  - soru: "Secrets Manager'daki bir parolanın otomatik rotasyonu neyi sağlar?"
+    secenekler: ["Parola hiç sızamaz", "Parolanın uzunluğu iki katına çıkar", "Uygulama parolayı artık hiç kullanmaz", "Sır düzenli aralıklarla değişir, bir sızıntının geçerlilik süresi sınırlı kalır"]
+    dogru: 3
+    aciklama: "Rotasyon sırrı periyodik olarak değiştirir ve hedef servisi de günceller. Sızıntıyı önlemez ama ömrünü kısaltır."
+  - soru: "Hesapta tanımadığın bir IAM kullanıcısı görüyorsun. Kimin, ne zaman, nereden oluşturduğunu nerede bulursun?"
+    secenekler: ["CloudTrail'deki CreateUser olayında", "S3 bucket politikasında", "VPC yönlendirme tablosunda", "KMS anahtar politikasında"]
+    dogru: 0
+    aciklama: "CloudTrail kimin hangi API çağrısını ne zaman ve hangi IP'den yaptığını kaydeder. CreateUser olayının userIdentity ve sourceIPAddress alanları cevabı verir."
+  - soru: "Bir saldırgan hesaba girdikten sonra izlerini silmek için önce hangi olaya yönelirdi, sen hangisi için alarm kurarsın?"
+    secenekler: ["ListBuckets", "GetCallerIdentity", "StopLogging ya da DeleteTrail", "DescribeInstances"]
+    dogru: 2
+    aciklama: "Kayıtları susturan olaylar yüksek değerlidir ve alarmı hak eder. Diğer üçü olağan okuma çağrılarıdır; tek başlarına şüpheli değildir."
+  - soru: "Bir CPU alarmı her gece yedek alınırken 2 dakika ötüp kapanıyor ve ekip artık bakmıyor. En uygun çözüm?"
+    secenekler: ["Değerlendirme penceresini uzatmak ya da bakım penceresinde bastırmak", "Alarmı silmek ve bir daha kurmamak", "Alarmı sadece yöneticiye göndermek", "Eşiği %100'e çıkarmak"]
+    dogru: 0
+    aciklama: "Beklenen ve geçici artışlar için değerlendirme süresi ayarlanır ya da bakım penceresi tanımlanır. Alarm yorgunluğu gerçek alarmları da kaçırtır; silmek ya da eşiği anlamsızlaştırmak çözüm değildir."
+  - soru: "Aynı IP'den 10 dakikada 3 başarısız giriş ve ardından başarılı giriş görüyorsun. Bu desene ne denir ve neden tek satırlık kurallar yetmez?"
+    secenekler: ["Korelasyon; her satır tek başına olağandır, sıra ve zaman birlikte şüphelidir", "Şifreleme; satırlar şifrelenmiştir", "Rotasyon; anahtarlar değişmiştir", "Yedekleme; satırlar kopyalanmıştır"]
+    dogru: 0
+    aciklama: "Korelasyon kuralı birden çok olayı bir zaman penceresinde birleştirir. Tek tek bakılan satırlar bu hikayeyi göstermez. Pencere ve eşik gerçek veriyle ayarlanır."
+  - soru: "Sızdığından emin olduğun bir erişim anahtarı için müdahalede doğru sıra hangisi?"
+    secenekler: ["Önce anahtarı sil, sonra herkesten gizle, loglara hiç bakma", "Önce raporu yaz, sonra gerekirse anahtarı kapat", "Önce hesabı sil", "Önce anahtarı devre dışı bırak, sonra kayıtlardan kapsamı çıkar, yeni oluşturulan kimlikleri temizle, anahtarı yenile, öğren"]
+    dogru: 3
+    aciklama: "Önce sınırla (devre dışı bırak), sonra kapsamı belirle (CloudTrail), saldırganın bıraktıklarını temizle, yeni kimlik bilgisi üret ve olaydan öğren. Kayıtlara bakmak atlanırsa arka kapılar kalır."
+  - soru: "Şirketin tek yedeği üretimle aynı hesapta ve yöneticinin silebildiği bir bucket'ta. Fidye yazılımı yönetici anahtarını ele geçirirse ne olur ve düzeltme nedir?"
+    secenekler: ["Yedek de silinebilir; yedeği ayrı hesapta, değiştirilemez depolamada tutup geri yüklemeyi denemek gerekir", "Yedek zarar görmez, çünkü bulutta", "Yedek otomatik olarak daha güvenli hale gelir", "Fidye ödemek tek seçenek olur"]
+    dogru: 0
+    aciklama: "Saldırganlar önce yedekleri hedefler. Ayrı hesap, Object Lock gibi değiştirilemez depolama ve düzenli geri yükleme denemesi savunmayı oluşturur; aynı yetkiyle silinebilen yedek koruma sağlamaz."
+---

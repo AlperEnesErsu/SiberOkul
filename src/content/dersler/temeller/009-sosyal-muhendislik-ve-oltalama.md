@@ -1,0 +1,91 @@
+---
+kimlik: temeller-009
+baslik: "Sosyal mühendislik ve oltalama"
+donem: 3
+sira: 9
+sure: 25
+neden: "Güvenlik zincirinin en kolay kırılan halkası çoğu zaman teknoloji değil insandır. DevSecOps mühendisleri, yetkili hesapları ve pipeline erişimlerini hedefleyen oltalamanın ilk hedefidir; tek bir kandırılmış geliştirici bütün üretim ortamını açabilir. Taktikleri tanımak ve ekibe öğretmek işinin bir parçasıdır."
+analoji:
+  baslik: "Resmi kıyafetli sahte görevli"
+  metin: "Kapıya gaz şirketinden geldiğini söyleyen, yeleği ve kartı olan biri, kapıyı açtırmak için kimlik kontrolünden önce güveni kullanır. Oltalama da aynıdır: kilidi kırmaz, seni kapıyı kendin açmaya ikna eder. Sınır: kapıdaki görevliyi yüz yüze görürsün; e-postada gönderen adı, logo ve dil kolayca taklit edilir."
+gorev:
+  aciklama: "Bir bağlantının gerçekte nereye gittiğini görmeyi çalış. Aşağıdaki komutlar bağlantıyı açmaz; yalnız adres metnini parçalar. Alan adı, ilk `/` işaretinden önce ve üst alan adının hemen solundaki kısımdır."
+  komutlar:
+    - echo "https://giris.banka.com.guvenlik-dogrula.example/hesap" | cut -d/ -f3
+    - echo "https://banka.com/giris" | cut -d/ -f3
+    - echo "https://banka.com@kotu.example/giris" | cut -d/ -f3
+    - echo "https://banka-com.example/giris" | cut -d/ -f3
+  soru: "Dört adresin gerçek alan adı hangisinin sonunda duruyor? Hangi adres 'banka.com' gibi görünüp aslında başka bir siteye ait?"
+  telefon:
+    soru: "Telefonuna 'Kargonuz gümrükte bekliyor, 24 saat içinde ödeme yapın: kisa.example/abc' diye SMS geldi. Hangi işaretler bunun oltalama olabileceğini düşündürür ve ilk ne yaparsın?"
+    cevap: "Aciliyet baskısı (24 saat), beklemediğin bir kargo, kısaltılmış bağlantı ve ödeme talebi. Bağlantıya tıklama; kargo firmasının uygulamasını ya da sitesini kendin açıp kontrol et, SMS'i bildir ve sil."
+sorular:
+  - id: temeller-009-s1
+    soru: "Sosyal mühendislik nedir ve oltalama (phishing) bunun neresindedir?"
+    cevap: "Sosyal mühendislik, teknik açık yerine insanın güvenini, aciliyet hissini ya da yardım isteğini kullanarak bilgi ya da erişim koparmaktır. Oltalama, bunun e-posta, SMS ya da sahte site üzerinden yapılan en yaygın biçimidir."
+  - id: temeller-009-s2
+    soru: "Oltalama mesajlarında en sık görülen üç işaret nedir?"
+    cevap: "Aciliyet ya da korku yaratan dil, kişisel/finansal bilgi ya da şifre talebi, uyuşmayan gönderen adresi ya da benzer görünen sahte alan adı ve kısaltılmış bağlantılar."
+  - id: temeller-009-s3
+    soru: "Hedefli oltalama (spear phishing) toplu oltalamadan nasıl farklıdır, neden daha tehlikelidir?"
+    cevap: "Belirli bir kişi ya da kurum için hazırlanır; adını, görevini, iş arkadaşlarını bilir. Kişiselleştirildiği için şüphe uyandırmaz. Geliştiricilere gelen 'sahte işe alım' ya da 'repo daveti' mesajları buna örnektir."
+  - id: temeller-009-s4
+    soru: "Şüpheli bir mesaj aldığında hangi sırayla ne yaparsın?"
+    cevap: "Tıklama, bağlantı açma, eki indirme. Göndereni başka bir kanaldan (bilinen telefon, resmi site) doğrula. Kurumsa güvenlik ekibine bildir. Yanlışlıkla tıkladıysan ya da bilgi girdiysen hemen parolayı değiştir ve bildir."
+derinDalis:
+  - tur: okuma
+    baslik: "CISA: Recognize and Report Phishing"
+    ayrinti: "Oltalama işaretlerini ve bildirme adımlarını sade anlatan sayfa."
+    url: "https://www.cisa.gov/secure-our-world/recognize-and-report-phishing"
+  - tur: kitap
+    baslik: "Social Engineering: The Science of Human Hacking (Christopher Hadnagy)"
+    ayrinti: "Taktiklerin psikolojisini anlatan kitap; bölüm numarası vermeden konu başlıklarına göz at."
+---
+
+**Sosyal mühendislik** (social engineering), bir sisteme teknik yoldan girmek yerine insanı ikna ederek bilgi ya da erişim almaktır. Saldırgan kilidi kırmaz; kapıyı sana açtırır.
+
+### Neden işe yarar?
+
+Beyin bazı durumlarda düşünmeden tepki verir. Saldırganlar şu kolları çeker:
+
+- **Aciliyet**: "Hesabın 2 saat içinde kapanacak."
+- **Otorite**: "Ben müdürünüzüm, hemen şu ödemeyi yap."
+- **Korku ya da merak**: "Hesabında şüpheli işlem var" ya da "Maaş listesi ektedir."
+- **Yardımseverlik**: "Telefonum bozuldu, şu kodu iletir misin?"
+- **Güven**: Tanıdık bir logo, bir iş arkadaşının adı.
+
+### Başlıca türler
+
+| Tür | Kanal |
+|---|---|
+| Oltalama (phishing) | E-posta, sahte site |
+| Hedefli oltalama (spear phishing) | Belirli bir kişiye özel e-posta |
+| Smishing | SMS |
+| Vishing | Telefon araması |
+| Bahaneleme (pretexting) | Uydurma bir hikâye ve rol |
+
+Geliştiricilere yönelik yaygın tuzaklar: sahte iş teklifi ile "kodlama testi" diye zararlı proje göndermek, sahte GitHub uyarısı, bir bağımlılık güncellemesi gibi görünen zararlı paket.
+
+### Alan adını okumak
+
+Bir bağlantıda gerçek sahip, alan adının sağdan sola okunan kısmıdır. `giris.banka.com.guvenlik.example` adresinin sahibi `guvenlik.example`'dır; başa eklenen `banka.com` yalnız aldatmacadır. Dikkat edilecek hileler:
+
+- Benzer alan adları (harf değişimi, ek kelime, tire).
+- `@` ile gizleme: `banka.com@kotu.example` adresinde gerçek hedef `@` işaretinden sonrasıdır.
+- Kısaltılmış bağlantılar hedefi saklar.
+- Logo, imza ve dil kolay taklit edilir; görünüş kanıt değildir.
+
+### Savunma
+
+1. **Dur ve düşün.** Aciliyet baskısı başlı başına bir uyarıdır.
+2. **Başka kanaldan doğrula.** Mesajdaki numarayı arama; resmi siteyi kendin aç.
+3. **Bağlantıya tıklama, uygulamayı ya da yer imini kullan.**
+4. **Çok faktörlü doğrulama aç.** Parola kaptırılsa bile tek başına yetmez; passkey sahte siteye hiç çalışmaz.
+5. **Parola yöneticisi kullan.** Yönetici sahte sitede parolayı otomatik doldurmaz; bu sinyal kıymetlidir.
+6. **Bildir.** Kurumunda bir bildirim yolu varsa kullan; sessiz kalmak diğerlerini tehlikede bırakır.
+
+### Hata yaparsan
+
+Herkes bir gün tıklar. Önemli olan hızdır: parolayı değiştir, açık oturumları kapat, güvenlik ekibine haber ver. Utanmak ve saklamak saldırganın işine yarar.
+
+Güvenlik notu: Oltalama farkındalığı egzersizi yapacaksan yalnız yetkili olduğun bir kurum içinde ve yazılı izinle yap. İzinsiz sahte mesaj göndermek suçtur.

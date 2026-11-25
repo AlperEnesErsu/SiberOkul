@@ -43,7 +43,6 @@ derinDalis:
   - tur: okuma
     baslik: "man7.org: tail kılavuz sayfası"
     ayrinti: "`-f` ve `-n` seçeneklerinin resmi açıklaması."
-    url: "https://man7.org/linux/man-pages/man1/tail.1.html"
 ---
 
 Linux'ta yapılandırma, kullanıcı listesi, loglar: hepsi **düz metin** dosyalarıdır. Bu yüzden metin okuma komutları günde onlarca kez kullanılır.

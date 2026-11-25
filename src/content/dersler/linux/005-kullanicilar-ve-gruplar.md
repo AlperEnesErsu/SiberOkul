@@ -43,7 +43,6 @@ derinDalis:
   - tur: okuma
     baslik: "man7.org: passwd(5) dosya biçimi"
     ayrinti: "`/etc/passwd` alanlarının resmi açıklaması."
-    url: "https://man7.org/linux/man-pages/man5/passwd.5.html"
 ---
 
 Linux çok kullanıcılı bir sistemdir. Her **kullanıcı** (user) bir ad ve bir sayıdan oluşur: **UID** (user ID). Çekirdek (kernel) adları değil sayıları kullanır. Aynı şekilde her **grup** bir **GID** taşır.
