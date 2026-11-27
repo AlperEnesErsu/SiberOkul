@@ -1,24 +1,28 @@
 ---
 import { getCollection } from 'astro:content';
 import Temel from '../../layouts/Temel.astro';
+import OkunduIsaretleri from '../../components/OkunduIsaretleri.astro';
 
 const kok = import.meta.env.BASE_URL;
 const kayitlar = (await getCollection('atolye')).sort((a, b) => b.data.no - a.data.no);
 ---
 <Temel baslik="Atölye" aciklama="Bu siteyi yaparken aldığımız kararlar: ne, neden, bedeli ne.">
   <h1>Atölye</h1>
-  <p class="soluk">Bu siteyi yaparken aldığımız her teknik karar burada: sorun neydi, hangi seçenekler vardı, neyi neden seçtik, bedeli ne.</p>
+  <p class="soluk">Bu siteyi yaparken aldığımız her teknik karar burada: sorun neydi, hangi seçenekler vardı, neyi neden seçtik, bedeli ne. <strong id="okunan-ozet"></strong></p>
   {kayitlar.length === 0 && <p>Henüz kayıt yok.</p>}
   <ol class="liste" reversed>
     {kayitlar.map((k) => (
-      <li class="kart">
+      <li class="kart" data-kart={`atolye:${k.id}`}>
+        <span class="kart-durum soluk"></span>
         <span class="etiket">Karar {String(k.data.no).padStart(3, '0')} · {k.data.tarih}</span><br />
         <a href={`${kok}atolye/${k.id}/`}>{k.data.baslik}</a>
       </li>
     ))}
   </ol>
+  <OkunduIsaretleri />
 </Temel>
 <style>
   .liste { list-style: none; padding: 0; }
   .liste a { font-weight: 600; font-size: 1.05rem; }
+  .kart-durum { float: right; font-size: 0.85rem; }
 </style>

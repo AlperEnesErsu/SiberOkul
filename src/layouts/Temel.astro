@@ -63,6 +63,12 @@ const aktifMi = (href: string) =>
         {sagVar && <aside class="sag" aria-label="Durum"><slot name="sag" /></aside>}
       </div>
     </div>
+    <script>
+      // Geri/ileri önbelleğinden (bfcache) dönen sayfa eski ilerlemeyi göstermesin: tazele.
+      window.addEventListener('pageshow', (e) => {
+        if (e.persisted) location.reload();
+      });
+    </script>
   </body>
 </html>
 

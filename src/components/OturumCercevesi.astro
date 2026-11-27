@@ -43,12 +43,14 @@ const { her = false, parca } = Astro.props;
     display: grid; place-items: center; width: 1.6rem; height: 1.6rem; flex: none;
     border-radius: 50%; border: 2px solid var(--cizgi); font-size: 0.8rem;
   }
+  /* Kilitliyken normal akışta (sayfanın sonunda); adım bitince .hazir ile alta yapışır. */
   .oturum-cubugu {
-    position: sticky; bottom: 1rem; z-index: 5;
+    position: static; z-index: 5;
     display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 0.6rem 1rem;
     margin-top: 2rem; padding: 0.8rem 1rem;
     background: var(--yuzey); border: 1px solid var(--cizgi); border-radius: var(--r); box-shadow: var(--golge);
   }
+  .oturum-cubugu.hazir { position: sticky; bottom: 1rem; border-color: var(--birincil); }
   /* Dar ekranda adım listesi tek satır: numaralar + yalnız şu anki adımın adı */
   @media (max-width: 1023px) {
     .oturum-adimlari { padding: 0.7rem 0.9rem; }
@@ -58,7 +60,7 @@ const { her = false, parca } = Astro.props;
     .oturum-adimlari :global(li.simdi) { font-size: 0.9rem; gap: 0.4rem; padding-right: 0.7rem; }
   }
   @media (max-width: 767px) {
-    .oturum-cubugu { bottom: calc(4.4rem + env(safe-area-inset-bottom, 0px)); }
+    .oturum-cubugu.hazir { bottom: calc(4.4rem + env(safe-area-inset-bottom, 0px)); }
     .oturum-cubugu button { width: 100%; justify-content: center; }
   }
 </style>

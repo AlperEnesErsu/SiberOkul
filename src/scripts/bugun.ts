@@ -1,6 +1,7 @@
 // Ana sayfa = oturum kapısı: istatistikler, oturumu başlat / devam et / bitti özeti, bölgeler.
 import { bugunSec } from '../lib/ilerleme/bugun';
-import { oturumOku, oturumPlanla, oturumYaz, type Oturum } from '../lib/oturum';
+import { oturumOku, oturumPlanla, oturumuAl, type Oturum } from '../lib/oturum';
+import { ilerlemeOku } from '../lib/ilerleme/depo';
 import { durumHesapla, yaz } from './durum';
 import { yayimlananlar } from './ders-verisi';
 import { ADIM_ADI, ADIM_SIMGE, adimAdresi, tahminiSure } from './oturum-ortak';
@@ -55,11 +56,12 @@ if (oturum.bitti) {
   dugme.textContent = 'Bugünün oturumunu başlat →';
   dugme.addEventListener('click', (olay) => {
     olay.preventDefault();
-    const yeni = oturumPlanla(dersler, kartlar, d.ilerleme, d.bugun, sinavBilgisi);
-    oturumYaz(yeni);
-    location.href = adimAdresi(yeni, dersler, kartlar) ?? `${import.meta.env.BASE_URL}oturum/`;
+    // Sayfa eskiyse (geri tuşuyla dönüldüyse) bugünkü oturum zaten başlamış olabilir: sıfırlama, sürdür.
+    const o = oturumuAl(dersler, kartlar, ilerlemeOku(), d.bugun, sinavBilgisi);
+    location.href = adimAdresi(o, dersler, kartlar) ?? `${import.meta.env.BASE_URL}oturum/`;
   });
 }
+
 
 // Bölgeler
 const yayin = yayimlananlar(dersler);

@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { adimTamamMi, adimUrl, ilerlet, kartSec, oturumOku, oturumPlanla, oturumYaz, OTURUM_ANAHTARI, type KartOzet } from '../src/lib/oturum';
+import { adimTamamMi, adimUrl, ilerlet, kartSec, oturumOku, oturumPlanla, oturumuAl, oturumYaz, OTURUM_ANAHTARI, type KartOzet } from '../src/lib/oturum';
 import type { DersOzet } from '../src/lib/ilerleme/bugun';
 import { bosIlerleme, type Ilerleme } from '../src/lib/ilerleme/model';
 
@@ -143,4 +143,23 @@ test('sınav yanlışı tekrarda', () => {
   const o = oturumPlanla(dersler, kartlar, i, B, { donemler: [], sinavDonemleri: [], soruIdleri: ['sinav-linux-3'] });
   expect(o.adimlar).toContain('tekrar');
   expect(o.tekrarlar).toEqual(['sinav-linux-3']);
+});
+
+// Korur: "Başlat"a ikinci kez basılınca (ör. geri tuşuyla eski ana sayfaya dönüp) bugünkü oturumun
+// sıfırlanmamasını; var olan oturum aynen sürer
+test('oturumu al: var olanı korur', () => {
+  const depo = new Depo();
+  const ilk = oturumuAl(dersler, kartlar, bosIlerleme(), B, undefined, depo);
+  oturumYaz({ ...ilk, konum: 2 }, depo);
+  const ikinci = oturumuAl(dersler, kartlar, bosIlerleme(), B, undefined, depo);
+  expect(ikinci.konum).toBe(2);
+  expect(oturumOku(B, depo)?.konum).toBe(2);
+});
+
+// Korur: bugüne ait oturum yoksa yenisinin planlanıp kaydedilmesini
+test('oturumu al: yoksa planlar ve kaydeder', () => {
+  const depo = new Depo();
+  const o = oturumuAl(dersler, kartlar, bosIlerleme(), B, undefined, depo);
+  expect(o.konum).toBe(0);
+  expect(oturumOku(B, depo)).toEqual(o);
 });

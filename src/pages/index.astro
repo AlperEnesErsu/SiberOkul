@@ -32,7 +32,7 @@ const ilk = (await dersOzetleri())[0];
     </div>
     <ol class="adimlar" id="kapi-adimlar" aria-label="Oturum adımları"></ol>
     <div class="kapi-alt">
-      <a class="dugme birincil buyuk" id="kapi-dugme" href={ilk ? ilk.url : kok}>Oturumu başlat →</a>
+      <a class="dugme birincil buyuk" id="kapi-dugme" href={`${kok}oturum/`}>Oturumu başlat →</a>
       <span class="soluk" id="kapi-sure"></span>
     </div>
   </section>

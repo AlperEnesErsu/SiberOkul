@@ -176,3 +176,23 @@ export function oturumYaz(o: Oturum, depo: Storage | null = varsayilanDepo()): b
     return false;
   }
 }
+
+/**
+ * Bugünün oturumunu verir: geçerli bir kayıt varsa onu (sıfırlamadan), yoksa yenisini planlayıp kaydeder.
+ * "Başlat" düğmesi her zaman bunu kullanır; geri tuşuyla dönülen eski bir ana sayfadan tekrar
+ * basılsa bile süren oturum baştan başlamaz.
+ */
+export function oturumuAl(
+  dersler: DersOzet[],
+  kartlar: KartOzet[],
+  i: Ilerleme,
+  bugun: Gun,
+  sinavBilgisi?: SinavBilgisi,
+  depo?: Storage | null,
+): Oturum {
+  const mevcut = oturumOku(bugun, depo);
+  if (mevcut) return mevcut;
+  const yeni = oturumPlanla(dersler, kartlar, i, bugun, sinavBilgisi);
+  oturumYaz(yeni, depo);
+  return yeni;
+}

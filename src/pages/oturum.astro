@@ -9,6 +9,7 @@ import { dersUrl } from '../lib/ders-listesi';
 import { DONEMLER } from '../data/donemler';
 import { sinavSoruId } from '../lib/sinav';
 import Ipucu from '../components/Ipucu.astro';
+import { jsonGom } from '../lib/json-gom';
 
 const kok = import.meta.env.BASE_URL;
 // Tekrar adımı için bütün soruları gömeriz; betik yalnız bugün tekrarı gelenleri gösterir.
@@ -29,6 +30,11 @@ const sinavSorulari = (await getCollection('sinavlar')).flatMap((s) => {
   }));
 });
 const sorular = [...dersSorulari, ...sinavSorulari];
+// Kimlik → [soru (HTML), cevap (HTML), ipucu (HTML ya da boş), kaynak başlığı, kaynak adresi].
+// HTML'ler satirIci ile üretildi: içerikteki bütün etiketler önce kaçırılır, yalnız <code> eklenir.
+const tekrarVerisi = Object.fromEntries(
+  sorular.map((s) => [s.id, [satirIci(s.soru), satirIci(s.cevap), s.ipucu ? satirIci(s.ipucu) : '', s.baslik, s.url]]),
+);
 ---
 
 <Temel baslik="Bugünün oturumu" duzen="okuma">
@@ -38,7 +44,14 @@ const sorular = [...dersSorulari, ...sinavSorulari];
     <div class="okuma-ana">
       <section class="okuma" id="oturum-yok" hidden>
         <h1>Bugün henüz oturum başlamadı</h1>
-        <p><a class="dugme birincil buyuk" href={kok}>Ana sayfaya dön ve başlat →</a></p>
+        <p><button type="button" class="birincil buyuk" id="oturumu-baslat">Bugünün oturumunu başlat →</button></p>
+      </section>
+
+      <section class="okuma" id="adim-devam" hidden>
+        <p class="etiket" id="devam-etiket">Sıradaki adım</p>
+        <h1 id="devam-baslik">Kaldığın yerden devam et</h1>
+        <p class="soluk" id="devam-alt"></p>
+        <p><a class="dugme birincil buyuk" id="devam-bag" href={kok}>Devam et →</a></p>
       </section>
 
       <section class="okuma" id="adim-isinma" hidden>
@@ -56,24 +69,28 @@ const sorular = [...dersSorulari, ...sinavSorulari];
         <p class="etiket">Tekrar 🔁</p>
         <h1>Unutmadan önce hatırla</h1>
         <p class="soluk">Bu sorular daha önce gördüğün derslerden. Önce cevabı kafanda kur, sonra aç ve kendine dürüstçe not ver.</p>
-        <ol class="tekrar-listesi" id="tekrar-listesi">
-          {sorular.map((s) => (
-            <li class="kart soru" data-soru-id={s.id} hidden>
-              <p class="etiket"><a href={s.url}>{s.baslik}</a></p>
-              <p class="soru-metni" set:html={satirIci(s.soru)} />
-              <Ipucu metin={s.ipucu} />
-              <details>
-                <summary>Cevabı göster</summary>
-                <p class="cevap" set:html={satirIci(s.cevap)} />
-                <div class="puanlar" role="group" aria-label="Kendine not ver" hidden>
-                  <button type="button" data-puan="bildim">Bildim</button>
-                  <button type="button" data-puan="kismen">Kısmen</button>
-                  <button type="button" data-puan="bilemedim">Bilemedim</button>
-                </div>
-              </details>
-            </li>
-          ))}
-        </ol>
+        <ol class="tekrar-listesi" id="tekrar-listesi"></ol>
+        {/*
+          Telefonu yormamak için yüzlerce soruyu sayfaya çizmiyoruz: soruların metni küçük bir JSON'da,
+          tek bir şablon var; betik yalnız bugün tekrarı gelen soruları şablondan üretir.
+        */}
+        <template id="tekrar-sablon">
+          <li class="kart soru" data-soru-id="">
+            <p class="etiket"><a class="soru-ders" href=""></a></p>
+            <p class="soru-metni"></p>
+            <Ipucu metin="ipucu" />
+            <details>
+              <summary>Cevabı göster</summary>
+              <p class="cevap"></p>
+              <div class="puanlar" role="group" aria-label="Kendine not ver">
+                <button type="button" data-puan="bildim">Bildim</button>
+                <button type="button" data-puan="kismen">Kısmen</button>
+                <button type="button" data-puan="bilemedim">Bilemedim</button>
+              </div>
+            </details>
+          </li>
+        </template>
+        <script type="application/json" id="tekrar-verisi" set:html={jsonGom(tekrarVerisi)} />
       </section>
 
       <section class="okuma" id="adim-ozet" hidden>

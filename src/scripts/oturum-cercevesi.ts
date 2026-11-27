@@ -47,13 +47,24 @@ if (nav && cubuk && dugme) {
       cubuk.hidden = true;
       return;
     }
-    cubuk.hidden = false;
     const adim = oturum.adimlar[oturum.konum];
+    // /oturum/ sayfasında ders/kart/sınav adımı için "Devam et" bağlantısı var; kilitli çubuk gösterilmez.
+    if (oturumSayfasi && (adim === 'ders' || adim === 'kart' || adim === 'sinav')) {
+      cubuk.hidden = true;
+      return;
+    }
+    cubuk.hidden = false;
     const sonAdim = oturum.konum === oturum.adimlar.length - 1;
     const acik = adimTamamMi(oturum, ilerlemeOku(), bugun);
+    const oncekiAcik = cubuk.classList.contains('hazir');
     dugme.disabled = !acik;
     dugme.textContent = sonAdim ? 'Oturumu bitir 🎉' : 'Sonraki adım →';
     metin!.textContent = acik ? '' : (IPUCU[adim] ?? '');
+    // Kilitliyken çubuk sayfanın sonunda durur (ekranı kaplamaz); adım bitince alta yapışır.
+    cubuk.classList.toggle('hazir', acik);
+    if (acik && !oncekiAcik && !oturumSayfasi) {
+      dugme.animate?.([{ transform: 'scale(0.96)' }, { transform: 'scale(1.03)' }, { transform: 'scale(1)' }], { duration: 450 });
+    }
   };
 
   dugme.addEventListener('click', () => {

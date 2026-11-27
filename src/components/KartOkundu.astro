@@ -1,11 +1,16 @@
 ---
 // Efsane/Atölye kartının sonunda "Okudum" düğmesi: kartı okunanlara ekler (oturum kapısı).
+// Okunduktan sonra düğme yerine açık bir "✓ Okundu" işareti görünür; listelerde de işaretlenir.
 interface Props { kimlik: string }
 const { kimlik } = Astro.props;
 ---
 <div class="okundu" data-kart={kimlik}>
   <button type="button" class="birincil" id="okudum">Okudum ✓</button>
-  <span id="okundu-durum" class="soluk" aria-live="polite"></span>
+  <p class="okundu-isaret" id="okundu-isaret" hidden>
+    <span class="tik" aria-hidden="true">✓</span>
+    <span><strong>Okundu.</strong> <span id="okundu-alt">Okuduğun kartlar listede işaretli görünür.</span></span>
+  </p>
+  <span id="okundu-durum" class="hata" role="alert"></span>
 </div>
 <script>
   import { ilerlemeOku } from '../lib/ilerleme/depo';
@@ -15,19 +20,24 @@ const { kimlik } = Astro.props;
 
   const kok = document.querySelector<HTMLElement>('.okundu[data-kart]');
   const dugme = document.getElementById('okudum') as HTMLButtonElement | null;
-  if (kok && dugme) {
+  const isaret = document.getElementById('okundu-isaret');
+  if (kok && dugme && isaret) {
     const kimlik = kok.dataset.kart!;
+    const oturumda = new URLSearchParams(location.search).has('oturum');
     const ciz = () => {
       const okundu = (ilerlemeOku().okunanKartlar ?? []).includes(kimlik);
-      dugme.disabled = okundu;
-      dugme.textContent = okundu ? 'Okundu ✓' : 'Okudum ✓';
+      dugme.hidden = okundu;
+      isaret.hidden = !okundu;
+      if (oturumda) document.getElementById('okundu-alt')!.textContent = 'Şimdi aşağıdan sonraki adıma geçebilirsin.';
     };
     dugme.addEventListener('click', () => {
       const i = ilerlemeOku();
       const liste = i.okunanKartlar ?? [];
       if (!liste.includes(kimlik)) {
         const tamam = kaydetVeBildir(gunuIsaretle({ ...i, okunanKartlar: [...liste, kimlik] }, bugunStr()));
-        document.getElementById('okundu-durum')!.textContent = tamam ? '' : 'Kaydedilemedi (tarayıcı depolaması kapalı olabilir).';
+        document.getElementById('okundu-durum')!.textContent = tamam
+          ? ''
+          : 'Kaydedilemedi (tarayıcı depolaması kapalı olabilir).';
       }
       ciz();
     });
@@ -35,5 +45,16 @@ const { kimlik } = Astro.props;
   }
 </script>
 <style>
-  .okundu { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-top: 2rem; }
+  .okundu { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-top: 2rem; font-family: var(--yazi); }
+  .okundu-isaret {
+    display: flex; align-items: center; gap: 0.7rem; margin: 0;
+    padding: 0.7rem 1rem; border-radius: 12px; font-size: 0.98rem;
+    background: color-mix(in srgb, var(--dogru) 12%, transparent); border: 1px solid var(--dogru);
+  }
+  .tik {
+    display: grid; place-items: center; flex: none; width: 1.8rem; height: 1.8rem; border-radius: 50%;
+    background: var(--dogru); color: #fff; font-weight: 800;
+  }
+  .hata { color: var(--yanlis); font-weight: 600; }
+  .hata:empty { display: none; }
 </style>

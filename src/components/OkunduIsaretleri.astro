@@ -1,0 +1,25 @@
+---
+// Liste sayfalarında (Efsane mi?, Atölye) okunan kartları işaretler ve "X/Y okundu" özetini yazar.
+// Listedeki her öğe `data-kart="<efsane|atolye>:<id>"` taşır, içinde `.kart-durum` olur.
+---
+<script>
+  import { ilerlemeOku } from '../lib/ilerleme/depo';
+
+  const okunan = new Set(ilerlemeOku().okunanKartlar ?? []);
+  const ogeler = [...document.querySelectorAll<HTMLElement>('[data-kart]')];
+  let sayi = 0;
+  for (const li of ogeler) {
+    if (!okunan.has(li.dataset.kart!)) continue;
+    sayi++;
+    li.classList.add('okundu');
+    const durum = li.querySelector('.kart-durum');
+    if (durum) durum.textContent = '✓ Okundu';
+  }
+  const ozet = document.getElementById('okunan-ozet');
+  if (ozet && ogeler.length) ozet.textContent = `${sayi}/${ogeler.length} okundu`;
+</script>
+
+<style is:global>
+  [data-kart].okundu { border-color: var(--dogru); }
+  [data-kart].okundu .kart-durum { color: var(--dogru); font-weight: 700; }
+</style>
